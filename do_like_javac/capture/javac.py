@@ -8,25 +8,15 @@
 import util
 import generic
 
-MODULE_NAME = __name__
-MODULE_DESCRIPTION = '''Run analysis of code built with a command like:
-javac [options] <source files>
-
-Analysis examples:
-do-like-javac.py -- javac srcfile.java'''
+supported_commands = ['javac']
 
 def gen_instance(cmd):
     return JavaCapture(cmd)
 
-# This creates an empty argparser for the module, which provides only
-# description/usage information and no arguments.
-create_argparser = util.base_argparser(MODULE_DESCRIPTION, MODULE_NAME)
-
-
 class JavaCapture(generic.GenericCapture):
 
     def __init__(self, cmd):
-    	self.build_cmd = cmd
+        self.build_cmd = cmd
         self.cmd = cmd[1:]
 
     def get_javac_commands(self, verbose_output):

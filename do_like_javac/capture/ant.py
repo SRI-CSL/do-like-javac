@@ -8,20 +8,10 @@
 import util
 import generic
 
-MODULE_NAME = __name__
-MODULE_DESCRIPTION = '''Run analysis of code built with a command like:
-ant [options] [target]
-
-Analysis examples:
-capture_javac.py -- ant compile'''
+supported_commands = ['ant']
 
 def gen_instance(cmd):
     return AntCapture(cmd)
-
-# This creates an empty argparser for the module, which provides only
-# description/usage information and no arguments.
-create_argparser = util.base_argparser(MODULE_DESCRIPTION, MODULE_NAME)
-
 
 class AntCapture(generic.GenericCapture):
 

@@ -8,21 +8,10 @@
 import util
 import generic
 
-MODULE_NAME = __name__
-MODULE_DESCRIPTION = '''Run analysis of code built with a command like:
-gradle [options] [task]
-
-Analysis examples:
-capture_javac.py -- gradle build
-capture_javac.py -- ./gradlew build'''
+supported_commands = ['gradle', 'gradlew']
 
 def gen_instance(cmd):
     return GradleCapture(cmd)
-
-# This creates an empty argparser for the module, which provides only
-# description/usage information and no arguments.
-create_argparser = util.base_argparser(MODULE_DESCRIPTION, MODULE_NAME)
-
 
 class GradleCapture(generic.GenericCapture):
 

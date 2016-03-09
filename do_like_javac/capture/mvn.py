@@ -9,20 +9,10 @@ import re
 import util
 import generic
 
-MODULE_NAME = __name__
-MODULE_DESCRIPTION = '''Run analysis of code built with a command like:
-mvn [options] [task]
-
-Analysis examples:
-capture_javac.py -- mvn build'''
+supported_commands = ['mvn']
 
 def gen_instance(cmd):
     return MavenCapture(cmd)
-
-# This creates an empty argparser for the module, which provides only
-# description/usage information and no arguments.
-create_argparser = util.base_argparser(MODULE_DESCRIPTION, MODULE_NAME)
-
 
 class MavenCapture(generic.GenericCapture):
     def __init__(self, cmd):

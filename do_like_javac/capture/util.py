@@ -7,9 +7,8 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-import argparse
+import do_like_javac.log
 import os
-import logging
 import subprocess
 import traceback
 
@@ -30,17 +29,4 @@ def run_cmd_ignore_fail(cmd):
 def log_java_version():
     java_version = run_cmd_ignore_fail(['java', '-version'])
     javac_version = run_cmd_ignore_fail(['javac', '-version'])
-    logging.info("java versions:\n%s%s", java_version, javac_version)
-
-
-def base_argparser(description, module_name):
-    def _func(group_name=module_name):
-        """This creates an empty argparser for the module, which provides only
-        description/usage information and no arguments."""
-        parser = argparse.ArgumentParser(add_help=False)
-        group = parser.add_argument_group(
-            "{grp} module".format(grp=group_name),
-            description=description,
-        )
-        return parser
-    return _func
+    log.info("java versions:\n%s%s", java_version, javac_version)
