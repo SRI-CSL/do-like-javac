@@ -52,8 +52,9 @@ Invoke `dljc` from the directory of the project you want to analyze:
 Where "ant build" is replaced by whatever command builds your project. Output
 will be emitted to logs/toplevel.log
 
-You may also run a checking tool on the discovered java files, by invoking with
-the -t option and a tool to use (e.g. "-t print", "-t inference" or "-t checker").
+You may also run one or more checking tools on the discovered java files, by
+invoking with the -t option and a comma separated list of tools to use (e.g.
+"-t print", "-t inference" or "-t inference,checker").
 
 LICENSE
 =======

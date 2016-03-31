@@ -21,17 +21,16 @@ base_group = base_parser.add_argument_group('global arguments')
 base_group.add_argument('-o', '--out', metavar='<directory>',
                         default=DEFAULT_OUTPUT_DIRECTORY, dest='output_directory',
                         action=AbsolutePathAction,
-                        help='Set the results directory')
+                        help='The directory to log results.')
 base_group.add_argument('--log_to_stderr', action='store_true',
-                        help='''When set, all logging will go to stderr instead
-                        of log file''')
+                        help='''Redirect log messages to stderr instead of log file''')
 base_group.add_argument('-t', '--tool', metavar='<tool>',
                         action='store',default=None,
-                        help='choose a tool to run. Valid tools: ' + ', '.join(tools.TOOLS))
+                        help='A comma separated list of tools to run. Valid tools: ' + ', '.join(tools.TOOLS))
 
 base_group.add_argument('-c', '--checker', metavar='<checker>',
                         action='store',default='NullnessChecker',
-                        help='choose a checker to check (for checker/inference tools)')
+                        help='A checker to check (for checker/inference tools)')
 
 def split_args_to_parse():
     split_index = len(sys.argv)
