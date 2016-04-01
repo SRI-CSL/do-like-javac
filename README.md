@@ -54,7 +54,7 @@ will be emitted to logs/toplevel.log
 
 You may also run one or more checking tools on the discovered java files, by
 invoking with the -t option and a comma separated list of tools to use (e.g.
-"-t print", "-t inference" or "-t inference,checker").
+"-t print", "-t randoop" or "-t print,randoop").
 
 LICENSE
 =======

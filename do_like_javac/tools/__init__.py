@@ -1,14 +1,15 @@
-import check
-import graphtools
-import infer
 import jprint
 import randoop
-import soot
+import graphtools
+
+# import soot
+# import check
+# import infer
 
 TOOLS = {
-  'soot' : soot,
-  'checker' : check,
-  'inference' : infer,
+  # 'soot' : soot,
+  # 'checker' : check,
+  # 'inference' : infer,
   'print' : jprint,
   'randoop' : randoop,
   'graphtool' : graphtools,

@@ -1,16 +1,20 @@
+# DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
+
 import os
 import pprint
 import subprocess
 import traceback
 import argparse
 
-argparser = None
+argparser = argparse.ArgumentParser(add_help=False)
+soot_group = argparser.add_argument_group('soot arguments')
+
+soot_group.add_argument('-j', '--soot-jar', metavar='<soot-jar>',
+                         action='store', default=None, dest='soot_jar',
+                         help='Set the path to the soot jar.')
 
 def run(args, javac_commands, jars):
-    soot_jar = os.path.dirname(os.path.realpath(__file__))+"/../soot-trunk.jar"
-    soot_command = []
-    # first add the call to the soot jar.
-    soot_command.extend(["java", "-jar", soot_jar])
+    soot_command = ["java", "-jar", args.soot_jar]
 
     # now add the generic soot args that we want to use.
     # TODO: these should actually be parsed from command line.
@@ -18,7 +22,6 @@ def run(args, javac_commands, jars):
 
     for jc in javac_commands:
         pprint.pformat(jc)
-        #jc['java_files']
         javac_switches = jc['javac_switches']
         cp = javac_switches['classpath']
         class_dir = javac_switches['d']
