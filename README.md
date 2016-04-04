@@ -56,6 +56,19 @@ You may also run one or more checking tools on the discovered java files, by
 invoking with the -t option and a comma separated list of tools to use (e.g.
 "-t print", "-t randoop" or "-t print,randoop").
 
+Supported Tools
+===============
+
+Print
+-----
+
+The print tool (`dljc -t print`) will pretty-print the detected `javac` commands, as well as any generated JAR files, and their entry points if applicable.
+
+Randoop
+-------
+
+No special arguments are required to run [Randoop](https://randoop.github.io/randoop/). In fact, Randoop itself is not a prequisite. Invoking `dljc -t randoop` will automatically download any necessary dependencies and create a script (or scripts) named something like "run\_randoop\_0001.sh", which you can then run to run randoop on your code.
+
 LICENSE
 =======
 

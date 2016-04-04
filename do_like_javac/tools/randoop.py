@@ -58,7 +58,7 @@ def run(args, javac_commands, jars):
                 clean_cp.append(cp_entry)
 
         randoop_cmd = ['java', '-ea', '-classpath', os.pathsep.join(clean_cp), 
-                "randoop.main.Main", "gentests", "--classlist=%s"%class_files_file_name, 
+                "randoop.main.Main", "gentests", "--classlist=%s"%class_files_file_name,
                 "--timelimit=60", "--silently-ignore-bad-class-names=true",
                 "--junit-output-dir=%s"%out_dir_name]
 
