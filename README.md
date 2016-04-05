@@ -64,6 +64,13 @@ Print
 
 The print tool (`dljc -t print`) will pretty-print the detected `javac` commands, as well as any generated JAR files, and their entry points if applicable.
 
+Bixie
+-----
+
+The Bixie tool will run your project through [Bixie](http://sri-csl.github.io/bixie/). You must specify a path to the Bixie jar file with the `--bixie-jar` argument, e.g.
+
+    dljc --bixie-jar path/to/bixie.jar -t bixie -- mvn compile
+
 Randoop
 -------
 

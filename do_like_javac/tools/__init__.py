@@ -1,5 +1,6 @@
 import jprint
 import randoop
+import bixie
 import graphtools
 
 # import soot
@@ -7,11 +8,12 @@ import graphtools
 # import infer
 
 TOOLS = {
-  # 'soot' : soot,
-  # 'checker' : check,
+  # 'soot'      : soot,
+  # 'checker'   : check,
   # 'inference' : infer,
-  'print' : jprint,
-  'randoop' : randoop,
+  'print'     : jprint,
+  'randoop'   : randoop,
+  'bixie'     : bixie,
   'graphtool' : graphtools,
 }
 
