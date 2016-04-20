@@ -7,8 +7,7 @@ for the purpose of later analysis. It can also automate the running of various
 analysis tools, including:
 
 * [Randoop](https://randoop.github.io/randoop/)
-* [Checker Framework](http://types.cs.washington.edu/checker-framework/)
-* [Soot](https://sable.github.io/soot/)
+* [Bixie](http://sri-csl.github.io/bixie/)
 
 `do-like-javac` supports projects built with:
 
