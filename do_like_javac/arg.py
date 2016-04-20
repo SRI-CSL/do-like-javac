@@ -28,9 +28,9 @@ base_group.add_argument('-t', '--tool', metavar='<tool>',
                         action='store',default=None,
                         help='A comma separated list of tools to run. Valid tools: ' + ', '.join(tools.TOOLS))
 
-# base_group.add_argument('-c', '--checker', metavar='<checker>',
-#                         action='store',default='NullnessChecker',
-#                         help='A checker to check (for checker/inference tools)')
+base_group.add_argument('-c', '--checker', metavar='<checker>',
+                        action='store',default='NullnessChecker',
+                        help='A checker to check (for checker/inference tools)')
 
 def split_args_to_parse():
     split_index = len(sys.argv)

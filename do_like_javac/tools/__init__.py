@@ -4,13 +4,13 @@ import bixie
 import graphtools
 
 # import soot
-# import check
-# import infer
+import check
+import infer
 
 TOOLS = {
   # 'soot'      : soot,
-  # 'checker'   : check,
-  # 'inference' : infer,
+  'checker'   : check,
+  'inference' : infer,
   'print'     : jprint,
   'randoop'   : randoop,
   'bixie'     : bixie,
