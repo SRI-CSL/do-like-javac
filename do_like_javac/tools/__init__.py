@@ -2,6 +2,7 @@ import jprint
 import randoop
 import bixie
 import graphtools
+import dyntrace
 
 # import soot
 import check
@@ -15,6 +16,7 @@ TOOLS = {
   'randoop'   : randoop,
   'bixie'     : bixie,
   'graphtool' : graphtools,
+  'dyntrace'  : dyntrace,
 }
 
 def parsers():
