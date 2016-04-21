@@ -44,7 +44,11 @@ Then symlink the `dljc` executable to somewhere in your $PATH, e.g.
 Running
 =======
 
-Invoke `dljc` from the directory of the project you want to analyze:
+First, make sure your project is in a clean state (e.g. via `ant clean`, `mvn clean`, etc.).
+Since `do-like-javac` monitors the build process and build tools skip already-built files, if
+you run `dljc` on an already-built project, you won't get any results.
+
+Next, invoke `dljc` from the directory of the project you want to analyze:
 
     dljc -o logs -- ant build
 
@@ -54,6 +58,20 @@ will be emitted to logs/toplevel.log
 You may also run one or more checking tools on the discovered java files, by
 invoking with the -t option and a comma separated list of tools to use (e.g.
 "-t print", "-t randoop" or "-t print,randoop").
+
+Caching
+=======
+
+`do-like-javac` can only extract data from a full compile of a project. That means
+if you want to re-run it with new arguments or different analysis tools, you will
+have to clean and fully re-compile your project. To save time and shortcut this
+process, we save a cache of the results in the output directory. If you want `dljc`
+to use this cache, simply add the `--cache` flag and the cache (if available) will
+be used instead of recompiling your project.
+
+**IMPORTANT NOTE**: We don't do any sort of cache invalidation or freshness checking.
+If you add new files to your project and want `dljc` to pick up on them, you will have
+to do a full clean and run `dljc` without the `--cache` flag.
 
 Supported Tools
 ===============
