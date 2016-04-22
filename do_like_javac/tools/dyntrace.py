@@ -12,24 +12,24 @@ dyntrace_group.add_argument("--dyntrace-libs", metavar='<dyntrace-lib-dir>',
 
 def run(args, javac_commands, jars):
   i = 1
+  out_dir = os.path.basename(args.output_directory)
 
   for jc in javac_commands:
-    dyntrace(i, jc, args.dyn_lib_dir)
+    dyntrace(i, jc, out_dir, args.dyn_lib_dir)
     i = i + 1
 
-def dyntrace(i, java_command, lib_dir):
+def dyntrace(i, java_command, out_dir, lib_dir):
   classpath = common.classpath(java_command)
   classdir = os.path.abspath(common.class_directory(java_command))
 
   randoop_driver = "RegressionTestDriver"
-  test_src_dir = "test-src{}".format(i)
-  test_class_directory = "test-classes{}".format(i)
-  dtrace_file_name="{}-{}.dtrace.gz".format(randoop_driver, i)
+  test_src_dir = os.path.join(out_dir, "test-src{}".format(i))
+  test_class_directory = os.path.join(out_dir, "test-classes{}".format(i))
 
   base_classpath = classpath + ":" + classdir
   randoop_classpath = base_classpath + ":" + os.path.join(lib_dir, "randoop-2.1.4.jar")
   compile_classpath = base_classpath + ":" + os.path.join(lib_dir, "junit-4.12.jar")
-  chicory_classpath = compile_classpath + ":" + os.path.abspath(test_class_directory) + ":" + os.path.join(lib_dir, "daikon.jar")
+  chicory_classpath = compile_classpath + ":" + os.path.abspath(test_class_directory) + ":" + os.path.join(lib_dir, "daikon.jar") + ":" + os.path.join(lib_dir, "hamcrest-core-1.3.jar")
 
   classes = get_classes(classdir)
 
@@ -42,7 +42,7 @@ def dyntrace(i, java_command, lib_dir):
   files_to_compile = get_files_to_compile(test_src_dir)
 
   compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
-  run_chicory(chicory_classpath, classes, randoop_driver, dtrace_file_name)
+  run_chicory(chicory_classpath, classes, randoop_driver, out_dir)
 
 def get_classes(classdir):
   classes = []
@@ -108,18 +108,11 @@ def get_namespace(class_name):
     return class_name[0:class_name.rfind(".")]
 
 
-def run_chicory(chicory_classpath, classes_to_include, main_class, dtrace_file_name):
-  # TODO Do we want ErrorTestDriver or main_class here?
-  inclusion_regex = "--ppt-select-pattern=^(ErrorTestDriver|ErrorTest(\\d)+"
-  for class_name in classes_to_include:
-    inclusion_regex = inclusion_regex + "|" + get_namespace(class_name)
-  inclusion_regex = inclusion_regex + ")\\S*"
-
+def run_chicory(chicory_classpath, classes_to_include, main_class, out_dir):
   chicory_command = ["java",
                      "-classpath", chicory_classpath,
-                     "daikon.Chicory", inclusion_regex,
-                     "--daikon",
-                     "--dtrace-file={}".format(dtrace_file_name),
+                     "daikon.Chicory",
+                     "--output_dir={}".format(out_dir),
                      main_class]
 
   common.run_cmd(chicory_command)
