@@ -32,6 +32,7 @@ def run(args, javac_commands, jars):
 
     cmd = tool_command + ["-o", current_outdir,
                           "-j", class_dir,
+                          "-all",
                           "-source", java_files_file]
 
     common.run_cmd(cmd)
