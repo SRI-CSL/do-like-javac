@@ -19,19 +19,21 @@ infer_group.add_argument('-solverArgs', '--solverArgs', metavar='<solverArgs>',
                         help='arguments for solver')
 
 def run(args, javac_commands, jars):
-	# the dist directory if CFI.
-	CFI_dist = os.path.join(os.environ['JSR308'], 'checker-framework-inference', 'dist')
-	CFI_command = ['java']
+    # the dist directory if CFI.
+    CFI_dist = os.path.join(os.environ['JSR308'], 'checker-framework-inference', 'dist')
+    CFI_command = ['java']
 
-	for jc in javac_commands:
-		target_cp = jc['javac_switches']['classpath']
+    print os.environ
 
-		cp = target_cp + \
+    for jc in javac_commands:
+        target_cp = jc['javac_switches']['classpath']
+
+        cp = target_cp + \
              ':' + os.path.join(CFI_dist, 'checker.jar') + \
              ':' + os.path.join(CFI_dist, 'plume.jar') + \
              ':' + os.path.join(CFI_dist, 'checker-framework-inference.jar')
 
-		cmd = CFI_command + ['-classpath', cp,
+        cmd = CFI_command + ['-classpath', cp,
                              'checkers.inference.InferenceLauncher',
                              '--solverArgs', args.solverArgs,
                              '--checker', args.checker,
