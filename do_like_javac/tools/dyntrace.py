@@ -55,16 +55,12 @@ def get_classes(classdir):
   return classes
 
 def make_class_list(classes):
-  fd, filename = tempfile.mkstemp(suffix='.txt', prefix='clist', text=True)
-
-  f = os.fdopen(fd, 'w')
-  for c in classes:
-    f.write(c)
-    f.write('\n')
-
-  f.close()
-
-  return filename
+  with tempfile.NamedTemporaryFile('w', suffix='.txt', prefix='clist', delete=False) as class_file:
+    for c in classes:
+      class_file.write(c)
+      class_file.write('\n')
+    class_file.flush()
+    return class_file.name
 
 def generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit, output_limit):
   randoop_command = ["java", "-ea",
@@ -100,13 +96,6 @@ def compile_test_cases(compile_classpath, test_class_directory, files_to_compile
   compile_command.extend(files_to_compile)
 
   common.run_cmd(compile_command)
-
-def get_namespace(class_name):
-  if "." not in class_name:
-    return class_name
-  else:
-    return class_name[0:class_name.rfind(".")]
-
 
 def run_chicory(chicory_classpath, classes_to_include, main_class, out_dir):
   chicory_command = ["java",
