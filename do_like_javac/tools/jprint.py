@@ -7,5 +7,5 @@ def run(args, javac_commands, jars):
   for jc in javac_commands:
     pp.pprint(jc)
     javac_switches = jc['javac_switches']
-  print("Target JARs (experimental):")
-  pp.pprint(jars)
+#  print("Target JARs (experimental):")
+#  pp.pprint(jars)
