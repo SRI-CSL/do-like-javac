@@ -31,9 +31,9 @@ base_group.add_argument('-t', '--tool', metavar='<tool>',
 base_group.add_argument('--cache', action='store_true',
                         help='''Use the dljc cache (if available)''')
 
-# base_group.add_argument('-c', '--checker', metavar='<checker>',
-#                         action='store',default='NullnessChecker',
-#                         help='A checker to check (for checker/inference tools)')
+base_group.add_argument('-c', '--checker', metavar='<checker>',
+                        action='store',default='NullnessChecker',
+                        help='A checker to check (for checker/inference tools)')
 
 def split_args_to_parse():
     split_index = len(sys.argv)
