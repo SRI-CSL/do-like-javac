@@ -8,6 +8,7 @@ analysis tools, including:
 
 * [Randoop](https://randoop.github.io/randoop/)
 * [Bixie](http://sri-csl.github.io/bixie/)
+* [Checker Framework](http://types.cs.washington.edu/checker-framework/)
 
 `do-like-javac` supports projects built with:
 
@@ -15,6 +16,10 @@ analysis tools, including:
 * Apache Maven
 * Gradle
 * Manual invocation of `javac`
+
+If you have a project that builds through Eclipse that you want to analyze,
+Eclipse can generate an Ant-compatible `build.xml` file by right-clicking the
+project, selecting "Export" and choosing the "Ant Buildfiles" option.
 
 Dependencies
 ============
@@ -96,7 +101,9 @@ No special arguments are required to run [Randoop](https://randoop.github.io/ran
 LICENSE
 =======
 
-Parts of the code in this directory were taken from the Facebook Infer project.
-Its license is available at
+Parts of the code in this project were taken from the Facebook Infer project.
+Files containing such code have Facebook copyright notices at the top and are
+licensed under the terms laid out in LICENSE_Facebook.
 
-  https://github.com/facebook/infer/blob/master/LICENSE
+The rest of the project is licensed under the BSD license under the terms laid
+out in LICENSE.
