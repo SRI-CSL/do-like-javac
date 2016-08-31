@@ -1,3 +1,11 @@
+# Copyright (c) 2013 - present Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD style license found in the
+# LICENSE_Facebook file in the root directory of this source tree. An
+# additional grant of patent rights can be found in the PATENTS_Facebook file
+# in the same directory.
+
 import argparse
 import os
 import sys
@@ -31,9 +39,9 @@ base_group.add_argument('-t', '--tool', metavar='<tool>',
 base_group.add_argument('--cache', action='store_true',
                         help='''Use the dljc cache (if available)''')
 
-# base_group.add_argument('-c', '--checker', metavar='<checker>',
-#                         action='store',default='NullnessChecker',
-#                         help='A checker to check (for checker/inference tools)')
+base_group.add_argument('-c', '--checker', metavar='<checker>',
+                        action='store',default='NullnessChecker',
+                        help='A checker to check (for checker/inference tools)')
 
 def split_args_to_parse():
     split_index = len(sys.argv)
