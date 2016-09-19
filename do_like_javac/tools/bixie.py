@@ -1,20 +1,12 @@
 import os
-import argparse
 import common
 
-argparser = argparse.ArgumentParser(add_help=False)
-bixie_group = argparser.add_argument_group('bixie arguments')
-
-bixie_group.add_argument('--bixie-jar', metavar='<bixie-jar>',
-                         action='store',default=None, dest='bixie_jar',
-                         help='Path to bixie.jar')
+argparser = None
 
 def run(args, javac_commands, jars):
-  if not args.bixie_jar:
-    print "Could not run bixie tool: missing arg --bixie-jar"
-    return
+  bixie_jar = os.path.join(lib_dir, "bixie.jar")
 
-  bixie_command = ["java", "-jar", args.bixie_jar,
+  bixie_command = ["java", "-jar", bixie_jar,
                     "-html", os.path.join(args.output_directory, 'bixie_report')]
 
   i = 1

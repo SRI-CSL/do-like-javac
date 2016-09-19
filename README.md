@@ -30,7 +30,7 @@ That's it. No other external dependencies for the core `do-like-javac` scripts.
 
 Of course, you will also need to have installed:
 
-* The analysis tool(s) you want to run. 
+* The analysis tool(s) you want to run.
 * Any build dependencies of the project you're analyzing.
 
 `do-like-javac` was built and tested on Mac OS X and GNU/Linux. It probably also
@@ -89,14 +89,29 @@ The print tool (`dljc -t print`) will pretty-print the detected `javac` commands
 Bixie
 -----
 
-The Bixie tool will run your project through [Bixie](http://sri-csl.github.io/bixie/). You must specify a path to the Bixie jar file with the `--bixie-jar` argument, e.g.
+The Bixie tool will run your project through [Bixie](http://sri-csl.github.io/bixie/). You will need to provide a library directory containing bixie.jar using the `--lib` option.
 
-    dljc --bixie-jar path/to/bixie.jar -t bixie -- mvn compile
+    dljc --lib path/to/libs/ -t bixie -- mvn compile
 
-Randoop
--------
+Dyntrace
+---------
 
-No special arguments are required to run [Randoop](https://randoop.github.io/randoop/). In fact, Randoop itself is not a prequisite. Invoking `dljc -t randoop` will automatically download any necessary dependencies and create a script (or scripts) named something like "run\_randoop\_0001.sh", which you can then run to run randoop on your code.
+The Dyntrace tool will run your project through Randoop to generate tests, then run those tests with Daikon/Chicory. You will need to provide a library directory with the following jars using the `--lib` option:
+
+* randoop.jar
+* junit-4.12.jar
+* daikon.jar
+* hamcrest-core-1.3.jar
+
+    dljc --lib path/to/libs/ -t dyntrace -- mvn compile
+
+You may also choose to invoke the Randoop and Daikon/Chicory phases separately (though the Chicory phase depends on the output of the Randoop phase), e.g.
+
+    dljc --lib path/to/libs/ -t randoop -- mvn compile
+
+or
+
+    dljc --lib path/to/libs/ -t chicory -- mvn compile
 
 LICENSE
 =======

@@ -1,24 +1,18 @@
 import os
-import argparse
 import common
 import tempfile
 
-argparser = argparse.ArgumentParser(add_help=False)
-dyntrace_group = argparser.add_argument_group('dyntrace arguments')
-
-dyntrace_group.add_argument("--dyntrace-libs", metavar='<dyntrace-lib-dir>',
-                            action='store', default=None, dest='dyn_lib_dir',
-                            help='Library directory with JARs for randoop, daikon, and junit.')
+argparser = None
 
 def run(args, javac_commands, jars):
   i = 1
   out_dir = os.path.basename(args.output_directory)
 
   for jc in javac_commands:
-    dyntrace(i, jc, out_dir, args.dyn_lib_dir)
+    dyntrace(i, jc, out_dir, args.lib_dir)
     i = i + 1
 
-def dyntrace(i, java_command, out_dir, lib_dir):
+def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory']):
   classpath = common.classpath(java_command)
   classdir = os.path.abspath(common.class_directory(java_command))
 
@@ -33,16 +27,19 @@ def dyntrace(i, java_command, out_dir, lib_dir):
 
   classes = get_classes(classdir)
 
-  class_list_file = make_class_list(classes)
-  time_limit = 10
-  output_limit = 20
+  if 'randoop' in run_parts:
+    class_list_file = make_class_list(classes)
+    time_limit = 10
+    output_limit = 20
 
-  generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit, output_limit)
+    generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit, output_limit)
 
-  files_to_compile = get_files_to_compile(test_src_dir)
+    files_to_compile = get_files_to_compile(test_src_dir)
 
-  compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
-  run_chicory(chicory_classpath, classes, randoop_driver, out_dir)
+    compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
+
+  if 'chicory' in run_parts:
+    run_chicory(chicory_classpath, classes, randoop_driver, out_dir)
 
 def get_classes(classdir):
   classes = []

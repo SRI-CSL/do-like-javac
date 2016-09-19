@@ -43,6 +43,10 @@ base_group.add_argument('-c', '--checker', metavar='<checker>',
                         action='store',default='NullnessChecker',
                         help='A checker to check (for checker/inference tools)')
 
+base_group.add_argument('-l', '--lib', metavar='<lib_dir>',
+                        action='store',dest='lib_dir',
+                        help='Library directory with JARs for tools that need them.')
+
 def split_args_to_parse():
     split_index = len(sys.argv)
     if CMD_MARKER in sys.argv:

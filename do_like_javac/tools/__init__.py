@@ -1,7 +1,9 @@
 import jprint
 import randoop
+import randoop_old
 import bixie
 import graphtools
+import chicory
 import dyntrace
 
 # import soot
@@ -14,8 +16,10 @@ TOOLS = {
   'inference' : infer,
   'print'     : jprint,
   'randoop'   : randoop,
+  'randoop_old': randoop_old,
   'bixie'     : bixie,
   'graphtool' : graphtools,
+  'chicory'   : chicory,
   'dyntrace'  : dyntrace,
 }
 
