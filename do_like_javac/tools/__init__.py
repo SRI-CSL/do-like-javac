@@ -37,5 +37,6 @@ def parse_tools(tools):
   return [tool for tool in tools.split(',') if check_tool(tool)]
 
 def run(args, javac_commands, jars):
-  for tool in parse_tools(args.tool):
-    TOOLS[tool].run(args, javac_commands, jars)
+  if args.tool:
+    for tool in parse_tools(args.tool):
+      TOOLS[tool].run(args, javac_commands, jars)
