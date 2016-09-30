@@ -20,10 +20,16 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
   test_src_dir = os.path.join(out_dir, "test-src{}".format(i))
   test_class_directory = os.path.join(out_dir, "test-classes{}".format(i))
 
+  if not os.path.exists(test_class_directory):
+    os.mkdir(test_class_directory)
+
   if classpath:
     base_classpath = classpath + ":" + classdir
   else:
     base_classpath = classdir
+
+  with open(os.path.join(test_class_directory, 'classpath.txt'), 'w') as f:
+    f.write(base_classpath)
 
   randoop_classpath = base_classpath + ":" + os.path.join(lib_dir, "randoop.jar")
   compile_classpath = base_classpath + ":" + os.path.join(lib_dir, "junit-4.12.jar")
@@ -88,9 +94,6 @@ def get_files_to_compile(test_src_dir):
   return jfiles
 
 def compile_test_cases(compile_classpath, test_class_directory, files_to_compile):
-  if not os.path.exists(test_class_directory):
-    os.mkdir(test_class_directory)
-
   compile_command = ["javac", "-g",
                      "-classpath", compile_classpath,
                      "-d", test_class_directory]
