@@ -1,3 +1,4 @@
+import os
 import util
 import zipfile
 
@@ -16,9 +17,10 @@ def get_entry_point(jar):
 
     return {"jar": jar}
 
-class GenericCapture:
-    def __init__(self, cmd):
+class GenericCapture(object):
+    def __init__(self, cmd, args):
         self.build_cmd = cmd
+        self.args = args
 
     def get_javac_commands(self, verbose_output):
         return []
@@ -28,8 +30,14 @@ class GenericCapture:
 
     def capture(self):
         build_output = util.get_build_output(self.build_cmd)
-        javac_commands = self.get_javac_commands(build_output)
-        target_jars = self.get_target_jars(build_output)
+
+        with open(os.path.join(self.args.output_directory, 'build_output.txt'), 'w') as f:
+            f.write(build_output)
+
+        build_lines = build_output.split('\n')
+
+        javac_commands = self.get_javac_commands(build_lines)
+        target_jars = self.get_target_jars(build_lines)
         jars_with_entry_points = map(get_entry_point, target_jars)
         return [javac_commands, jars_with_entry_points]
 

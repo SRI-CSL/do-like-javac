@@ -11,12 +11,13 @@ import generic
 
 supported_commands = ['ant']
 
-def gen_instance(cmd):
-    return AntCapture(cmd)
+def gen_instance(cmd, args):
+    return AntCapture(cmd, args)
 
 class AntCapture(generic.GenericCapture):
 
-    def __init__(self, cmd):
+    def __init__(self, cmd, args):
+        super(AntCapture, self).__init__(cmd, args)
         self.build_cmd = ['ant', '-verbose'] + cmd[1:]
 
     def is_interesting(self, content):

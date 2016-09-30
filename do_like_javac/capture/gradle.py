@@ -11,12 +11,12 @@ import generic
 
 supported_commands = ['gradle', 'gradlew']
 
-def gen_instance(cmd):
-    return GradleCapture(cmd)
+def gen_instance(cmd, args):
+    return GradleCapture(cmd, args)
 
 class GradleCapture(generic.GenericCapture):
-
-    def __init__(self, cmd):
+    def __init__(self, cmd, args):
+        super(GradleCapture, self).__init__(cmd, args)
         self.build_cmd = [cmd[0], '--debug'] + cmd[1:]
 
     def get_javac_commands(self, verbose_output):
