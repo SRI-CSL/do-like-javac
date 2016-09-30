@@ -31,9 +31,9 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
   with open(os.path.join(test_class_directory, 'classpath.txt'), 'w') as f:
     f.write(base_classpath)
 
-  randoop_classpath = base_classpath + ":" + os.path.join(lib_dir, "randoop.jar")
-  compile_classpath = base_classpath + ":" + os.path.join(lib_dir, "junit-4.12.jar")
-  chicory_classpath = compile_classpath + ":" + os.path.abspath(test_class_directory) + ":" + os.path.join(lib_dir, "daikon.jar") + ":" + os.path.join(lib_dir, "hamcrest-core-1.3.jar")
+  randoop_classpath = os.path.join(lib_dir, "randoop.jar") + ":" + base_classpath
+  compile_classpath = os.path.join(lib_dir, "junit-4.12.jar") + ":" + base_classpath
+  chicory_classpath = os.path.abspath(test_class_directory) + ":" + os.path.join(lib_dir, "daikon.jar") + ":" + os.path.join(lib_dir, "hamcrest-core-1.3.jar") + ":" + compile_classpath
 
   classes = get_classes(classdir)
 
