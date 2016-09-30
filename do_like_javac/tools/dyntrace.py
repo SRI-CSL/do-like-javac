@@ -43,7 +43,7 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
     compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
 
   if 'chicory' in run_parts:
-    run_chicory(chicory_classpath, classes, randoop_driver, test_class_directory)
+    run_chicory(chicory_classpath, randoop_driver, test_class_directory)
 
 def get_classes(classdir):
   classes = []
@@ -98,7 +98,7 @@ def compile_test_cases(compile_classpath, test_class_directory, files_to_compile
 
   common.run_cmd(compile_command)
 
-def run_chicory(chicory_classpath, classes_to_include, main_class, out_dir):
+def run_chicory(chicory_classpath, main_class, out_dir):
   chicory_command = ["java",
                      "-classpath", chicory_classpath,
                      "daikon.Chicory",
