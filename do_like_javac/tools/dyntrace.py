@@ -30,6 +30,8 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
 
   with open(os.path.join(test_class_directory, 'classpath.txt'), 'w') as f:
     f.write(base_classpath)
+  with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
+    f.write(classdir)
 
   randoop_classpath = os.path.join(lib_dir, "randoop.jar") + ":" + base_classpath
   compile_classpath = os.path.join(lib_dir, "junit-4.12.jar") + ":" + base_classpath
