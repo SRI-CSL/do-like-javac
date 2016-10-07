@@ -36,6 +36,9 @@ def run(args, javac_commands, jars):
              ':' + os.path.join(CFI_dist, 'plume.jar') + \
              ':' + os.path.join(CFI_dist, 'checker-framework-inference.jar')
 
+        if 'CLASSPATH' in os.environ:
+            cp += ':' + os.environ['CLASSPATH']
+
         cmd = CFI_command + ['-classpath', cp,
                              'checkers.inference.InferenceLauncher',
                              '--solverArgs', args.solverArgs,
