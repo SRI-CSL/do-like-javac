@@ -17,6 +17,9 @@ infer_group.add_argument('-m', '--mode', metavar='<mode>',
 infer_group.add_argument('-solverArgs', '--solverArgs', metavar='<solverArgs>',
                         action='store',default='backEndType=maxsatbackend.MaxSat',
                         help='arguments for solver')
+infer_group.add_argument('-cfArgs', '--cfArgs', metavar='<cfArgs>',
+                        action='store',default='',
+                        help='arguments for checker framework')
 
 def run(args, javac_commands, jars):
     # the dist directory if CFI.
@@ -33,9 +36,13 @@ def run(args, javac_commands, jars):
              ':' + os.path.join(CFI_dist, 'plume.jar') + \
              ':' + os.path.join(CFI_dist, 'checker-framework-inference.jar')
 
+        if 'CLASSPATH' in os.environ:
+            cp += ':' + os.environ['CLASSPATH']
+
         cmd = CFI_command + ['-classpath', cp,
                              'checkers.inference.InferenceLauncher',
                              '--solverArgs', args.solverArgs,
+                             '--cfArgs', args.cfArgs,
                              '--checker', args.checker,
                              '--solver', args.solver,
                              '--mode', args.mode,
