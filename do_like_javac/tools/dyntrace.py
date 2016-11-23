@@ -78,6 +78,7 @@ def generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit,
                      '--classlist={}'.format(class_list_file),
                      "--timelimit={}".format(time_limit),
                      "--junit-reflection-allowed=false",
+                     "--ignore-flaky-tests=true",
                      "--silently-ignore-bad-class-names=true",
                      '--junit-output-dir={}'.format(test_src_dir)]
 
