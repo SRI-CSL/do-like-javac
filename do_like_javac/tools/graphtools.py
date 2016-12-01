@@ -16,6 +16,10 @@ def run(args, javac_commands, jars):
 
   tool_command = ["java", "-jar", args.graph_jar]
 
+  dot_dir = os.path.join(args.output_directory, "dot")
+  if not os.path.isdir(dot_dir):
+    os.makedirs(dot_dir)
+
   for jc in javac_commands:
     java_files = jc['java_files']
     java_files_file = os.path.join(os.getcwd(), '__java_file_names.txt')
@@ -27,7 +31,7 @@ def run(args, javac_commands, jars):
         f.write(s)
         f.write("\n")
 
-    current_outdir = os.path.join(args.output_directory,
+    current_outdir = os.path.join(dot_dir,
                                   class_dir.replace(os.getcwd(),'').replace(os.sep,"_"))
 
     cmd = tool_command + ["-o", current_outdir,
