@@ -46,7 +46,7 @@ class GenericCapture(object):
         target_jars = self.get_target_jars(build_lines)
         jars_with_entry_points = map(get_entry_point, target_jars)
 
-        self.record_stats(stats, javac_commands, jars_with_entry_points)
+        self.record_stats(stats, javac_commands, jars, jars_with_entry_points)
 
         return [javac_commands, jars_with_entry_points, stats]
 
@@ -79,8 +79,9 @@ class GenericCapture(object):
 
         return dict(java_files=files, javac_switches=switches)
 
-    def record_stats(self, stats, javac_commands, jars):
+    def record_stats(self, stats, javac_commands, jars, executable_jars):
         stats['source_files'] = sum([len(cmd['java_files']) for cmd in javac_commands])
         stats['class_files'] = sum([len(cmdtools.get_classes(cmd)) for cmd in javac_commands])
         stats['javac_invocations'] = len(javac_commands)
         stats['built_jars'] = len(jars)
+        stats['executable_jars'] = len(executable_jars)
