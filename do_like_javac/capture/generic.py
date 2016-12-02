@@ -81,4 +81,6 @@ class GenericCapture(object):
 
     def record_stats(self, stats, javac_commands, jars):
         stats['source_files'] = sum([len(cmd['java_files']) for cmd in javac_commands])
-        stats['class_files'] = sum([len(cmdtools.get_classes(cmd)) for cmd in javac_commands)
+        stats['class_files'] = sum([len(cmdtools.get_classes(cmd)) for cmd in javac_commands])
+        stats['javac_invocations'] = len(javac_commands)
+        stats['built_jars'] = len(jars)
