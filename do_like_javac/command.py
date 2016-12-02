@@ -17,10 +17,11 @@ def main():
     log.configure_logging(args.output_directory, args.log_to_stderr)
     log.log_header()
 
-    javac_commands, jars = cache.retrieve(cmd, args, capturer)
+    javac_commands, jars, stats = cache.retrieve(cmd, args, capturer)
 
     log.info('Results: %s', pprint.pformat(javac_commands))
     output_json(os.path.join(args.output_directory, 'javac.json'), javac_commands)
     output_json(os.path.join(args.output_directory, 'jars.json'), jars)
+    output_json(os.path.join(args.output_directory, 'stats.json'), stats)
 
     tools.run(args, javac_commands, jars)
