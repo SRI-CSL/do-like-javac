@@ -19,15 +19,22 @@ def class_directory(javac_command):
       return switches['d']
   return None
 
-def get_classes(javac_command):
+def get_class_files(javac_command):
   classes = []
   classdir = class_directory(javac_command)
 
   if classdir:
     for root, dirs, files in os.walk(classdir):
-      classes.extend([file for file in files if '.class' in file])
+      classes.extend([os.path.join(root,file) for file in files if '.class' in file])
 
   return classes
+
+def get_classes(javac_command):
+  def class_file_to_class_name(classdir, class_file):
+    class_name.replace(classdir + "/", '').replace('.class','').replace('/','.')
+
+  classdir = class_directory(javac_command)
+  return [class_file_to_class_name(classdir, file) for file in get_class_files(javac_command)]
 
 def source_path(javac_command):
   if 'javac_switches' in javac_command:

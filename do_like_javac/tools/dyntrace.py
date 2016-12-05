@@ -37,12 +37,12 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
   compile_classpath = os.path.join(lib_dir, "junit-4.12.jar") + ":" + base_classpath
   chicory_classpath = os.path.abspath(test_class_directory) + ":" + os.path.join(lib_dir, "daikon.jar") + ":" + os.path.join(lib_dir, "hamcrest-core-1.3.jar") + ":" + compile_classpath
 
-  classes = get_classes(classdir)
+  classes = sorted(common.get_classes(java_command))
 
   if 'randoop' in run_parts:
     class_list_file = make_class_list(classes)
-    time_limit = 10
-    output_limit = 20
+    time_limit = 300
+    output_limit = 30
 
     generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit, output_limit)
 
@@ -51,17 +51,34 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
     compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
 
   if 'chicory' in run_parts:
-    run_chicory(chicory_classpath, randoop_driver, test_class_directory)
+    run_dyncomp(chicory_classpath, classdir, randoop_driver, test_class_directory)
+    run_chicory(chicory_classpath, classdir, randoop_driver, test_class_directory)
+    run_daikon(chicory_classpath, test_class_directory)
 
-def get_classes(classdir):
-  classes = []
+def get_select_list(classdir):
+  selects = []
+  last_add = " " # guaranteed not to match
   for root, dirs, files in os.walk(classdir):
-    for file in files:
-      if file.endswith('.class'):
-        classfile = os.path.join(root, file)
-        classname = classfile.replace(classdir + "/", '').replace('.class','').replace('/','.')
-        classes.append(classname)
-  return classes
+    if not root.startswith(last_add):
+      for file in files:
+        if file.endswith('.class'):
+          if root == classdir:
+            break
+          last_add = root
+          select = "--ppt-select-pattern=" + root.replace(classdir + "/", '').replace('/','.')
+          selects.append(select)
+          break
+  return selects
+
+def get_omit_list(omit_file_path, classdir):
+  omits = []
+
+  if os.path.isfile(omit_file_path):
+    with open(omit_file_path, 'r') as f:
+      for line in f:
+        omit = "--ppt-omit-pattern=" + line.strip()
+        omits.append(omit)
+  return omits
 
 def make_class_list(classes):
   with tempfile.NamedTemporaryFile('w', suffix='.txt', prefix='clist', delete=False) as class_file:
@@ -81,6 +98,10 @@ def generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit,
                      "--ignore-flaky-tests=true",
                      "--silently-ignore-bad-class-names=true",
                      '--junit-output-dir={}'.format(test_src_dir)]
+
+  junit_after_path = os.path.join(test_src_dir, "..", "junit-after-code")
+  if os.path.exists(junit_after_path):
+    randoop_command.append("--junit-after-all={}".format(junit_after_path))
 
   if output_limit and output_limit > 0:
     randoop_command.append('--outputlimit={}'.format(output_limit))
@@ -104,11 +125,47 @@ def compile_test_cases(compile_classpath, test_class_directory, files_to_compile
 
   common.run_cmd(compile_command)
 
-def run_chicory(chicory_classpath, main_class, out_dir):
+
+def run_chicory(chicory_classpath, classdir, main_class, out_dir):
+  selects = get_select_list(classdir)
+  omits = get_omit_list(os.path.join(out_dir, "..", "omit-list"), classdir)
   chicory_command = ["java",
                      "-classpath", chicory_classpath,
                      "daikon.Chicory",
-                     "--output_dir={}".format(out_dir),
-                     main_class]
+                     "--comparability-file={}/RegressionTestDriver.decls-DynComp".format(out_dir),
+                     "--output_dir={}".format(out_dir)]
+  for select in selects:
+    chicory_command.append(select)
+  for omit in omits:
+    chicory_command.append(omit)
+  chicory_command.append(main_class)
 
   common.run_cmd(chicory_command)
+
+
+def run_dyncomp(dyncomp_classpath, classdir, main_class, out_dir):
+  selects = get_select_list(classdir)
+  omits = get_omit_list(os.path.join(out_dir, "..", "omit-list"), classdir)
+  dyncomp_command = ["java",
+                     "-classpath", dyncomp_classpath,
+                     "daikon.DynComp",
+                     "--no-cset-file",
+                     "--output-dir={}".format(out_dir)]
+  for select in selects:
+    dyncomp_command.append(select)
+  for omit in omits:
+    dyncomp_command.append(omit)
+  dyncomp_command.append(main_class)
+
+  common.run_cmd(dyncomp_command)
+
+
+def run_daikon(daikon_classpath, out_dir):
+  daikon_command = ["java",
+                     "-classpath", daikon_classpath,
+                     "daikon.Daikon",
+                     "-o", out_dir+"/invariants.gz",
+                     out_dir+"/RegressionTestDriver.dtrace.gz"]
+
+  common.run_cmd(daikon_command)
+
