@@ -31,7 +31,7 @@ def get_class_files(javac_command):
 
 def get_classes(javac_command):
   def class_file_to_class_name(classdir, class_file):
-    class_name.replace(classdir + "/", '').replace('.class','').replace('/','.')
+    return class_file.replace(classdir + "/", '').replace('.class','').replace('/','.')
 
   classdir = class_directory(javac_command)
   return [class_file_to_class_name(classdir, file) for file in get_class_files(javac_command)]

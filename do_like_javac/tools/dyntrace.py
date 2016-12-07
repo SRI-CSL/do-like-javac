@@ -12,7 +12,13 @@ def run(args, javac_commands, jars):
     dyntrace(i, jc, out_dir, args.lib_dir)
     i = i + 1
 
+def full_daikon_available():
+  return os.environ.get('DAIKONDIR')
+
 def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory']):
+  def lib(jar):
+    return os.path.join(lib_dir, jar)
+
   classpath = common.classpath(java_command)
   classdir = os.path.abspath(common.class_directory(java_command))
 
@@ -33,29 +39,32 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
   with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
     f.write(classdir)
 
-  randoop_classpath = os.path.join(lib_dir, "randoop.jar") + ":" + base_classpath
-  compile_classpath = os.path.join(lib_dir, "junit-4.12.jar") + ":" + base_classpath
-  chicory_classpath = os.path.abspath(test_class_directory) + ":" + os.path.join(lib_dir, "daikon.jar") + ":" + os.path.join(lib_dir, "hamcrest-core-1.3.jar") + ":" + compile_classpath
-
-  classes = sorted(common.get_classes(java_command))
+  randoop_classpath = lib('randoop.jar') + ":" + base_classpath
+  compile_classpath = lib("junit-4.12.jar") + ":" + base_classpath
+  chicory_classpath = os.path.abspath(test_class_directory) + ":" + \
+                      lib("daikon.jar") + ":" +\
+                      lib("hamcrest-core-1.3.jar") + ":" + \
+                      compile_classpath
 
   if 'randoop' in run_parts:
+    classes = sorted(common.get_classes(java_command))
     class_list_file = make_class_list(classes)
-    time_limit = 300
-    output_limit = 30
 
-    generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit, output_limit)
-
+    generate_tests(randoop_classpath, class_list_file, test_src_dir)
     files_to_compile = get_files_to_compile(test_src_dir)
-
     compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
 
   if 'chicory' in run_parts:
-    run_dyncomp(chicory_classpath, classdir, randoop_driver, test_class_directory)
-    run_chicory(chicory_classpath, classdir, randoop_driver, test_class_directory)
+    selects = get_select_list(classdir)
+    omits = get_omit_list(os.path.join(out_dir, "omit-list"), classdir)
+
+    if full_daikon_available():
+      run_dyncomp(chicory_classpath, randoop_driver, test_class_directory, selects, omits)
+    run_chicory(chicory_classpath, randoop_driver, test_class_directory, selects, omits)
     run_daikon(chicory_classpath, test_class_directory)
 
 def get_select_list(classdir):
+  """Get a list of all directories under classdir containing class files."""
   selects = []
   last_add = " " # guaranteed not to match
   for root, dirs, files in os.walk(classdir):
@@ -88,9 +97,9 @@ def make_class_list(classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(randoop_classpath, class_list_file, test_src_dir, time_limit, output_limit):
+def generate_tests(classpath, class_list_file, test_src_dir, time_limit=300, output_limit=30):
   randoop_command = ["java", "-ea",
-                     "-classpath", randoop_classpath,
+                     "-classpath", classpath,
                      "randoop.main.Main", "gentests",
                      '--classlist={}'.format(class_list_file),
                      "--timelimit={}".format(time_limit),
@@ -117,55 +126,51 @@ def get_files_to_compile(test_src_dir):
 
   return jfiles
 
-def compile_test_cases(compile_classpath, test_class_directory, files_to_compile):
+def compile_test_cases(classpath, test_class_directory, files_to_compile):
   compile_command = ["javac", "-g",
-                     "-classpath", compile_classpath,
+                     "-classpath", classpath,
                      "-d", test_class_directory]
   compile_command.extend(files_to_compile)
 
   common.run_cmd(compile_command)
 
 
-def run_chicory(chicory_classpath, classdir, main_class, out_dir):
-  selects = get_select_list(classdir)
-  omits = get_omit_list(os.path.join(out_dir, "..", "omit-list"), classdir)
+def run_chicory(classpath, main_class, out_dir, selects=[], omits=[]):
   chicory_command = ["java",
-                     "-classpath", chicory_classpath,
+                     "-classpath", classpath,
                      "daikon.Chicory",
-                     "--comparability-file={}/RegressionTestDriver.decls-DynComp".format(out_dir),
                      "--output_dir={}".format(out_dir)]
-  for select in selects:
-    chicory_command.append(select)
-  for omit in omits:
-    chicory_command.append(omit)
+
+  if full_daikon_available():
+    dc_out_path = os.path.join(out_dir, "RegressionTestDriver.decls-DynComp")
+    chicory_command.append("--comparability-file={}".format(dc_out_path))
+
+  chicory_command.extend(selects)
+  chicory_command.extend(omits)
   chicory_command.append(main_class)
 
   common.run_cmd(chicory_command)
 
 
-def run_dyncomp(dyncomp_classpath, classdir, main_class, out_dir):
-  selects = get_select_list(classdir)
-  omits = get_omit_list(os.path.join(out_dir, "..", "omit-list"), classdir)
+def run_dyncomp(classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command = ["java",
-                     "-classpath", dyncomp_classpath,
+                     "-classpath", classpath,
                      "daikon.DynComp",
                      "--no-cset-file",
                      "--output-dir={}".format(out_dir)]
-  for select in selects:
-    dyncomp_command.append(select)
-  for omit in omits:
-    dyncomp_command.append(omit)
+
+  dyncomp_command.extend(selects)
+  dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
 
   common.run_cmd(dyncomp_command)
 
-
-def run_daikon(daikon_classpath, out_dir):
+def run_daikon(classpath, out_dir):
   daikon_command = ["java",
-                     "-classpath", daikon_classpath,
+                     "-classpath", classpath,
                      "daikon.Daikon",
-                     "-o", out_dir+"/invariants.gz",
-                     out_dir+"/RegressionTestDriver.dtrace.gz"]
+                     "-o", os.path.join(out_dir, "invariants.gz"),
+                     os.path.join(out_dir, "RegressionTestDriver.dtrace.gz")]
 
   common.run_cmd(daikon_command)
 
