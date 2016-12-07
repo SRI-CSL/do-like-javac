@@ -12,11 +12,12 @@ import generic
 
 supported_commands = ['mvn']
 
-def gen_instance(cmd):
-    return MavenCapture(cmd)
+def gen_instance(cmd, args):
+    return MavenCapture(cmd, args)
 
 class MavenCapture(generic.GenericCapture):
-    def __init__(self, cmd):
+    def __init__(self, cmd, args):
+        super(MavenCapture, self).__init__(cmd, args)
         self.build_cmd = ['mvn', '-X'] + cmd[1:]
 
     def get_target_jars(self, verbose_output):

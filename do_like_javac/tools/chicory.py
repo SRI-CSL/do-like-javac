@@ -8,5 +8,5 @@ def run(args, javac_commands, jars):
   out_dir = os.path.basename(args.output_directory)
 
   for jc in javac_commands:
-    dyntrace.dyntrace(i, jc, out_dir, args.lib_dir, ['randoop'])
+    dyntrace.dyntrace(i, jc, out_dir, args.lib_dir, ['chicory'])
     i = i+1
