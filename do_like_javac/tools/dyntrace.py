@@ -48,7 +48,7 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
-    class_list_file = make_class_list(classes)
+    class_list_file = make_class_list(test_class_directory, classes)
 
     generate_tests(randoop_classpath, class_list_file, test_src_dir)
     files_to_compile = get_files_to_compile(test_src_dir)
@@ -89,8 +89,8 @@ def get_omit_list(omit_file_path, classdir):
         omits.append(omit)
   return omits
 
-def make_class_list(classes):
-  with tempfile.NamedTemporaryFile('w', suffix='.txt', prefix='clist', delete=False) as class_file:
+def make_class_list(out_dir, classes):
+  with open(os.path.join(out_dir,"classlist.txt"), 'w') as class_file:
     for c in classes:
       class_file.write(c)
       class_file.write('\n')
