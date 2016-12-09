@@ -4,7 +4,9 @@ import common
 argparser = None
 
 def run(args, javac_commands, jars):
-  bixie_jar = os.path.join(lib_dir, "bixie.jar")
+  bixie_jar = os.path.join(args.lib_dir, "bixie.jar")
+
+
 
   bixie_command = ["java", "-jar", bixie_jar,
                     "-html", os.path.join(args.output_directory, 'bixie_report')]
