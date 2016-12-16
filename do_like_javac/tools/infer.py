@@ -48,6 +48,7 @@ def run(args, javac_commands, jars):
                              '--mode', args.mode,
                              '--hacks=true',
                              '--targetclasspath', target_cp,
+                             '--logLevel=WARNING',
                              '-afud', args.afuOutputDir]
         cmd.extend(jc['java_files'])
 
