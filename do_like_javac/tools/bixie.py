@@ -1,23 +1,27 @@
 import os
 import common
+import copy
 
 argparser = None
 
 def run(args, javac_commands, jars):
   bixie_jar = os.path.join(args.lib_dir, "bixie.jar")
 
-
-
-  bixie_command = ["java", "-jar", bixie_jar,
-                    "-html", os.path.join(args.output_directory, 'bixie_report')]
+  base_command = ["java",
+                  "-jar", bixie_jar,
+                  "-html", os.path.join(args.output_directory, 'bixie_report')]
 
   i = 1
 
   for jc in javac_commands:
-    javac_switches = jc['javac_switches']
+    cmd = copy.copy(base_command)
 
-    cmd = bixie_command + ["-cp", common.classpath(jc),
-                            "-j", common.class_directory(jc)]
+    if common.classpath(jc):
+      cmd.extend(["-cp", common.classpath(jc)])
+
+    if common.class_directory(jc):
+      cmd.extend(["-j", common.class_directory(jc)])
+
     if common.source_path(jc):
       cmd.extend(['-src', common.source_path(jc)])
 

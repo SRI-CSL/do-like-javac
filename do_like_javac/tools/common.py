@@ -46,7 +46,7 @@ def source_path(javac_command):
   return None
 
 def run_cmd(cmd):
-  print ("Running %s" % ' '.join(cmd))
+  print "Running {}".format(' '.join(cmd))
   try:
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in iter(process.stdout.readline, b''):
