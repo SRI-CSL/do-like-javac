@@ -97,7 +97,7 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(classpath, class_list_file, test_src_dir, time_limit=300, output_limit=30):
+def generate_tests(classpath, class_list_file, test_src_dir, time_limit=60, output_limit=2000):
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
                      "randoop.main.Main", "gentests",
@@ -173,4 +173,3 @@ def run_daikon(classpath, out_dir):
                      os.path.join(out_dir, "RegressionTestDriver.dtrace.gz")]
 
   common.run_cmd(daikon_command)
-
