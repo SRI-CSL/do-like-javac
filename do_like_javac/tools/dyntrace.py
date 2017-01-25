@@ -108,7 +108,7 @@ def generate_tests(classpath, class_list_file, test_src_dir, time_limit=60, outp
                      "--silently-ignore-bad-class-names=true",
                      '--junit-output-dir={}'.format(test_src_dir)]
 
-  junit_after_path = os.path.join(test_src_dir, "..", "junit-after-code")
+  junit_after_path = os.path.normpath(os.path.join(test_src_dir, "..", "junit-after"))
   if os.path.exists(junit_after_path):
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
 
