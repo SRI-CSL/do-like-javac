@@ -3,6 +3,7 @@ import common
 import tempfile
 
 argparser = None
+no_jdk = False
 
 def run(args, javac_commands, jars):
   i = 1
@@ -80,13 +81,17 @@ def get_select_list(classdir):
   return selects
 
 def get_omit_list(omit_file_path, classdir):
+  global no_jdk
   omits = []
 
   if os.path.isfile(omit_file_path):
     with open(omit_file_path, 'r') as f:
       for line in f:
-        omit = "--ppt-omit-pattern=" + line.strip()
-        omits.append(omit)
+        if line.strip() == "NO-JDK":
+            no_jdk = True
+        else:
+            omit = "--ppt-omit-pattern=" + line.strip()
+            omits.append(omit)
   return omits
 
 def make_class_list(out_dir, classes):
@@ -156,9 +161,11 @@ def run_dyncomp(classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command = ["java",
                      "-classpath", classpath,
                      "daikon.DynComp",
-                     "--no-cset-file",
+                     "--approximate-omitted-ppts",
                      "--output-dir={}".format(out_dir)]
 
+  if no_jdk:
+      dyncomp_command.append("--rt-file=none")
   dyncomp_command.extend(selects)
   dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
@@ -169,6 +176,7 @@ def run_daikon(classpath, out_dir):
   daikon_command = ["java",
                      "-classpath", classpath,
                      "daikon.Daikon",
+#                    "--config_option", "daikon.Daikon.calc_possible_invs=true",
                      "-o", os.path.join(out_dir, "invariants.gz"),
                      os.path.join(out_dir, "RegressionTestDriver.dtrace.gz")]
 
