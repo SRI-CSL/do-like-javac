@@ -2,6 +2,7 @@ import sys
 import subprocess
 import traceback
 import os
+import time
 
 def classpath(javac_command):
   if 'javac_switches' in javac_command:
@@ -46,7 +47,10 @@ def source_path(javac_command):
   return None
 
 def run_cmd(cmd):
+  print time.strftime('%X %x')
   print "Running {}".format(' '.join(cmd))
+  # force immediate output to help with debugging
+  sys.stdout.flush()
   try:
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in iter(process.stdout.readline, b''):
