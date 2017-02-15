@@ -36,6 +36,14 @@ base_group.add_argument('-t', '--tool', metavar='<tool>',
                         action='store',default=None,
                         help='A comma separated list of tools to run. Valid tools: ' + ', '.join(tools.TOOLS))
 
+base_group.add_argument('--timeout', metavar='<seconds>',
+                        action='store', default=None,
+                        type=int,
+                        help='The maximum time to run any subcommand.')
+
+base_group.add_argument('--quiet', action='store_false', dest='verbose',
+                        help="Suppress output from subcommands.")
+
 base_group.add_argument('--cache', action='store_true',
                         help='''Use the dljc cache (if available)''')
 

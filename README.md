@@ -49,9 +49,10 @@ Then symlink the `dljc` executable to somewhere in your $PATH, e.g.
 Running
 =======
 
-First, make sure your project is in a clean state (e.g. via `ant clean`, `mvn clean`, etc.).
-Since `do-like-javac` monitors the build process and build tools skip already-built files, if
-you run `dljc` on an already-built project, you won't get any results.
+First, make sure your project is in a clean state (e.g. via `ant clean`,
+`mvn clean`, etc.). Since `do-like-javac` monitors the build process and build
+tools skip already-built files, if you run `dljc` on an already-built project,
+you won't get any results.
 
 Next, invoke `dljc` from the directory of the project you want to analyze:
 
@@ -63,6 +64,10 @@ will be emitted to logs/toplevel.log
 You may also run one or more checking tools on the discovered java files, by
 invoking with the -t option and a comma separated list of tools to use (e.g.
 "-t print", "-t randoop" or "-t print,randoop").
+
+If you're running checking tools, there are a couple more flags that may be
+helpful. `--quiet` suppresses output from tools, and `--timeout <seconds>`
+kills any tool subcommand that runs longer than `<seconds>`.
 
 Caching
 =======
