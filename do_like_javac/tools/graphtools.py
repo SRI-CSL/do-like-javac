@@ -39,4 +39,4 @@ def run(args, javac_commands, jars):
                           "-all",
                           "-source", java_files_file]
 
-    common.run_cmd(cmd)
+    common.run_cmd(cmd, args.verbose, args.timeout)

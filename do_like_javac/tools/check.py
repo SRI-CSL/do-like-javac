@@ -1,10 +1,8 @@
 # DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
 
+import common
 import os
 import pprint
-import subprocess
-import traceback
-import argparse
 
 argparser = None
 
@@ -19,8 +17,4 @@ def run(args, javac_commands, jars):
         cp = javac_switches['classpath']
         java_files = ' '.join(jc['java_files'])
         cmd = checker_command + ["-classpath", cp, java_files]
-        print ("Running %s" % cmd)
-        try:
-            print (subprocess.check_output(cmd, stderr=subprocess.STDOUT))
-        except subprocess.CalledProcessError as e:
-            print e.output
+        common.run_cmd(cmd, args.verbose, args.timeout)

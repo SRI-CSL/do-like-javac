@@ -14,7 +14,6 @@ import subprocess
 import traceback
 
 def get_build_output(build_cmd):
-    #  TODO make it return generator to be able to handle large builds
     proc = subprocess.Popen(build_cmd, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
     (verbose_out_chars, _) = proc.communicate()
     return verbose_out_chars

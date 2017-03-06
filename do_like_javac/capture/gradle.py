@@ -8,6 +8,7 @@
 
 import util
 import generic
+import os
 
 supported_commands = ['gradle', 'gradlew']
 
@@ -18,6 +19,10 @@ class GradleCapture(generic.GenericCapture):
     def __init__(self, cmd, args):
         super(GradleCapture, self).__init__(cmd, args)
         self.build_cmd = [cmd[0], '--debug'] + cmd[1:]
+
+        # Automatically promote to gradlew if available
+        if os.path.exists('gradlew'):
+          self.build_cmd[0] = './gradlew'
 
     def get_javac_commands(self, verbose_output):
         argument_start_pattern = ' Compiler arguments: '
