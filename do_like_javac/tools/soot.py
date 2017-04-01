@@ -2,8 +2,6 @@
 
 import os
 import pprint
-import subprocess
-import traceback
 import argparse
 
 argparser = argparse.ArgumentParser(add_help=False)
@@ -27,10 +25,6 @@ def run(args, javac_commands, jars):
         class_dir = javac_switches['d']
 
         cmd = soot_command + ["-cp", cp, "-process-dir", class_dir]
-        print ("Running %s" % cmd)
-        try:
-            print (subprocess.check_output(cmd, stderr=subprocess.STDOUT))
-        except:
-            print ('calling {cmd} failed\n{trace}'.format(cmd=' '.join(cmd),trace=traceback.format_exc()))
+        common.run_cmd(cmd, args.verbose, args.timeout)
 
 

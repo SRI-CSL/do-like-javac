@@ -10,13 +10,13 @@ def run(args, javac_commands, jars):
   out_dir = os.path.basename(args.output_directory)
 
   for jc in javac_commands:
-    dyntrace(i, jc, out_dir, args.lib_dir)
+    dyntrace(args, i, jc, out_dir, args.lib_dir)
     i = i + 1
 
 def full_daikon_available():
   return os.environ.get('DAIKONDIR')
 
-def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory']):
+def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory']):
   def lib(jar):
     return os.path.join(lib_dir, jar)
 
@@ -50,19 +50,21 @@ def dyntrace(i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory'])
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
     class_list_file = make_class_list(test_class_directory, classes)
+    junit_after_path = get_special_file("junit-after", out_dir, i)
 
-    generate_tests(randoop_classpath, class_list_file, test_src_dir)
+    generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path)
     files_to_compile = get_files_to_compile(test_src_dir)
-    compile_test_cases(compile_classpath, test_class_directory, files_to_compile)
+    compile_test_cases(args, compile_classpath, test_class_directory, files_to_compile)
 
   if 'chicory' in run_parts:
     selects = get_select_list(classdir)
-    omits = get_omit_list(os.path.join(out_dir, "omit-list"), classdir)
+    omit_file_path = get_special_file("omit-list", out_dir, i)
+    omits = get_omit_list(omit_file_path)
 
     if full_daikon_available():
-      run_dyncomp(chicory_classpath, randoop_driver, test_class_directory, selects, omits)
-    run_chicory(chicory_classpath, randoop_driver, test_class_directory, selects, omits)
-    run_daikon(chicory_classpath, test_class_directory)
+      run_dyncomp(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
+    run_chicory(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
+    run_daikon(args, chicory_classpath, test_class_directory)
 
 def get_select_list(classdir):
   """Get a list of all directories under classdir containing class files."""
@@ -80,11 +82,23 @@ def get_select_list(classdir):
           break
   return selects
 
-def get_omit_list(omit_file_path, classdir):
+def get_special_file(special_type, out_dir, i):
+  candidate = os.path.join(out_dir, "{}.{}".format(special_type, i))
+  if os.path.isfile(candidate):
+    return os.path.normpath(candidate)
+
+  candidate = os.path.join(out_dir, special_type)
+  if os.path.isfile(candidate):
+    return os.path.normpath(candidate)
+
+  return None
+
+def get_omit_list(omit_file_path):
   global no_jdk
+  no_jdk = False
   omits = []
 
-  if os.path.isfile(omit_file_path):
+  if omit_file_path:
     with open(omit_file_path, 'r') as f:
       for line in f:
         if line.strip() == "NO-JDK":
@@ -102,7 +116,7 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(classpath, class_list_file, test_src_dir, time_limit=60, output_limit=2000):
+def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=60, output_limit=4000):
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
                      "randoop.main.Main", "gentests",
@@ -113,14 +127,13 @@ def generate_tests(classpath, class_list_file, test_src_dir, time_limit=60, outp
                      "--silently-ignore-bad-class-names=true",
                      '--junit-output-dir={}'.format(test_src_dir)]
 
-  junit_after_path = os.path.normpath(os.path.join(test_src_dir, "..", "junit-after"))
-  if os.path.exists(junit_after_path):
+  if junit_after_path:
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
 
   if output_limit and output_limit > 0:
     randoop_command.append('--outputlimit={}'.format(output_limit))
 
-  common.run_cmd(randoop_command)
+  common.run_cmd(randoop_command, args.verbose, args.timeout)
 
 def get_files_to_compile(test_src_dir):
   jfiles = []
@@ -131,16 +144,16 @@ def get_files_to_compile(test_src_dir):
 
   return jfiles
 
-def compile_test_cases(classpath, test_class_directory, files_to_compile):
+def compile_test_cases(args, classpath, test_class_directory, files_to_compile):
   compile_command = ["javac", "-g",
                      "-classpath", classpath,
                      "-d", test_class_directory]
   compile_command.extend(files_to_compile)
 
-  common.run_cmd(compile_command)
+  common.run_cmd(compile_command, args.verbose, args.timeout)
 
 
-def run_chicory(classpath, main_class, out_dir, selects=[], omits=[]):
+def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
   chicory_command = ["java",
                      "-classpath", classpath,
                      "daikon.Chicory",
@@ -154,10 +167,10 @@ def run_chicory(classpath, main_class, out_dir, selects=[], omits=[]):
   chicory_command.extend(omits)
   chicory_command.append(main_class)
 
-  common.run_cmd(chicory_command)
+  common.run_cmd(chicory_command, args.verbose, args.timeout)
 
 
-def run_dyncomp(classpath, main_class, out_dir, selects=[], omits=[]):
+def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command = ["java",
                      "-classpath", classpath,
                      "daikon.DynComp",
@@ -170,9 +183,9 @@ def run_dyncomp(classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
 
-  common.run_cmd(dyncomp_command)
+  common.run_cmd(dyncomp_command, args.verbose, args.timeout)
 
-def run_daikon(classpath, out_dir):
+def run_daikon(args, classpath, out_dir):
   daikon_command = ["java",
                      "-classpath", classpath,
                      "daikon.Daikon",
@@ -180,4 +193,4 @@ def run_daikon(classpath, out_dir):
                      "-o", os.path.join(out_dir, "invariants.gz"),
                      os.path.join(out_dir, "RegressionTestDriver.dtrace.gz")]
 
-  common.run_cmd(daikon_command)
+  common.run_cmd(daikon_command, args.verbose, args.timeout)

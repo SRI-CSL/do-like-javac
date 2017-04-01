@@ -1,8 +1,7 @@
-import sys
-import subprocess
-import traceback
-import os
 import time
+import sys, os, traceback
+import subprocess32 as subprocess
+from threading import Timer
 
 def classpath(javac_command):
   if 'javac_switches' in javac_command:
@@ -46,17 +45,40 @@ def source_path(javac_command):
       return os.pathsep.join(javac_command['java_files'])
   return None
 
-def run_cmd(cmd):
-  print time.strftime('%X %x')
-  print "Running {}".format(' '.join(cmd))
-  # force immediate output to help with debugging
-  sys.stdout.flush()
+def run_cmd(cmd, print_output=True, timeout=None):
+  def kill_proc(proc, stats):
+    if print_output:
+      print "Timed out on {}".format(cmd)
+    stats['timed_out'] = True
+    proc.kill()
+
+  stats = {'timed_out': False,
+           'output': ''}
+  timer = None
+
+  if print_output:
+    print time.strftime('%X %x')
+    print ("Running %s" % ' '.join(cmd))
+    # force immediate output to help with debugging
+    sys.stdout.flush()
   try:
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    if timeout:
+      timer = Timer(timeout, kill_proc, [process, stats])
+      timer.start()
+
     for line in iter(process.stdout.readline, b''):
-      sys.stdout.write(line)
-      sys.stdout.flush()
+      stats['output'] = stats['output'] + line
+      if print_output:
+        sys.stdout.write(line)
+        sys.stdout.flush()
     process.stdout.close()
     process.wait()
+    stats['return_code'] = process.returncode
+    if timer:
+      timer.cancel()
+
   except:
     print ('calling {cmd} failed\n{trace}'.format(cmd=' '.join(cmd),trace=traceback.format_exc()))
+  return stats
