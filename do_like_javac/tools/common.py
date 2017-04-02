@@ -1,4 +1,5 @@
 import sys, os, traceback
+import time
 import subprocess32 as subprocess
 from threading import Timer
 
@@ -56,7 +57,10 @@ def run_cmd(cmd, print_output=True, timeout=None):
   timer = None
 
   if print_output:
+    print time.strftime('%X %x')
     print ("Running %s" % ' '.join(cmd))
+    # force immediate output to help with debugging
+    sys.stdout.flush()
   try:
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
