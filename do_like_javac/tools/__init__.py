@@ -5,6 +5,7 @@ import bixie
 import graphtools
 import chicory
 import dyntrace
+import dyntracecounts
 
 # import soot
 import check
@@ -21,6 +22,7 @@ TOOLS = {
   'graphtool' : graphtools,
   'chicory'   : chicory,
   'dyntrace'  : dyntrace,
+  'dyntracecounts' : dyntracecounts,
 }
 
 def parsers():
