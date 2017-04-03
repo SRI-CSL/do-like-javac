@@ -4,6 +4,7 @@ import tempfile
 
 argparser = None
 no_jdk = False
+no_ternary = False
 
 def run(args, javac_commands, jars):
   i = 1
@@ -64,7 +65,9 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
     if full_daikon_available():
       run_dyncomp(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
     run_chicory(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
-    run_daikon(args, chicory_classpath, test_class_directory)
+    run_daikon(args, chicory_classpath, test_class_directory, False)
+    if 'invcounts' in run_parts:
+      run_daikon(args, chicory_classpath, test_class_directory, True)
 
 def get_select_list(classdir):
   """Get a list of all directories under classdir containing class files."""
@@ -94,8 +97,9 @@ def get_special_file(special_type, out_dir, i):
   return None
 
 def get_omit_list(omit_file_path):
-  global no_jdk
+  global no_jdk, no_ternary
   no_jdk = False
+  no_ternary = False
   omits = []
 
   if omit_file_path:
@@ -103,6 +107,8 @@ def get_omit_list(omit_file_path):
       for line in f:
         if line.strip() == "NO-JDK":
             no_jdk = True
+        elif line.strip() == "NO-TERNARY":
+            no_ternary = True
         else:
             omit = "--ppt-omit-pattern=" + line.strip()
             omits.append(omit)
@@ -154,7 +160,7 @@ def compile_test_cases(args, classpath, test_class_directory, files_to_compile):
 
 
 def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
-  chicory_command = ["java",
+  chicory_command = ["java", "-Xmx3G",
                      "-classpath", classpath,
                      "daikon.Chicory",
                      "--output_dir={}".format(out_dir)]
@@ -171,7 +177,7 @@ def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
 
 
 def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
-  dyncomp_command = ["java",
+  dyncomp_command = ["java", "-Xmx3G",
                      "-classpath", classpath,
                      "daikon.DynComp",
                      "--approximate-omitted-ppts",
@@ -185,12 +191,19 @@ def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
 
   common.run_cmd(dyncomp_command, args.verbose, args.timeout)
 
-def run_daikon(args, classpath, out_dir):
-  daikon_command = ["java",
+def run_daikon(args, classpath, out_dir, invcounts):
+  daikon_command = ["java", "-Xmx4G",
                      "-classpath", classpath,
                      "daikon.Daikon",
-#                    "--config_option", "daikon.Daikon.calc_possible_invs=true",
-                     "-o", os.path.join(out_dir, "invariants.gz"),
-                     os.path.join(out_dir, "RegressionTestDriver.dtrace.gz")]
+                     "-o", os.path.join(out_dir, "invariants.gz")]
+  if invcounts:
+      daikon_command.append("--config_option")
+      daikon_command.append("daikon.Daikon.calc_possible_invs=true")
+  if no_ternary:
+      daikon_command.append("--config_option")
+      daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernary.enabled=false")
+      daikon_command.append("--config_option")
+      daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled=false")
+  daikon_command.append(os.path.join(out_dir, "RegressionTestDriver.dtrace.gz"))
 
   common.run_cmd(daikon_command, args.verbose, args.timeout)
