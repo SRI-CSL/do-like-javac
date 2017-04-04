@@ -28,5 +28,5 @@ def run(args, javac_commands, jars):
     out_filename = 'bixie-report-{}.log'.format(i)
     cmd.extend(['-o', os.path.join(args.output_directory, out_filename)])
 
-    common.run_cmd(cmd, args.verbose, args.timeout)
+    common.run_cmd(cmd, args, 'bixie')
     i = i + 1

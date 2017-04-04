@@ -139,7 +139,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
   if output_limit and output_limit > 0:
     randoop_command.append('--outputlimit={}'.format(output_limit))
 
-  common.run_cmd(randoop_command, args.verbose, args.timeout)
+  common.run_cmd(randoop_command, args, 'randoop')
 
 def get_files_to_compile(test_src_dir):
   jfiles = []
@@ -156,7 +156,7 @@ def compile_test_cases(args, classpath, test_class_directory, files_to_compile):
                      "-d", test_class_directory]
   compile_command.extend(files_to_compile)
 
-  common.run_cmd(compile_command, args.verbose, args.timeout)
+  common.run_cmd(compile_command, args, 'randoop')
 
 
 def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
@@ -173,7 +173,7 @@ def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
   chicory_command.extend(omits)
   chicory_command.append(main_class)
 
-  common.run_cmd(chicory_command, args.verbose, args.timeout)
+  common.run_cmd(chicory_command, args, 'chicory')
 
 
 def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
@@ -189,7 +189,7 @@ def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
 
-  common.run_cmd(dyncomp_command, args.verbose, args.timeout)
+  common.run_cmd(dyncomp_command, args, 'dyncomp')
 
 def run_daikon(args, classpath, out_dir, invcounts):
   daikon_command = ["java", "-Xmx4G",
@@ -206,4 +206,4 @@ def run_daikon(args, classpath, out_dir, invcounts):
       daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled=false")
   daikon_command.append(os.path.join(out_dir, "RegressionTestDriver.dtrace.gz"))
 
-  common.run_cmd(daikon_command, args.verbose, args.timeout)
+  common.run_cmd(daikon_command, args, 'daikon')

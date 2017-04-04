@@ -44,31 +44,45 @@ def source_path(javac_command):
       return os.pathsep.join(javac_command['java_files'])
   return None
 
-def run_cmd(cmd, print_output=True, timeout=None):
-  def kill_proc(proc, stats):
-    if print_output:
-      print "Timed out on {}".format(cmd)
-    stats['timed_out'] = True
-    proc.kill()
-
+def run_cmd(cmd, args, tool):
   stats = {'timed_out': False,
            'output': ''}
   timer = None
+  out = None
+  out_file = None
+  friendly_cmd = ' '.join(cmd)
 
-  if print_output:
-    print ("Running %s" % ' '.join(cmd))
+  if args.verbose and args.log_to_stderr:
+    out = sys.stderr
+  elif tool:
+    out_file = os.path.join(args.output_directory, tool + ".log")
+    out = open(out_file, 'a')
+
+  def output(line):
+    if out:
+      out.write(line)
+      out.flush()
+
+  def kill_proc(proc, stats):
+    if args.verbose:
+      print "Timed out on {}".format(friendly_cmd)
+    stats['timed_out'] = True
+    proc.kill()
+
+
+  output("Running {}\n\n".format(friendly_cmd))
+
   try:
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    if timeout:
-      timer = Timer(timeout, kill_proc, [process, stats])
+    if args.timeout:
+      timer = Timer(args.timeout, kill_proc, [process, stats])
       timer.start()
 
     for line in iter(process.stdout.readline, b''):
       stats['output'] = stats['output'] + line
-      if print_output:
-        sys.stdout.write(line)
-        sys.stdout.flush()
+      output(line)
+
     process.stdout.close()
     process.wait()
     stats['return_code'] = process.returncode
@@ -76,5 +90,9 @@ def run_cmd(cmd, print_output=True, timeout=None):
       timer.cancel()
 
   except:
-    print ('calling {cmd} failed\n{trace}'.format(cmd=' '.join(cmd),trace=traceback.format_exc()))
+    output('calling {cmd} failed\n{trace}'.format(cmd=friendly_cmd,trace=traceback.format_exc()))
+
+  if out_file:
+    out.close()
+
   return stats

@@ -52,4 +52,4 @@ def run(args, javac_commands, jars):
                              '-afud', args.afuOutputDir]
         cmd.extend(jc['java_files'])
 
-        common.run_cmd(cmd, args.verbose, args.timeout)
+        common.run_cmd(cmd, args, 'infer')
