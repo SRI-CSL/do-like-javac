@@ -64,11 +64,9 @@ def run_cmd(cmd, args, tool):
       out.flush()
 
   def kill_proc(proc, stats):
-    if args.verbose:
-      print "Timed out on {}".format(friendly_cmd)
+    output("Timed out on {}\n".format(friendly_cmd))
     stats['timed_out'] = True
     proc.kill()
-
 
   output("Running {}\n\n".format(friendly_cmd))
 
@@ -90,7 +88,7 @@ def run_cmd(cmd, args, tool):
       timer.cancel()
 
   except:
-    output('calling {cmd} failed\n{trace}'.format(cmd=friendly_cmd,trace=traceback.format_exc()))
+    output('calling {cmd} failed\n{trace}\n'.format(cmd=friendly_cmd,trace=traceback.format_exc()))
 
   if out_file:
     out.close()
