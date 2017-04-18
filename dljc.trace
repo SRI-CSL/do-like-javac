@@ -1,0 +1,8 @@
+#!/usr/bin/env python2.7
+
+import sys
+import trace
+import do_like_javac
+
+tracer = trace.Trace( trace=1, count=0)
+tracer.run('do_like_javac.run()')

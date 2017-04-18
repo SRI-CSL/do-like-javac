@@ -1,4 +1,5 @@
 import sys, os, traceback
+import time
 import subprocess32 as subprocess
 from threading import Timer
 
@@ -68,6 +69,7 @@ def run_cmd(cmd, args, tool):
     stats['timed_out'] = True
     proc.kill()
 
+  output("\n{}\n".format(time.strftime('%X %x')))
   output("Running {}\n\n".format(friendly_cmd))
 
   try:

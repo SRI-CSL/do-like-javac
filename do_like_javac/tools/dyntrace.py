@@ -118,7 +118,7 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=60, output_limit=4000):
+def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=200, output_limit=4000):
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
                      "randoop.main.Main", "gentests",
@@ -126,6 +126,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
                      "--timelimit={}".format(time_limit),
                      "--junit-reflection-allowed=false",
                      "--ignore-flaky-tests=true",
+                     "--timeout=5",
                      "--silently-ignore-bad-class-names=true",
                      '--junit-output-dir={}'.format(test_src_dir)]
 
