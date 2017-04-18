@@ -14,9 +14,6 @@ def run(args, javac_commands, jars):
     dyntrace(args, i, jc, out_dir, args.lib_dir)
     i = i + 1
 
-def full_daikon_available():
-  return os.environ.get('DAIKONDIR')
-
 def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chicory']):
   def lib(jar):
     return os.path.join(lib_dir, jar)
@@ -43,10 +40,10 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
 
   randoop_classpath = lib('randoop.jar') + ":" + base_classpath
   compile_classpath = lib("junit-4.12.jar") + ":" + base_classpath
-  chicory_classpath = os.path.abspath(test_class_directory) + ":" + \
-                      lib("daikon.jar") + ":" +\
-                      lib("hamcrest-core-1.3.jar") + ":" + \
-                      compile_classpath
+  chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
+                                os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
+                                lib("hamcrest-core-1.3.jar"),
+                                compile_classpath])
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
@@ -62,8 +59,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
     omit_file_path = get_special_file("omit-list", out_dir, i)
     omits = get_omit_list(omit_file_path)
 
-    if full_daikon_available():
-      run_dyncomp(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
+    run_dyncomp(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
     run_chicory(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
     run_daikon(args, chicory_classpath, test_class_directory, False)
     if 'invcounts' in run_parts:
@@ -139,7 +135,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
   if output_limit and output_limit > 0:
     randoop_command.append('--outputlimit={}'.format(output_limit))
 
-  common.run_cmd(randoop_command, args.verbose, args.timeout)
+  common.run_cmd(randoop_command, args, 'randoop')
 
 def get_files_to_compile(test_src_dir):
   jfiles = []
@@ -156,8 +152,7 @@ def compile_test_cases(args, classpath, test_class_directory, files_to_compile):
                      "-d", test_class_directory]
   compile_command.extend(files_to_compile)
 
-  common.run_cmd(compile_command, args.verbose, args.timeout)
-
+  common.run_cmd(compile_command, args, 'randoop')
 
 def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
   chicory_command = ["java", "-Xmx3G",
@@ -165,15 +160,14 @@ def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
                      "daikon.Chicory",
                      "--output_dir={}".format(out_dir)]
 
-  if full_daikon_available():
-    dc_out_path = os.path.join(out_dir, "RegressionTestDriver.decls-DynComp")
-    chicory_command.append("--comparability-file={}".format(dc_out_path))
+  dc_out_path = os.path.join(out_dir, "RegressionTestDriver.decls-DynComp")
+  chicory_command.append("--comparability-file={}".format(dc_out_path))
 
   chicory_command.extend(selects)
   chicory_command.extend(omits)
   chicory_command.append(main_class)
 
-  common.run_cmd(chicory_command, args.verbose, args.timeout)
+  common.run_cmd(chicory_command, args, 'chicory')
 
 
 def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
@@ -189,7 +183,7 @@ def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
 
-  common.run_cmd(dyncomp_command, args.verbose, args.timeout)
+  common.run_cmd(dyncomp_command, args, 'dyncomp')
 
 def run_daikon(args, classpath, out_dir, invcounts):
   daikon_command = ["java", "-Xmx4G",
@@ -206,4 +200,4 @@ def run_daikon(args, classpath, out_dir, invcounts):
       daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled=false")
   daikon_command.append(os.path.join(out_dir, "RegressionTestDriver.dtrace.gz"))
 
-  common.run_cmd(daikon_command, args.verbose, args.timeout)
+  common.run_cmd(daikon_command, args, 'daikon')

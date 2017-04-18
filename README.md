@@ -101,22 +101,16 @@ The Bixie tool will run your project through [Bixie](http://sri-csl.github.io/bi
 Dyntrace
 ---------
 
-The Dyntrace tool will run your project through Randoop to generate tests, then run those tests with Daikon/Chicory. You will need to provide a library directory with the following jars using the `--lib` option:
+The Dyntrace tool will run your project through Randoop to generate tests, then run those tests with Daikon/Chicory to generate invariants. You will need to provide a library directory with the following jars using the `--lib` option:
 
 * randoop.jar
 * junit-4.12.jar
-* daikon.jar
 * hamcrest-core-1.3.jar
+
+You will also need Daikon built and installed somewhere, with the environment variable `DAIKONDIR` pointing to your installation.
 
     dljc --lib path/to/libs/ -t dyntrace -- mvn compile
 
-You may also choose to invoke the Randoop and Daikon/Chicory phases separately (though the Chicory phase depends on the output of the Randoop phase), e.g.
-
-    dljc --lib path/to/libs/ -t randoop -- mvn compile
-
-or
-
-    dljc --lib path/to/libs/ -t chicory -- mvn compile
 
 LICENSE
 =======

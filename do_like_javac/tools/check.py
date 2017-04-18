@@ -17,4 +17,4 @@ def run(args, javac_commands, jars):
         cp = javac_switches['classpath']
         java_files = ' '.join(jc['java_files'])
         cmd = checker_command + ["-classpath", cp, java_files]
-        common.run_cmd(cmd, args.verbose, args.timeout)
+        common.run_cmd(cmd, args, 'check')

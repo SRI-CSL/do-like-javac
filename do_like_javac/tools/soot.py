@@ -25,6 +25,6 @@ def run(args, javac_commands, jars):
         class_dir = javac_switches['d']
 
         cmd = soot_command + ["-cp", cp, "-process-dir", class_dir]
-        common.run_cmd(cmd, args.verbose, args.timeout)
+        common.run_cmd(cmd, args, 'soot')
 
 
