@@ -1,5 +1,4 @@
 import os
-import util
 import zipfile
 import timeit
 import do_like_javac.tools.common as cmdtools
@@ -34,13 +33,16 @@ class GenericCapture(object):
         stats = {}
 
         start_time = timeit.default_timer()
-        build_output = util.get_build_output(self.build_cmd)
-        stats['build_time'] = timeit.default_timer() - start_time
+        result = cmdtools.run_cmd(self.build_cmd)
+        stats['build_time'] = result['time']
 
         with open(os.path.join(self.args.output_directory, 'build_output.txt'), 'w') as f:
-            f.write(build_output)
+            f.write(result['output'])
 
-        build_lines = build_output.split('\n')
+        if result['return_code'] != 0:
+            return None
+
+        build_lines = result['output'].split('\n')
 
         javac_commands = self.get_javac_commands(build_lines)
         target_jars = self.get_target_jars(build_lines)

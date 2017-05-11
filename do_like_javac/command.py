@@ -3,7 +3,7 @@ import arg
 import log
 import tools
 import cache
-import os,json
+import os,json,sys
 
 def output_json(filename, obj):
     with open(filename, 'w') as f:
@@ -17,7 +17,13 @@ def main():
     log.configure_logging(args.output_directory, args.log_to_stderr)
     log.log_header()
 
-    javac_commands, jars, stats = cache.retrieve(cmd, args, capturer)
+    result = cache.retrieve(cmd, args, capturer)
+
+    if not result:
+        print "DLJC: Build command failed."
+        sys.exit(1)
+
+    javac_commands, jars, stats = result
 
     log.info('Results: %s', pprint.pformat(javac_commands))
     output_json(os.path.join(args.output_directory, 'javac.json'), javac_commands)

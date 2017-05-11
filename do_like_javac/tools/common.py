@@ -1,5 +1,6 @@
 import sys, os, traceback
 import subprocess32 as subprocess
+import timeit
 from threading import Timer
 
 def classpath(javac_command):
@@ -44,7 +45,7 @@ def source_path(javac_command):
       return os.pathsep.join(javac_command['java_files'])
   return None
 
-def run_cmd(cmd, args, tool):
+def run_cmd(cmd, args=None, tool=None):
   stats = {'timed_out': False,
            'output': ''}
   timer = None
@@ -52,7 +53,7 @@ def run_cmd(cmd, args, tool):
   out_file = None
   friendly_cmd = ' '.join(cmd)
 
-  if args.verbose and args.log_to_stderr:
+  if args and args.verbose and args.log_to_stderr:
     out = sys.stderr
   elif tool:
     out_file = os.path.join(args.output_directory, tool + ".log")
@@ -71,9 +72,10 @@ def run_cmd(cmd, args, tool):
   output("Running {}\n\n".format(friendly_cmd))
 
   try:
+    start_time = timeit.default_timer()
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    if args.timeout:
+    if args and args.timeout:
       timer = Timer(args.timeout, kill_proc, [process, stats])
       timer.start()
 
@@ -83,6 +85,7 @@ def run_cmd(cmd, args, tool):
 
     process.stdout.close()
     process.wait()
+    stats['time'] = timeit.default_timer() - start_time
     stats['return_code'] = process.returncode
     if timer:
       timer.cancel()

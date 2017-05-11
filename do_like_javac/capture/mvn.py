@@ -7,7 +7,6 @@
 # in the same directory.
 
 import re
-import util
 import generic
 
 supported_commands = ['mvn']
