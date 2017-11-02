@@ -17,7 +17,7 @@ def gen_instance(cmd, args):
 class MavenCapture(generic.GenericCapture):
     def __init__(self, cmd, args):
         super(MavenCapture, self).__init__(cmd, args)
-        self.build_cmd = ['mvn', '-X'] + cmd[1:]
+        self.build_cmd = ['mvn', '-X', '-B'] + cmd[1:]
 
     def get_target_jars(self, verbose_output):
         jar_pattern = '[INFO] Building jar: '
