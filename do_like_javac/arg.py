@@ -41,6 +41,9 @@ base_group.add_argument('--timeout', metavar='<seconds>',
                         type=int,
                         help='The maximum time to run any subcommand.')
 
+base_group.add_argument('--guess', action='store_true', dest='guess_source',
+                        help="Guess source files if not present in build output.")
+
 base_group.add_argument('--quiet', action='store_false', dest='verbose',
                         help="Suppress output from subcommands.")
 

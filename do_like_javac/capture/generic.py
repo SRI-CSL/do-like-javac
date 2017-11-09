@@ -18,6 +18,32 @@ def get_entry_point(jar):
 
     return {"jar": jar}
 
+def ignore_path(path):
+    return \
+        not path \
+        or 'generated-sources' in path
+
+def guess_source(switches):
+    """If no .java files are detected and --guess has been passed on the
+    command line, this will attempt to fill in the blanks based on the
+    -sourcepath option to javac."""
+
+    sourcepath = switches.get('sourcepath')
+    files = []
+
+    if not sourcepath:
+        return []
+
+    paths = [path for path in sourcepath.split(':')
+             if not ignore_path(path)]
+
+    for path in paths:
+        for dirname, subdirs, dirfiles in os.walk(path):
+            files.extend([os.path.join(dirname, file) for file in dirfiles
+                          if file.endswith('.java')])
+
+    return files
+
 class GenericCapture(object):
     def __init__(self, cmd, args):
         self.build_cmd = cmd
@@ -78,6 +104,9 @@ class GenericCapture(object):
                 prev_arg = a
             else:
                 prev_arg = None
+
+        if self.args.guess_source and not files:
+            files = guess_source(switches)
 
         return dict(java_files=files, javac_switches=switches)
 
