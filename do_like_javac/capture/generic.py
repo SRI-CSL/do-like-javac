@@ -1,5 +1,4 @@
 import os
-import util
 import zipfile
 import timeit
 import do_like_javac.tools.common as cmdtools
@@ -19,6 +18,32 @@ def get_entry_point(jar):
 
     return {"jar": jar}
 
+def ignore_path(path):
+    return \
+        not path \
+        or 'generated-sources' in path
+
+def guess_source(switches):
+    """If no .java files are detected and --guess has been passed on the
+    command line, this will attempt to fill in the blanks based on the
+    -sourcepath option to javac."""
+
+    sourcepath = switches.get('sourcepath')
+    files = []
+
+    if not sourcepath:
+        return []
+
+    paths = [path for path in sourcepath.split(':')
+             if not ignore_path(path)]
+
+    for path in paths:
+        for dirname, subdirs, dirfiles in os.walk(path):
+            files.extend([os.path.join(dirname, file) for file in dirfiles
+                          if file.endswith('.java')])
+
+    return files
+
 class GenericCapture(object):
     def __init__(self, cmd, args):
         self.build_cmd = cmd
@@ -34,13 +59,16 @@ class GenericCapture(object):
         stats = {}
 
         start_time = timeit.default_timer()
-        build_output = util.get_build_output(self.build_cmd)
-        stats['build_time'] = timeit.default_timer() - start_time
+        result = cmdtools.run_cmd(self.build_cmd)
+        stats['build_time'] = result['time']
 
         with open(os.path.join(self.args.output_directory, 'build_output.txt'), 'w') as f:
-            f.write(build_output)
+            f.write(result['output'])
 
-        build_lines = build_output.split('\n')
+        if result['return_code'] != 0:
+            return None
+
+        build_lines = result['output'].split('\n')
 
         javac_commands = self.get_javac_commands(build_lines)
         target_jars = self.get_target_jars(build_lines)
@@ -76,6 +104,9 @@ class GenericCapture(object):
                 prev_arg = a
             else:
                 prev_arg = None
+
+        if self.args.guess_source and not files:
+            files = guess_source(switches)
 
         return dict(java_files=files, javac_switches=switches)
 

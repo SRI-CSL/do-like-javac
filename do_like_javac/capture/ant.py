@@ -6,7 +6,6 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
-import util
 import generic
 
 supported_commands = ['ant']
