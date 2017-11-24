@@ -119,11 +119,15 @@ def make_class_list(out_dir, classes):
     return class_file.name
 
 def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=200, output_limit=4000):
+
+  # Methods to be omitted due to non-determinism.
+  omitted_methods = "\"(org\\.la4j\\.operation\\.ooplace\\.OoPlaceKroneckerProduct\\.applyCommon)|(PseudoOracle\\.verifyFace)|(org\\.znerd\\.math\\.NumberCentral\\.createRandomInteger)|(org\\.jbox2d\\.common\\.MathUtils\\.randomFloat.*)|(org\\.jbox2d\\.utests\\.MathTest\\.testFastMath)|(org\\.jbox2d\\.testbed\\.tests\\.DynamicTreeTest.*)|(org\\.jcodec\\.containers\\.mkv\\.SeekHeadFactoryTest\\.addFakeTracks)\""
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
                      "randoop.main.Main", "gentests",
                      '--classlist={}'.format(class_list_file),
-                     "--timelimit={}".format(time_limit),
+                     "--timeLimit={}".format(time_limit),
+		     "--omitmethods={}".format(omitted_methods),
                      "--junit-reflection-allowed=false",
                      "--ignore-flaky-tests=true",
                      "--timeout=5",
@@ -134,7 +138,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
 
   if output_limit and output_limit > 0:
-    randoop_command.append('--outputlimit={}'.format(output_limit))
+    randoop_command.append('--outputLimit={}'.format(output_limit))
 
   common.run_cmd(randoop_command, args, 'randoop')
 
