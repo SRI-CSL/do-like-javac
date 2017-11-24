@@ -38,7 +38,8 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
     f.write(classdir)
 
-  randoop_classpath = lib('randoop.jar') + ":" + base_classpath
+  replacecall_agent = lib('replacecall.jar')
+  randoop_classpath = lib('randoop.jar') + ":" + replacecall_agent + ":" + base_classpath
   compile_classpath = lib("junit-4.12.jar") + ":" + base_classpath
   chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
                                 os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
@@ -50,7 +51,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
     class_list_file = make_class_list(test_class_directory, classes)
     junit_after_path = get_special_file("junit-after", out_dir, i)
 
-    generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path)
+    generate_tests(args, replacecall_agent, randoop_classpath, class_list_file, test_src_dir, junit_after_path)
     files_to_compile = get_files_to_compile(test_src_dir)
     compile_test_cases(args, compile_classpath, test_class_directory, files_to_compile)
 
@@ -118,8 +119,10 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=200, output_limit=4000):
+def generate_tests(args, replacecall_agent, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=200, output_limit=4000):
   randoop_command = ["java", "-ea",
+                     "-Xbootclasspath/a:" + replacecall_agent,
+                     "-javaagent:" + replacecall_agent,
                      "-classpath", classpath,
                      "randoop.main.Main", "gentests",
                      '--classlist={}'.format(class_list_file),
