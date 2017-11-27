@@ -38,19 +38,27 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
     f.write(classdir)
 
+  with open(os.path.join(out_dir, 'select_log.txt'), 'w') as f:
+    f.write("log")
+  with open(os.path.join(out_dir, 'op_log.txt'), 'w') as f:
+    f.write("log")
+  with open(os.path.join(out_dir, 'r_log.txt'), 'w') as f:
+    f.write("log")
+
   randoop_classpath = lib('randoop.jar') + ":" + base_classpath
   compile_classpath = lib("junit-4.12.jar") + ":" + base_classpath
   chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
                                 os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
                                 lib("hamcrest-core-1.3.jar"),
                                 compile_classpath])
+  replace_call_classpath = lib('replacecall.jar') + ":" + base_classpath
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
     class_list_file = make_class_list(test_class_directory, classes)
     junit_after_path = get_special_file("junit-after", out_dir, i)
 
-    generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path)
+    generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path, replace_call_classpath)
     files_to_compile = get_files_to_compile(test_src_dir)
     compile_test_cases(args, compile_classpath, test_class_directory, files_to_compile)
 
@@ -118,27 +126,37 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, time_limit=200, output_limit=4000):
+def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, rc_classpath, time_limit=200, output_limit=4000):
 
   # Methods to be omitted due to non-determinism.
-  omitted_methods = "\"(org\\.la4j\\.operation\\.ooplace\\.OoPlaceKroneckerProduct\\.applyCommon)|(PseudoOracle\\.verifyFace)|(org\\.znerd\\.math\\.NumberCentral\\.createRandomInteger)|(org\\.jbox2d\\.common\\.MathUtils\\.randomFloat.*)|(org\\.jbox2d\\.utests\\.MathTest\\.testFastMath)|(org\\.jbox2d\\.testbed\\.tests\\.DynamicTreeTest.*)|(org\\.jcodec\\.containers\\.mkv\\.SeekHeadFactoryTest\\.addFakeTracks)\""
+  omitted_methods = "\"(org\\.la4j\\.operation\\.ooplace\\.OoPlaceKroneckerProduct\\.applyCommon)|(PseudoOracle\\.verifyFace)|(org\\.znerd\\.math\\.NumberCentral\\.createRandomInteger)|(org\\.jbox2d\\.common\\.MathUtils\\.randomFloat.*)|(org\\.jbox2d\\.utests\\.MathTest\\.testFastMath)|(org\\.jbox2d\\.testbed\\.tests\\.DynamicTreeTest.*)|(org\\.la4j\\.Matrix.*)\""
+
+  selection_log_file = "dljc-out/select_log.txt"
+  operation_log_file = "dljc-out/op_log.txt"
+  randoop_log_file = "dljc-out/r_log.txt"
+
   randoop_command = ["java", "-ea",
-                     "-classpath", classpath,
-                     "randoop.main.Main", "gentests",
-                     '--classlist={}'.format(class_list_file),
-                     "--timeLimit={}".format(time_limit),
-		     "--omitmethods={}".format(omitted_methods),
-                     "--junit-reflection-allowed=false",
-                     "--ignore-flaky-tests=true",
-                     "--timeout=5",
-                     "--silently-ignore-bad-class-names=true",
-                     '--junit-output-dir={}'.format(test_src_dir)]
+                    "-classpath", classpath,
+                    "-Xbootclasspath/a:{} -javaagent:{}".format(rc_classpath, rc_classpath),
+                    "randoop.main.Main", "gentests",
+                    "--classlist={}".format(class_list_file),
+                    "--time-limit={}".format(time_limit),
+                    "--omitmethods={}".format(omitted_methods),
+                    "--junit-reflection-allowed=false",
+                    "--ignore-flaky-tests=true",
+                    "--usethreads=true",
+                    "--call-timeout=5",
+                    # "--log={}".format(randoop_log_file),
+                    "--selection-log={}".format(selection_log_file),
+                    "--operation-history-log={}".format(operation_log_file),
+                    "--silently-ignore-bad-class-names=true",
+                    "--junit-output-dir={}".format(test_src_dir)]
 
   if junit_after_path:
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
 
   if output_limit and output_limit > 0:
-    randoop_command.append('--outputLimit={}'.format(output_limit))
+    randoop_command.append('--output-limit={}'.format(output_limit))
 
   common.run_cmd(randoop_command, args, 'randoop')
 
