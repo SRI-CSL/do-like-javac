@@ -137,8 +137,8 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
 
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
-		     "-Xbootclasspath/a:{}".format(rc_classpath),
-		     "-javaagent:{}".format(rc_classpath),
+                     "-Xbootclasspath/a:{}".format(rc_classpath),
+                     "-javaagent:{}".format(rc_classpath),
                      "randoop.main.Main", "gentests",
                      "--classlist={}".format(class_list_file),
                      "--time-limit={}".format(time_limit),
@@ -152,7 +152,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
                      # Uncomment these lines to produce Randoop debugging logs
                      "--log={}".format(randoop_log_file),
                      "--selection-log={}".format(selection_log_file),
-		     "--operation-history-log={}".format(operation_log_file),
+                     "--operation-history-log={}".format(operation_log_file),
 
   if junit_after_path:
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
