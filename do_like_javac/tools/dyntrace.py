@@ -51,7 +51,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
                                 os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
                                 lib("hamcrest-core-1.3.jar"),
                                 compile_classpath])
-  replace_call_classpath = lib('replacecall.jar') + ":" + base_classpath
+  replace_call_classpath = lib('replacecall.jar')
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
@@ -137,7 +137,8 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
 
   randoop_command = ["java", "-ea",
                     "-classpath", classpath,
-                    "-Xbootclasspath/a:{} -javaagent:{}".format(rc_classpath, rc_classpath),
+		    "-Xbootclasspath/a:{}".format(rc_classpath),
+		    "-javaagent:{}".format(rc_classpath),
                     "randoop.main.Main", "gentests",
                     "--classlist={}".format(class_list_file),
                     "--time-limit={}".format(time_limit),
@@ -146,7 +147,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
                     "--ignore-flaky-tests=true",
                     "--usethreads=true",
                     "--call-timeout=5",
-                    # "--log={}".format(randoop_log_file),
+                    "--log={}".format(randoop_log_file),
                     "--selection-log={}".format(selection_log_file),
                     "--operation-history-log={}".format(operation_log_file),
                     "--silently-ignore-bad-class-names=true",
