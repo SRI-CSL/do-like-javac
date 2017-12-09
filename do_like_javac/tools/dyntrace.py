@@ -131,27 +131,28 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
   # Methods to be omitted due to non-determinism.
   omitted_methods = "\"(org\\.la4j\\.operation\\.ooplace\\.OoPlaceKroneckerProduct\\.applyCommon)|(PseudoOracle\\.verifyFace)|(org\\.znerd\\.math\\.NumberCentral\\.createRandomInteger)|(org\\.jbox2d\\.common\\.MathUtils\\.randomFloat.*)|(org\\.jbox2d\\.utests\\.MathTest\\.testFastMath)|(org\\.jbox2d\\.testbed\\.tests\\.DynamicTreeTest.*)|(org\\.la4j\\.Matrix.*)\""
 
-  selection_log_file = "dljc-out/select_log.txt"
-  operation_log_file = "dljc-out/op_log.txt"
-  randoop_log_file = "dljc-out/r_log.txt"
+  selection_log_file = "dljc-out/selection-log.txt"
+  operation_log_file = "dljc-out/operation-history-log.txt"
+  randoop_log_file = "dljc-out/randoop-log.txt"
 
   randoop_command = ["java", "-ea",
-                    "-classpath", classpath,
-		    "-Xbootclasspath/a:{}".format(rc_classpath),
-		    "-javaagent:{}".format(rc_classpath),
-                    "randoop.main.Main", "gentests",
-                    "--classlist={}".format(class_list_file),
-                    "--time-limit={}".format(time_limit),
-                    "--omitmethods={}".format(omitted_methods),
-                    "--junit-reflection-allowed=false",
-                    "--ignore-flaky-tests=true",
-                    "--usethreads=true",
-                    "--call-timeout=5",
-                    "--log={}".format(randoop_log_file),
-                    "--selection-log={}".format(selection_log_file),
-                    "--operation-history-log={}".format(operation_log_file),
-                    "--silently-ignore-bad-class-names=true",
-                    "--junit-output-dir={}".format(test_src_dir)]
+                     "-classpath", classpath,
+		     "-Xbootclasspath/a:{}".format(rc_classpath),
+		     "-javaagent:{}".format(rc_classpath),
+                     "randoop.main.Main", "gentests",
+                     "--classlist={}".format(class_list_file),
+                     "--time-limit={}".format(time_limit),
+                     "--omitmethods={}".format(omitted_methods),
+                     "--junit-reflection-allowed=false",
+                     "--ignore-flaky-tests=true",
+                     "--usethreads=true",
+                     "--call-timeout=5",
+                     "--silently-ignore-bad-class-names=true",
+                     "--junit-output-dir={}".format(test_src_dir)]
+                     # Uncomment these lines to produce Randoop debugging logs
+                     "--log={}".format(randoop_log_file),
+                     "--selection-log={}".format(selection_log_file),
+		     "--operation-history-log={}".format(operation_log_file),
 
   if junit_after_path:
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
