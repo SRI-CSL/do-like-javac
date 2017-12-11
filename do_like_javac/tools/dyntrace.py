@@ -148,11 +148,11 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
                      "--usethreads=true",
                      "--call-timeout=5",
                      "--silently-ignore-bad-class-names=true",
-                     "--junit-output-dir={}".format(test_src_dir)]
+                     "--junit-output-dir={}".format(test_src_dir),
                      # Uncomment these lines to produce Randoop debugging logs
-                     "--log={}".format(randoop_log_file),
+                     #"--log={}".format(randoop_log_file),
                      "--selection-log={}".format(selection_log_file),
-                     "--operation-history-log={}".format(operation_log_file),
+                     "--operation-history-log={}".format(operation_log_file)]
 
   if junit_after_path:
     randoop_command.append("--junit-after-all={}".format(junit_after_path))
