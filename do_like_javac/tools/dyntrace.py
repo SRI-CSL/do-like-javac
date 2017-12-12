@@ -38,13 +38,6 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
     f.write(classdir)
 
-  with open(os.path.join(out_dir, 'select_log.txt'), 'w') as f:
-    f.write("log")
-  with open(os.path.join(out_dir, 'op_log.txt'), 'w') as f:
-    f.write("log")
-  with open(os.path.join(out_dir, 'r_log.txt'), 'w') as f:
-    f.write("log")
-
   randoop_classpath = lib('randoop.jar') + ":" + base_classpath
   compile_classpath = lib("junit-4.12.jar") + ":" + base_classpath
   chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
@@ -52,13 +45,14 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
                                 lib("hamcrest-core-1.3.jar"),
                                 compile_classpath])
   replace_call_classpath = lib('replacecall.jar')
+  replacement_file = lib('replacement_file.txt')
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
     class_list_file = make_class_list(test_class_directory, classes)
     junit_after_path = get_special_file("junit-after", out_dir, i)
 
-    generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path, replace_call_classpath)
+    generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path, replace_call_classpath, replacement_file)
     files_to_compile = get_files_to_compile(test_src_dir)
     compile_test_cases(args, compile_classpath, test_class_directory, files_to_compile)
 
@@ -126,7 +120,7 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, rc_classpath, time_limit=200, output_limit=4000):
+def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, rc_classpath, replacement_file, time_limit=200, output_limit=4000):
 
   # Methods to be omitted due to non-determinism.
   omitted_methods = "\"(org\\.la4j\\.operation\\.ooplace\\.OoPlaceKroneckerProduct\\.applyCommon)|(PseudoOracle\\.verifyFace)|(org\\.znerd\\.math\\.NumberCentral\\.createRandomInteger)|(org\\.jbox2d\\.common\\.MathUtils\\.randomFloat.*)|(org\\.jbox2d\\.utests\\.MathTest\\.testFastMath)|(org\\.jbox2d\\.testbed\\.tests\\.DynamicTreeTest.*)|(org\\.la4j\\.Matrix.*)\""
@@ -138,7 +132,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
                      "-Xbootclasspath/a:{}".format(rc_classpath),
-                     "-javaagent:{}".format(rc_classpath),
+                     "-javaagent:{}=--replacement-file={}".format(rc_classpath, replacement_file),
                      "randoop.main.Main", "gentests",
                      "--classlist={}".format(class_list_file),
                      "--time-limit={}".format(time_limit),
