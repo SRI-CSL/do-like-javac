@@ -138,7 +138,7 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
                      "--time-limit={}".format(time_limit),
                      "--omitmethods={}".format(omitted_methods),
                      "--junit-reflection-allowed=false",
-                     "--ignore-flaky-tests=true",
+                     "--flaky-test-behavior=DISCARD",
                      "--usethreads=true",
                      "--call-timeout=5",
                      "--silently-ignore-bad-class-names=true",
