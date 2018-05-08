@@ -45,7 +45,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
                                 lib("hamcrest-core-1.3.jar"),
                                 compile_classpath])
   replace_call_classpath = lib('replacecall.jar')
-  replacement_file = lib('replacement_file.txt')
+  replacement_file = lib('default-replacements.txt')
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
