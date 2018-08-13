@@ -39,7 +39,8 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
     f.write(classdir)
 
   randoop_classpath = lib('randoop.jar') + ":" + base_classpath
-  compile_classpath = lib("junit-4.12.jar") + ":" + base_classpath
+  # randoop needs to be on compile classpath due to replacement of System.exit with SystemExitCalledError
+  compile_classpath = lib("junit-4.12.jar") + ":" + randoop_classpath
   chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
                                 os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
                                 lib("hamcrest-core-1.3.jar"),
