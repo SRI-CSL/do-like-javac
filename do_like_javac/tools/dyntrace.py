@@ -1,8 +1,15 @@
 import os
 import common
 import tempfile
+import argparse
 
-argparser = None
+argparser = argparse.ArgumentParser(add_help=False)
+dyntrace_group = argparser.add_argument_group('dyntrace arguments')
+
+dyntrace_group.add_argument('-X', '--daikon-xml',
+                        action='store_true',
+                        help='Have Daikon emit XML')
+
 no_jdk = False
 no_ternary = False
 
@@ -66,6 +73,9 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
     run_daikon(args, chicory_classpath, test_class_directory, False)
     if 'invcounts' in run_parts:
       run_daikon(args, chicory_classpath, test_class_directory, True)
+
+    if args.daikon_xml:
+      daikon_print_xml(args, chicory_classpath, test_class_directory)
 
 def get_select_list(classdir):
   """Get a list of all directories under classdir containing class files."""
@@ -197,7 +207,7 @@ def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
                      "--output-dir={}".format(out_dir)]
 
   if no_jdk:
-      dyncomp_command.append("--rt-file=none")
+    dyncomp_command.append("--rt-file=none")
   dyncomp_command.extend(selects)
   dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
@@ -210,13 +220,23 @@ def run_daikon(args, classpath, out_dir, invcounts):
                      "daikon.Daikon",
                      "-o", os.path.join(out_dir, "invariants.gz")]
   if invcounts:
-      daikon_command.append("--config_option")
-      daikon_command.append("daikon.Daikon.calc_possible_invs=true")
+    daikon_command.append("--config_option")
+    daikon_command.append("daikon.Daikon.calc_possible_invs=true")
   if no_ternary:
-      daikon_command.append("--config_option")
-      daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernary.enabled=false")
-      daikon_command.append("--config_option")
-      daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled=false")
+    daikon_command.append("--config_option")
+    daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernary.enabled=false")
+    daikon_command.append("--config_option")
+    daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled=false")
   daikon_command.append(os.path.join(out_dir, "RegressionTestDriver.dtrace.gz"))
+
+  common.run_cmd(daikon_command, args, 'daikon')
+
+def daikon_print_xml(args, classpath, out_dir):
+  daikon_command = ["java", "-Xmx4G",
+                    "-classpath", classpath,
+                    "daikon.PrintInvariants",
+                    "--wrap_xml",
+                    "--output", os.path.join(out_dir, "invariants.xml"),
+                    os.path.join(out_dir, "invariants.gz")]
 
   common.run_cmd(daikon_command, args, 'daikon')
