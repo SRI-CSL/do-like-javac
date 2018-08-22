@@ -1,4 +1,6 @@
 import os
+import json
+import jsoninv
 import common
 import tempfile
 import argparse
@@ -240,3 +242,6 @@ def daikon_print_xml(args, classpath, out_dir):
                     os.path.join(out_dir, "invariants.gz")]
 
   common.run_cmd(daikon_command, args, 'daikon')
+  js = jsoninv.generate_json_invariants(out_dir)
+  with open(os.path.join(out_dir, 'invariants.json'), 'w') as f:
+    json.dump(js, f)
