@@ -36,7 +36,7 @@ def ppt_info(ppt):
   if '(' not in signature:
     return signature, None, None, point
 
-  match = re.match(r'(.*)\.(\w+)\((.*)\)', signature)
+  match = re.match(r'(.*)\.([^\(.]+)\.?\((.*)\)', signature)
   class_name, method_name, args = match.groups()
   if args:
     args = args.split(', ')
