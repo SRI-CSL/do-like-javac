@@ -245,5 +245,5 @@ def daikon_print_xml(args, classpath, out_dir):
 
   common.run_cmd(daikon_command, args, 'daikon')
   js = jsoninv.generate_json_invariants(out_dir)
-  with open(os.path.join(out_dir, 'invariants.json'), 'w') as f:
+  with open(os.path.join(args, out_dir, 'invariants.json'), 'w') as f:
     json.dump(js, f)
