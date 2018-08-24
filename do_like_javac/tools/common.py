@@ -3,6 +3,11 @@ import subprocess32 as subprocess
 import timeit
 from threading import Timer
 
+def log(args, tool, message):
+  with open(os.path.join(args.output_directory, '{}.log'.format(tool)), 'a') as f:
+    f.write(message)
+    f.flush()
+
 def classpath(javac_command):
   if 'javac_switches' in javac_command:
     switches = javac_command['javac_switches']

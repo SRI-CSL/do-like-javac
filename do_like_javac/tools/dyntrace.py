@@ -63,6 +63,8 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
 
     generate_tests(args, randoop_classpath, class_list_file, test_src_dir, junit_after_path, replace_call_classpath)
     files_to_compile = get_files_to_compile(test_src_dir)
+    if not files_to_compile:
+      return
     compile_test_cases(args, compile_classpath, test_class_directory, files_to_compile)
 
   if 'chicory' in run_parts:
