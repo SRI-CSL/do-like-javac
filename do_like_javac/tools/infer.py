@@ -29,7 +29,8 @@ def run(args, javac_commands, jars):
     print os.environ
 
     for jc in javac_commands:
-        target_cp = jc['javac_switches']['classpath']
+        target_cp = jc['javac_switches']['classpath'] + \
+            ':' + os.path.join(args.lib_dir, 'ontology.jar')
 
         cp = target_cp + \
              ':' + os.path.join(CFI_dist, 'checker.jar') + \
