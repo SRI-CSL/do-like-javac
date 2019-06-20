@@ -60,7 +60,7 @@ class GenericCapture(object):
 
         start_time = timeit.default_timer()
         result = cmdtools.run_cmd(self.build_cmd)
-        stats['build_time'] = result['time']
+#        stats['build_time'] = result['time']
 
         with open(os.path.join(self.args.output_directory, 'build_output.txt'), 'w') as f:
             f.write(result['output'])

@@ -8,7 +8,7 @@ argparser = None
 
 def run(args, javac_commands, jars):
     # checker-framework javac.
-    javacheck = os.environ['JSR308']+"/checker-framework/checker/bin/javac"
+    javacheck = os.environ['CHECKERFRAMEWORK']+"/checker/bin/javac"
     checker_command = [javacheck, "-processor", args.checker, "-Astubs=" + str(args.stubs)]
 
     for jc in javac_commands:
