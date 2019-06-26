@@ -4,42 +4,76 @@
 # - Move this script to an experiment directory.
 # - Then create a list of git reposities, and place it in
 #   the file INLIST, one repository per line
-# - Then run the following command:
-#   > bash run-dljc.sh OUTDIR INLIST
+# - Ensure that your JAVA_HOME variable points to a Java 8 JDK
+# - Ensure that your CHECKERFRAMEWORK variable points to a built copy of the Checker Framework
+# - Then run a command like the following (replacing the example arguments with your own):
+#   > bash run-dljc.sh -o outdir -i describe-images-list -c org.checkerframework.checker.builder.TypesafeBuilderChecker -l /homes/gws/kelloggm/image-sniping-oss/typesafe-builder-checker/build/libs/typesafe-builder-checker.jar:/homes/gws/kelloggm/.m2/repository/org/springframework/spring-expression/5.1.7.RELEASE/spring-expression-5.1.7.RELEASE.jar:/homes/gws/kelloggm/.m2/repository/org/springframework/spring-core/5.1.7.RELEASE/spring-core-5.1.7.RELEASE.jar:/homes/gws/kelloggm/.m2/repository/org/springframework/spring-jcl/5.1.7.RELEASE/spring-jcl-5.1.7.RELEASE.jar: -s /homes/gws/kelloggm/image-sniping-oss/typesafe-builder-checker/stubs
 #
-# Where OUTDIR is a name for the experiment you're running, and
-# INLIST is the list of git repositories.
+# The meaning of each required argument is:
 #
-# This script will:
-# - Checkout each repository into OUTDIR/.
-# - Attempt to build it with do-like-javac.
-# - If it can be built, attempt to replay the javac commands
-#   with checkers enabled.
-# - Place a copy of the results in the directory OUTDIR-results/.
+# -o outdir : run the experiment in the ./outdir directory, and place the
+#             results in the ./outdir-results directory. Both will be created
+#             if they do not exist.
 #
-# Configuration:
-# - Ensure that JAVA_HOME points to a java 8 JDK,
-#   or set the JAVA_HOME variable below.
-# - Configure the checkers to run using the CHECKERS variable below.
-# - Create a list of the dependencies of any custom checkers you
-#   want to use, and set the CHECKER_LIB variable below accordingly.
-# - Set the STUBS variable below if you want to use any stub files.
+# -i infile : read the list of repositories to use from the file $infile. The
+#             file should be formatted as a list of git repositories,
+#             separated by newlines
+#
+# -c checkers : a comma-separated list of typecheckers to run
+#
+# The meaning of each optional argument is:
+#
+# -l lib : a colon-separated list of jar files which should be added to the
+#          java classpath when doing typechecking. Use this for the dependencies
+#          of any custom typecheckers.
+#
+# -s stubs : a colon-separated list of stub files
+#
 
-# requirements:
+while getopts ":a:p:" opt; do
+  case $opt in
+    c) CHECKERS="$OPTARG"
+       ;;
+    l) CHECKER_LIB="$OPTARG"
+       ;;
+    s) STUBS="$OPTARG"
+       ;;
+    o) OUTDIR="$OPTARG"
+       ;;
+    i) INLIST="$OPTARG"
+       ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+# check required arguments and environment variables:
+
 # JAVA_HOME must point to a Java 8 JDK for this script to work
 if [ "x${JAVA_HOME}" = "x" ]; then
-    JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+    echo "JAVA_HOME must be set to a Java 8 JDK for this script to succeed"
+    exit 1
 fi
 
-# what typecheckers should be run?
-CHECKERS=org.checkerframework.checker.builder.TypesafeBuilderChecker
+if [ "x${CHECKERFRAMEWORK}" = "x" ]; then
+    echo "CHECKERFRAMEWORK must be set to the base directory of a pre-built Checker Framework for this script to succeed. Please checkout github.com/typetools/checker-framework and follow the build instructions there"
+    exit 2
+fi
 
-# if you want to use a custom typechecker or typecheckers,
-# define their dependencies here
-CHECKER_LIB=/homes/gws/kelloggm/image-sniping-oss/typesafe-builder-checker/build/libs/typesafe-builder-checker.jar:/homes/gws/kelloggm/.m2/repository/org/springframework/spring-expression/5.1.7.RELEASE/spring-expression-5.1.7.RELEASE.jar:/homes/gws/kelloggm/.m2/repository/org/springframework/spring-core/5.1.7.RELEASE/spring-core-5.1.7.RELEASE.jar:/homes/gws/kelloggm/.m2/repository/org/springframework/spring-jcl/5.1.7.RELEASE/spring-jcl-5.1.7.RELEASE.jar:
+if [ "x${CHECKERS}" = "x" ]; then
+    echo "you must specify one or more typecheckers using the -c argument"
+    exit 3
+fi
 
-# should any stub files be used?
-STUBS=/homes/gws/kelloggm/image-sniping-oss/typesafe-builder-checker/stubs
+if [ "x${OUTDIR}" = "x" ]; then
+    echo "you must specify an output directory using the -o argument"
+    exit 4
+fi
+
+if [ "x${INLIST}" = "x" ]; then
+    echo "you must specify an input file using the -i argument"
+    exit 5
+fi
 
 # script:
 
@@ -51,23 +85,15 @@ fi
 PWD=`pwd`
 
 DLJC=${PWD}/do-like-javac/dljc
-
-if [ "x${CHECKERFRAMEWORK}" = "x" ]; then
-
-    if [ ! -d checker-framework ]; then
-	git clone https://github.com/typetools/checker-framework
-    fi
-    export CHECKERFRAMEWORK=${PWD}/checker-framework
-fi
     
 PATH=${JAVA_HOME}/bin:${PATH}
 
-mkdir $1 || true
-mkdir $1-results || true
+mkdir ${OUTDIR} || true
+mkdir ${OUTDIR}-results || true
 
-pushd $1
+pushd ${OUTDIR}
 
-for repo in `cat ../$2`; do
+for repo in `cat ../${INLIST}`; do
     
     REPO_NAME=`echo ${repo} | cut -d / -f 5`
     
@@ -86,11 +112,11 @@ for repo in `cat ../$2`; do
     fi
     
     if [ "${BUILD_CMD}" = "not found" ]; then
-        echo "no build file found for ${REPO_NAME}; not calling DLJC" > ../../$1-results/${REPO_NAME}-check.log 
+        echo "no build file found for ${REPO_NAME}; not calling DLJC" > ../../${OUTDIR}-results/${REPO_NAME}-check.log 
     else
         ${DLJC} --lib ${CHECKER_LIB} -t checker --checker ${CHECKERS} --stubs ${STUBS} -- ${BUILD_CMD}
 
-        cp dljc-out/check.log ../../$1-results/${REPO_NAME}-check.log
+        cp dljc-out/check.log ../../${OUTDIR}-results/${REPO_NAME}-check.log
     fi
  
     popd
