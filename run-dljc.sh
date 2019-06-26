@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# usage:
+# This script runs the Checker Framework on each of a list of projects.
+
+### Usage
+
 # - Move this script to an experiment directory.
-# - Then create a list of git reposities, and place it in
-#   the file INLIST, one repository per line
+# - Make a file containing a list of git repositories, one per line.
 # - Ensure that your JAVA_HOME variable points to a Java 8 JDK
 # - Ensure that your CHECKERFRAMEWORK variable points to a built copy of the Checker Framework
 # - Then run a command like the following (replacing the example arguments with your own):
@@ -75,9 +77,10 @@ if [ "x${INLIST}" = "x" ]; then
     exit 5
 fi
 
-# script:
 
-# clone DLJC if its not present
+### Script
+
+# clone DLJC if it's not present
 if [ ! -d do-like-javac ]; then
     git clone https://github.com/kelloggm/do-like-javac
 fi
