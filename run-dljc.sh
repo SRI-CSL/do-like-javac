@@ -5,7 +5,7 @@
 ### Usage
 
 # - Move this script to an experiment directory.
-# - Make a file containing a list of git repositories, one per line.
+# - Make a file containing a list of git repositories, one per line. Repositories must be of the form: https://github.com/username/repository - the script is reliant on the number of slashes, so excluding https:// is an error.
 # - Ensure that your JAVA_HOME variable points to a Java 8 JDK
 # - Ensure that your CHECKERFRAMEWORK variable points to a built copy of the Checker Framework
 # - Then run a command like the following (replacing the example arguments with your own):
@@ -32,7 +32,7 @@
 # -s stubs : a colon-separated list of stub files
 #
 
-while getopts ":a:p:" opt; do
+while getopts "c:l:s:o:i:" opt; do
   case $opt in
     c) CHECKERS="$OPTARG"
        ;;
@@ -117,8 +117,21 @@ for repo in `cat ../${INLIST}`; do
     if [ "${BUILD_CMD}" = "not found" ]; then
         echo "no build file found for ${REPO_NAME}; not calling DLJC" > ../../${OUTDIR}-results/${REPO_NAME}-check.log 
     else
-        ${DLJC} --lib ${CHECKER_LIB} -t checker --checker ${CHECKERS} --stubs ${STUBS} -- ${BUILD_CMD}
+	DLJC_CMD="${DLJC} -t checker --checker ${CHECKERS}"
+	if [ ! "x${CHECKER_LIB}" = "x" ]; then
+	    TMP="${DLJC_CMD} --lib ${CHECKER_LIB}"
+	    DLJC_CMD="${TMP}"
+	fi
 
+	if [ ! "x${STUBS}" = "x" ]; then
+	    TMP="${DLJC_CMD} --stubs ${STUBS}"
+	    DLJC_CMD="${TMP}"
+	fi
+
+        TMP="${DLJC_CMD} -- ${BUILD_CMD}"
+        DLJC_CMD="${TMP}"
+
+	${DLJC_CMD}
         cp dljc-out/check.log ../../${OUTDIR}-results/${REPO_NAME}-check.log
     fi
  
