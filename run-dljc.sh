@@ -62,19 +62,14 @@ if [ "x${CHECKERFRAMEWORK}" = "x" ]; then
     exit 2
 fi
 
-if [ "x${CHECKERS}" = "x" ]; then
-    echo "you must specify one or more typecheckers using the -c argument"
-    exit 3
-fi
-
 if [ "x${OUTDIR}" = "x" ]; then
     echo "you must specify an output directory using the -o argument"
-    exit 4
+    exit 3
 fi
 
 if [ "x${INLIST}" = "x" ]; then
     echo "you must specify an input file using the -i argument"
-    exit 5
+    exit 4
 fi
 
 
@@ -117,7 +112,11 @@ for repo in `cat ../${INLIST}`; do
     if [ "${BUILD_CMD}" = "not found" ]; then
         echo "no build file found for ${REPO_NAME}; not calling DLJC" > ../../${OUTDIR}-results/${REPO_NAME}-check.log 
     else
-	DLJC_CMD="${DLJC} -t checker --checker ${CHECKERS}"
+        DLJC_CMD="${DLJC} -t checker"
+        if [ ! "x${CHECKERS}" = "x" ]; then
+	    TMP="${DLJC_CMD} --checker ${CHECKERS}"
+            DLJC_CMD="${TMP}"
+        fi
 	if [ ! "x${CHECKER_LIB}" = "x" ]; then
 	    TMP="${DLJC_CMD} --lib ${CHECKER_LIB}"
 	    DLJC_CMD="${TMP}"
