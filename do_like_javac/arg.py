@@ -51,7 +51,7 @@ base_group.add_argument('--cache', action='store_true',
                         help='''Use the dljc cache (if available)''')
 
 base_group.add_argument('-c', '--checker', metavar='<checker>',
-                        action='store',default='NullnessChecker',
+                        action='store',
                         help='A checker to check (for checker/inference tools)')
 
 base_group.add_argument('--stubs', metavar='<stubs>',
