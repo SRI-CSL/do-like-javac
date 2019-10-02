@@ -10,8 +10,10 @@ import generic
 
 supported_commands = ['javac']
 
+
 def gen_instance(cmd, args):
     return JavaCapture(cmd, args)
+
 
 class JavaCapture(generic.GenericCapture):
     def __init__(self, cmd, args):

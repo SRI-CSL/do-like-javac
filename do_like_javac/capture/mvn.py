@@ -7,12 +7,15 @@
 # in the same directory.
 
 import re
+
 import generic
 
 supported_commands = ['mvn']
 
+
 def gen_instance(cmd, args):
     return MavenCapture(cmd, args)
+
 
 class MavenCapture(generic.GenericCapture):
     def __init__(self, cmd, args):

@@ -10,8 +10,10 @@ import generic
 
 supported_commands = ['ant']
 
+
 def gen_instance(cmd, args):
     return AntCapture(cmd, args)
+
 
 class AntCapture(generic.GenericCapture):
 

@@ -1,10 +1,13 @@
 import os
-import zipfile
 import timeit
+import zipfile
+
 import do_like_javac.tools.common as cmdtools
 
+
 def is_switch(s):
-    return s != None and s.startswith('-')
+    return s is not None and s.startswith('-')
+
 
 def get_entry_point(jar):
     class_pattern = "Main-Class:"
@@ -18,10 +21,12 @@ def get_entry_point(jar):
 
     return {"jar": jar}
 
+
 def ignore_path(path):
     return \
         not path \
         or 'generated-sources' in path
+
 
 def guess_source(switches):
     """If no .java files are detected and --guess has been passed on the
@@ -44,6 +49,7 @@ def guess_source(switches):
 
     return files
 
+
 class GenericCapture(object):
     def __init__(self, cmd, args):
         self.build_cmd = cmd
@@ -58,7 +64,6 @@ class GenericCapture(object):
     def capture(self):
         stats = {}
 
-        start_time = timeit.default_timer()
         result = cmdtools.run_cmd(self.build_cmd)
         stats['build_time'] = result['time']
 

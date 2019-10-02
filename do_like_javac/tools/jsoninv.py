@@ -1,81 +1,87 @@
 import os
 import re
 import xml.etree.ElementTree as ET
+
 import common
 
+
 def generate_json_invariants(args, out_dir):
-  filename = os.path.join(out_dir, 'invariants.xml')
-  if not os.path.exists(filename):
-    return
+    filename = os.path.join(out_dir, 'invariants.xml')
+    if not os.path.exists(filename):
+        return
 
-  try:
-    tree = ET.parse(filename)
-  except:
-    common.log(args, 'jsoninv', 'Failed to parse {}'.format(filename))
-    return
+    try:
+        tree = ET.parse(filename)
+    except Exception:
+        common.log(args, 'jsoninv', 'Failed to parse {}'.format(filename))
+        return
 
-  invariants = tree.getroot()
-  methods = {}
+    invariants = tree.getroot()
+    methods = {}
 
-  for ppt in invariants:
-    add_ppt(methods, ppt)
+    for ppt in invariants:
+        add_ppt(methods, ppt)
 
-  js = {"invariants": methods.values()}
+    js = {"invariants": methods.values()}
 
-  return js
-  
+    return js
+
+
 def add_ppt(methods, ppt):
-  class_name, method_name, args, point = ppt_info(ppt)
+    class_name, method_name, args, point = ppt_info(ppt)
 
-  if point not in ['ENTER', 'EXIT']:
-    return
+    if point not in ['ENTER', 'EXIT']:
+        return
 
-  method = find_method(methods, class_name, method_name, args)
+    method = find_method(methods, class_name, method_name, args)
 
-  for inv in ppt.iter('INVINFO'):
-    add_inv(method, inv)
+    for inv in ppt.iter('INVINFO'):
+        add_inv(method, inv)
+
 
 def ppt_info(ppt):
-  name = ppt.find('PPTNAME').text
+    name = ppt.find('PPTNAME').text
 
-  signature, point = name.split(':::')
-  if '(' not in signature:
-    return signature, None, None, point
+    signature, point = name.split(':::')
+    if '(' not in signature:
+        return signature, None, None, point
 
-  match = re.match(r'(.*)\.([^\(.]+)\.?\((.*)\)', signature)
-  class_name, method_name, args = match.groups()
-  if args:
-    args = args.split(', ')
-  else:
-    args = []
+    match = re.match(r'(.*)\.([^\(.]+)\.?\((.*)\)', signature)
+    class_name, method_name, args = match.groups()
+    if args:
+        args = args.split(', ')
+    else:
+        args = []
 
-  return class_name, method_name, args, point
+    return class_name, method_name, args, point
+
 
 def find_method(methods, class_name, method_name, args):
-  descriptor = "{}.{}({})".format(class_name, method_name, args)
-  if descriptor not in methods:
-    methods[descriptor] = {"cls": class_name,
-                           "method": method_name,
-                           "params": args,
-                           "preconds": [],
-                           "postconds": []}
+    descriptor = "{}.{}({})".format(class_name, method_name, args)
+    if descriptor not in methods:
+        methods[descriptor] = {"cls": class_name,
+                               "method": method_name,
+                               "params": args,
+                               "preconds": [],
+                               "postconds": []}
 
-  return methods[descriptor]
+    return methods[descriptor]
+
 
 def add_inv(method, inv):
-  i = None
-  point = inv.find('PARENT').text
-  inv_txt = inv.find('INV').text
+    i = None
+    point = inv.find('PARENT').text
+    inv_txt = inv.find('INV').text
 
-  pattern = r'(.*) ([=!<>]+|one of) (.*)'
-  match = re.match(pattern, inv_txt)
-  if match:
-    left, op, right = match.groups()
-    i = {"left": left, "right": right, "op": op}
-  else:
-    i = {"inv": inv_txt}
+    pattern = r'(.*) ([=!<>]+|one of) (.*)'
+    match = re.match(pattern, inv_txt)
+    if match:
+        left, op, right = match.groups()
+        i = {"left": left, "right": right, "op": op}
+    else:
+        i = {"inv": inv_txt}
 
-  if point == "ENTER":
-    method['preconds'].append(i)
-  else:
-    method['postconds'].append(i)
+    if point == "ENTER":
+        method['preconds'].append(i)
+    else:
+        method['postconds'].append(i)
