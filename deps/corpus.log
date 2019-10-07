@@ -1,0 +1,99 @@
+Running command 'git remote -v'
+origin	https://github.com/cstroe/jama.git (fetch)
+origin	https://github.com/cstroe/jama.git (push)
+
+
+Running command 'git rev-parse HEAD'
+d6b3e3d192bb901aec5e16a084c824d8db336d74
+
+
+Running command 'git remote -v'
+origin	https://gitlab.com/ICM-VisLab/JLargeArrays.git (fetch)
+origin	https://gitlab.com/ICM-VisLab/JLargeArrays.git (push)
+
+
+Running command 'git rev-parse HEAD'
+31e6840a5636cdbd4f7f66a7bef73918d7a86e25
+
+
+Running command 'git remote -v'
+origin	https://github.com/vkostyukov/la4j (fetch)
+origin	https://github.com/vkostyukov/la4j (push)
+
+
+Running command 'git rev-parse HEAD'
+db204167aa6161cd2104ce845e62518cae451d70
+
+
+Running command 'git remote -v'
+origin	https://github.com/deeplearning4j/nd4j (fetch)
+origin	https://github.com/deeplearning4j/nd4j (push)
+
+
+Running command 'git rev-parse HEAD'
+b6981f82fa788da1b9518b0ee3e79d96ea5bc1c4
+
+
+Running command 'git remote -v'
+origin	https://github.com/apache/commons-math.git (fetch)
+origin	https://github.com/apache/commons-math.git (push)
+
+
+Running command 'git rev-parse HEAD'
+657b1b49da5ea1593dd7f950eae99a88a8ada87a
+
+
+Running command 'git remote -v'
+origin	https://github.com/lessthanoptimal/ejml.git (fetch)
+origin	https://github.com/lessthanoptimal/ejml.git (push)
+
+
+Running command 'git rev-parse HEAD'
+2a2bfb58d789148d06fc002e7118e5f870012683
+
+
+Running command 'git remote -v'
+origin	https://github.com/fasseg/exp4j (fetch)
+origin	https://github.com/fasseg/exp4j (push)
+
+
+Running command 'git rev-parse HEAD'
+8a4e2104b6e73d54bb7b0ac39fd18e7a0874c4ea
+
+
+Running command 'git remote -v'
+origin	https://github.com/mikiobraun/jblas.git (fetch)
+origin	https://github.com/mikiobraun/jblas.git (push)
+
+
+Running command 'git rev-parse HEAD'
+65687a90318631a2f4cb176b623278d7cee05d59
+
+
+Running command 'git remote -v'
+origin	https://github.com/hwinkler/matrix-toolkits-java.git (fetch)
+origin	https://github.com/hwinkler/matrix-toolkits-java.git (push)
+
+
+Running command 'git rev-parse HEAD'
+f2594128eee45a188957c854acede3d6a511d717
+
+
+Running command 'git remote -v'
+origin	https://github.com/rwl/ParallelColt.git (fetch)
+origin	https://github.com/rwl/ParallelColt.git (push)
+
+
+Running command 'git rev-parse HEAD'
+36a75e68abae9ed7ece5426cd96272a9ba328346
+
+
+Running command 'git remote -v'
+origin	https://github.com/optimatika/ojAlgo.git (fetch)
+origin	https://github.com/optimatika/ojAlgo.git (push)
+
+
+Running command 'git rev-parse HEAD'
+0a28f91db144914dc58aa45ddf94a4bea72b8bf7
+
+

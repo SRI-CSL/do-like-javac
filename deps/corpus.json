@@ -1,0 +1,245 @@
+{
+  "global": {
+    "build": "mvn compile",
+    "clean": "mvn clean",
+    "exclude": ["bixie"]
+  },
+  "sets": {
+    "image": ["boofcv", "imagej", "thumbnailinator", "imglib2", "imgscalr", "catalano"],
+    "mini": ["Sort07", "Sort09", "Sort10"],
+    "restricted": ["jreactphysics3d", "react"],
+    "sci": ["jama", "JLargeArrays", "la4j", "nd4j", "commonsmath", "ejml", "exp4j", "jblas", "matrixtoolkit", "parallelcolt", "ojalgo"],
+    "test": ["jama", "la4j", "ejml", "exp4j", "jblas"]
+  },
+  "projects": {
+    "boofcv":
+    {
+      "git-url": "https://github.com/lessthanoptimal/BoofCV.git",
+      "git-ref": "16fff968dbbe07af4a9cb14395a89cde18ffb72e",
+      "build": "gradle compileJava",
+      "clean": "gradle clean"
+    },
+
+    "catalano":
+    {
+      "git-url": "https://github.com/DiegoCatalano/Catalano-Framework.git",
+      "git-ref": "381b7c29ef73bca1e5479fc715fb285e6697d7bd",
+      "build-dir": "Catalano.Image",
+      "build": "ant jar",
+      "clean": "ant clean"
+    },
+
+    "imgscalr":
+    {
+      "git-url": "https://github.com/thebuzzmedia/imgscalr.git",
+      "git-ref": "e1e1da77c12570f5c21d2f6ef42f0ce80c3fa092"
+    },
+
+    "dyn4j":
+    {
+      "git-url": "https://github.com/aas-integration/dyn4j.git",
+      "git-ref": "88073bd45b83ecdc61fc40b73baf4df1fa50411f",
+      "build": "ant build",
+      "clean": "ant clean"
+    },
+
+    "jreactphysics3d":
+    {
+      "git-url": "https://github.com/kovertopz/jReactPhysics3D.git",
+      "git-ref": "8da0120f5fa2254a7e98a14f3446d97096bb0fd7",
+      "build": "mvn package -Dmaven.test.skip=true"
+    },
+
+    "react":
+    {
+      "git-url": "https://github.com/flow/react.git",
+      "git-ref": "e8f7ee5ec666d2d1783c8a16b9cbd49bc11f037c"
+    },
+
+    "jmonkeyengine":
+    {
+      "git-url": "https://github.com/jMonkeyEngine/jmonkeyengine.git",
+      "git-ref": "977610bbd7d9f000e4f79804465eec6a743b3789",
+      "build": "gradle compileJava",
+      "clean": "gradle clean"
+    },
+
+    "jbox2d":
+    {
+      "git-url": "https://github.com/jbox2d/jbox2d.git",
+      "git-ref": "3746b69de71d3d23818cd4367b884c020c194981",
+      "build": "mvn compile -pl !jbox2d-testbed-jogl,!jbox2d-testbed-javafx"
+    },
+
+    "imagej":
+    {
+      "git-url": "https://github.com/aas-integration/imagej.git",
+      "git-ref": "fc5cc397096fadc749e573df0817d7835d885b1d",
+      "build": "ant build",
+      "clean": "ant clean",
+      "exclude": ["bixie", "dyntrace"]
+    },
+
+    "imglib2":
+    {
+      "git-url": "https://github.com/imglib/imglib2.git",
+      "git-ref": "16af41a9beec79642ce0728ed198defa46c6e0dd"
+    },
+
+    "thumbnailinator":
+    {
+      "git-url": "https://github.com/coobird/thumbnailator.git",
+      "git-ref": "270851897110ec21b5b6fa8b9ba031abb98b9749"
+    },
+
+    "Sort07":
+    {
+      "git-url": "https://github.com/aas-integration/Sort07.git",
+      "git-ref": "3a79246dffbebfd14026b5fa3f98a734f243a506",
+      "timelimit": 120,
+      "build": "ant",
+      "clean": "ant clean"
+    },
+    "Sort09":
+    {
+      "git-url": "https://github.com/aas-integration/Sort09.git",
+      "git-ref": "12f1464816ed34dbe24e395f578a3bf5196f5502",
+      "timelimit": 120,
+      "build": "ant",
+      "clean": "ant clean"
+    },
+    "Sort10":
+    {
+      "git-url": "https://github.com/aas-integration/Sort10.git",
+      "git-ref": "a65dc9a777cf10e228b572fa00c32eb99312f20a",
+      "timelimit": 120,
+      "build": "ant",
+      "clean": "ant clean"
+    },
+
+    "jcodec":
+    {
+      "git-url": "https://github.com/jcodec/jcodec.git",
+      "git-ref": "0993f3ff68d28ea08b40732915c4009c7561b707"
+    },
+    "ejml":
+    {
+      "git-url": "https://github.com/lessthanoptimal/ejml.git",
+      "git-ref": "2a2bfb58d789148d06fc002e7118e5f870012683",
+      "build": "gradle jar",
+      "jar": "gradle jar",
+      "clean": "gradle clean"
+    },
+    "ojalgo":
+    {
+      "git-url": "https://github.com/optimatika/ojAlgo.git",
+      "git-ref": "0a28f91db144914dc58aa45ddf94a4bea72b8bf7",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "commonsmath":
+    {
+      "git-url": "https://github.com/apache/commons-math.git",
+      "git-ref": "657b1b49da5ea1593dd7f950eae99a88a8ada87a",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "facedetection1":
+    {
+      "git-url": "https://github.com/azeevg/FaceDetection.git",
+      "git-ref": "1a8c91328f96e90cc2c8270d6adce9e663793bc0"
+    },
+    "facer":
+    {
+      "git-url": "https://github.com/bharathk005/Facer.git",
+      "git-ref": "6ce45ce52310fc820173a12b72b29261acdf3181",
+      "build": "ant",
+      "clean": "ant clean"
+    },
+    "jviolajones":
+    {
+      "git-url": "https://github.com/tc/jviolajones.git",
+      "git-ref": "2881bf4aa61775ecb9f09278390a3572065b7ef8",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "parallelcolt":
+    {
+      "git-url": "https://github.com/rwl/ParallelColt.git",
+      "git-ref": "36a75e68abae9ed7ece5426cd96272a9ba328346",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "jama":
+    {
+      "git-url": "https://github.com/cstroe/jama.git",
+      "git-ref": "d6b3e3d192bb901aec5e16a084c824d8db336d74",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "jblas":
+    {
+      "git-url": "https://github.com/mikiobraun/jblas.git",
+      "git-ref": "65687a90318631a2f4cb176b623278d7cee05d59",
+      "git-opt": "--config transfer.fsckObjects=false",
+      "jar": "mvn package -Dmaven.test.skip=true",
+      "exclude": ["bixie", "dyntrace"]
+
+    },
+    "matrixtoolkit":
+    {
+      "git-url": "https://github.com/hwinkler/matrix-toolkits-java.git",
+      "git-ref": "f2594128eee45a188957c854acede3d6a511d717",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "exp4j":
+    {
+      "git-url": "https://github.com/fasseg/exp4j",
+      "git-ref": "8a4e2104b6e73d54bb7b0ac39fd18e7a0874c4ea",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "JLargeArrays":
+    {
+      "git-url": "https://gitlab.com/ICM-VisLab/JLargeArrays.git",
+      "git-ref": "31e6840a5636cdbd4f7f66a7bef73918d7a86e25",
+      "jar": "mvn package -Dmaven.test.skip=true",
+      "exclude": ["bixie", "dyntrace"]
+    },
+    "jscience":
+    {
+      "git-url": "https://github.com/tarelli/jscience",
+      "git-ref": "28bf87f3e98dde9524e877bade78d5a32728f65e",
+      "build": "ant jarfile",
+      "clean": "ant clean"
+    },
+    "la4j":
+    {
+      "git-url": "https://github.com/vkostyukov/la4j",
+      "git-ref": "db204167aa6161cd2104ce845e62518cae451d70",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "jump":
+    {
+      "git-url": "https://github.com/aas-integration/jump",
+      "git-ref": "e05cac7b1b584a493978d6861cbc7fa762816f34",
+      "build": "ant jar",
+      "clean": "ant clean"
+    },
+    "scijava-common":
+    {
+      "git-url": "https://github.com/scijava/scijava-common",
+      "git-ref": "cfd3e736f74a7b4a900b2eb18521cbe45f0d62d5",
+      "dljc-opt": "--guess",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "scifio":
+    {
+      "git-url": "https://github.com/scifio/scifio",
+      "git-ref": "c6971950a3569ef8a2bdd81fa8fc3e2b89544cbb",
+      "dljc-opt": "--guess",
+      "jar": "mvn package -Dmaven.test.skip=true"
+    },
+    "nd4j":
+    {
+      "git-url": "https://github.com/deeplearning4j/nd4j",
+      "git-ref": "b6981f82fa788da1b9518b0ee3e79d96ea5bc1c4",
+      "build": "mvn compile -pl :nd4j-api",
+      "jar": "mvn package -Dmaven.test.skip=true -pl :nd4j-api"
+    }
+  }
+}
