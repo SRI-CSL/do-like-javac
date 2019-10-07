@@ -42,11 +42,11 @@ javac commands from.
 `args` is the argparse structure that dljc stores its own arguments in. You can
 find more details in `do_like_javac/arg.py`.
 
-Your job now is to implement `get\_javac\_commands` and optionally
-`get\_target\_jars`. verbose\_output contains a list of lines of output from
+Your job now is to implement `get_javac_commands` and optionally
+`get_target_jars`. verbose\_output contains a list of lines of output from
 running the build system. If your build system outputs entire javac commands
 on a single line, or if you can reconstitute the commands in their entirety,
-then there's a convenience method called `javac\_parse` defined in the
+then there's a convenience method called `javac_parse` defined in the
 superclass, which expects a list of words in the command and produces the
 output you need.
 
@@ -73,7 +73,7 @@ Finally, add your new module to the `capture_modules` list at the top of
 
 ## Adding a new analysis tool
 
-Create a new Python file in `do\_like\_javac/tools/` named after the tool you
+Create a new Python file in `do_like_javac/tools/` named after the tool you
 want to add. Use this template:
 
 ```python
@@ -87,7 +87,7 @@ def run(args, javac_commands, jars):
 plug in additional command line options you'd like to be available for your
 tool. You can see an example in `do_like_javac/tools/infer.py`.
 
-`javac\_commands` and `jars` are the structures discussed above, consisting of
+`javac_commands` and `jars` are the structures discussed above, consisting of
 the javac command used to build the project and the jar files generated (if
 that information is available).
 
