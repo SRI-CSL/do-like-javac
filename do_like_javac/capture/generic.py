@@ -59,10 +59,11 @@ class GenericCapture(object):
         stats = {}
 
         start_time = timeit.default_timer()
-        result = cmdtools.run_cmd(self.build_cmd)
+        result = cmdtools.run_cmd(self.build_cmd, self.args)
         stats['build_time'] = result['time']
 
-        with open(os.path.join(self.args.output_directory, 'build_output.txt'), 'w') as f:
+        build_out_file = os.path.join(self.args.output_directory, 'build_output.txt')
+        with open(build_out_file, 'w') as f:
             f.write(result['output'])
 
         if result['return_code'] != 0:
@@ -72,7 +73,7 @@ class GenericCapture(object):
 
         javac_commands = self.get_javac_commands(build_lines)
         target_jars = self.get_target_jars(build_lines)
-        jars_with_entry_points = map(get_entry_point, target_jars)
+        jars_with_entry_points = list(map(get_entry_point, target_jars))
 
         self.record_stats(stats, javac_commands, jars_with_entry_points)
 

@@ -6,7 +6,7 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
-import generic
+from . import generic
 import os
 
 supported_commands = ['gradle', 'gradlew']
@@ -32,4 +32,4 @@ class GradleCapture(generic.GenericCapture):
                 content = line.partition(argument_start_pattern)[2].strip()
                 results.append(content.split(' '))
 
-        return map(self.javac_parse, results)
+        return list(map(self.javac_parse, results))

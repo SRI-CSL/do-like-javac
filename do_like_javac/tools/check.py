@@ -1,6 +1,6 @@
 # DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
 
-import common
+from . import common
 import os
 import pprint
 

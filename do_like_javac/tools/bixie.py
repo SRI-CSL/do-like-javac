@@ -1,5 +1,5 @@
 import os
-import common
+from . import common
 import copy
 
 argparser = None

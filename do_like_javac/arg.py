@@ -10,8 +10,8 @@ import argparse
 import os
 import sys
 
-import tools
-import capture
+from . import tools
+from . import capture
 
 DEFAULT_OUTPUT_DIRECTORY = os.path.join(os.getcwd(), 'dljc-out')
 

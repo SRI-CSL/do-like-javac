@@ -6,7 +6,7 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
-import generic
+from . import generic
 
 supported_commands = ['javac']
 
@@ -20,4 +20,4 @@ class JavaCapture(generic.GenericCapture):
         self.cmd = cmd[1:]
 
     def get_javac_commands(self, verbose_output):
-        return map(self.javac_parse, [self.cmd])
+        return list(map(self.javac_parse, [self.cmd]))

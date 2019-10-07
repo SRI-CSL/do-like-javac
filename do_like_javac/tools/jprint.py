@@ -3,7 +3,7 @@ import json
 argparser = None
 
 def run(args, javac_commands, jars):
-  print (json.dumps(
+  print(json.dumps(
     {
       "javac_commands": javac_commands,
       "jars": jars

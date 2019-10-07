@@ -1,4 +1,4 @@
-import ant, gradle, javac, mvn
+from . import ant, gradle, javac, mvn
 import itertools
 
 capture_modules = [ant, gradle, javac, mvn]
