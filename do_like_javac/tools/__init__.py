@@ -10,10 +10,12 @@ import dyntracecounts
 # import soot
 import check
 import infer
+import wpi
 
 TOOLS = {
   # 'soot'      : soot,
   'checker'   : check,
+  'wpi'       : wpi,
   'inference' : infer,
   'print'     : jprint,
   'randoop'   : randoop,
