@@ -7,6 +7,9 @@ import shutil
 import tempfile
 import subprocess32 as subprocess
 
+# re-use existing CF build logic
+import check
+
 argparser = None
 
 def run(args, javac_commands, jars):
@@ -17,6 +20,8 @@ def run(args, javac_commands, jars):
     else:
         # checker should run via auto-discovery
         checker_command = [javacheck, "-Ainfer=stubs", "-AmergeStubsWithSource"]
+
+    checker_command += check.getArgumentsByVersion(args.jdkVersion)
 
     for jc in javac_commands:
 
@@ -61,8 +66,10 @@ def run(args, javac_commands, jars):
             if javac_switches.has_key('processorpath'):
                 pp = javac_switches['processorpath'] + ':'
             cp = javac_switches['classpath']
+            if args.quals:
+                 cp += ":" + args.quals
             if args.lib_dir:
-                cp = cp + ':' + pp + args.lib_dir + ':'
+                cp += ':' + pp + args.lib_dir + ':'
             java_files = jc['java_files']
             cmd = iterationCheckerCmd + ["-classpath", cp] + java_files
             common.run_cmd(cmd, args, 'wpi')
