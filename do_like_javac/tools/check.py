@@ -1,5 +1,3 @@
-# DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
-
 import common
 import os
 import pprint
