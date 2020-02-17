@@ -62,6 +62,14 @@ base_group.add_argument('-l', '--lib', metavar='<lib_dir>',
                         action='store',dest='lib_dir',
                         help='Library directory with JARs for tools that need them.')
 
+base_group.add_argument('--jdkVersion', metavar='<jdkVersion>',
+                        action='store',
+                        help='Version of the JDK to use with the Checker Framework.')
+
+base_group.add_argument('--quals', metavar='<quals>',
+                        action='store',
+                        help='Path to custom annotations to put on the classpath when using the Checker Framework.')
+
 def split_args_to_parse():
     split_index = len(sys.argv)
     if CMD_MARKER in sys.argv:
