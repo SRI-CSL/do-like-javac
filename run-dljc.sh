@@ -17,9 +17,11 @@
 #             results in the ./outdir-results directory. Both will be created
 #             if they do not exist.
 #
-# -i infile : read the list of repositories to use from the file $infile. The
-#             file should be formatted as a list of git repositories,
-#             separated by newlines
+# -i infile : read the list of repositories to use from the file $infile. Each
+#             line should contain the (https) url of the git repository on
+#             GitHub and the commit hash to use, separated by spaces. If the
+#             repository's owner is you (see -u flag), then each line owned by
+#             you must be followed by the original github repository.
 #
 # -c checkers : a comma-separated list of typecheckers to run
 #
@@ -29,20 +31,31 @@
 #          java classpath when doing typechecking. Use this for the dependencies
 #          of any custom typecheckers.
 #
+# -q quals : a colon-separated list of the jar files containing annotations used
+#            by custom checkers
+#
 # -s stubs : a colon-separated list of stub files
 #
+# -u user : the GitHub user to consider the "owner" for repositories that have
+#           been forked and modified. These repositories must have a third entry
+#           in the infile indicating their origin. Default is "kelloggm".
+#
 
-while getopts "c:l:s:o:i:" opt; do
+while getopts "c:l:s:o:i:q:w:" opt; do
   case $opt in
     c) CHECKERS="$OPTARG"
        ;;
     l) CHECKER_LIB="$OPTARG"
+       ;;
+    q) QUALS="$OPTARG"
        ;;
     s) STUBS="$OPTARG"
        ;;
     o) OUTDIR="$OPTARG"
        ;;
     i) INLIST="$OPTARG"
+       ;;
+    u) USER="$OPTARG"
        ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -56,6 +69,7 @@ if [ "x${JAVA_HOME}" = "x" ]; then
     echo "JAVA_HOME must be set to a Java 8 JDK for this script to succeed"
     exit 1
 fi
+
 
 if [ "x${CHECKERFRAMEWORK}" = "x" ]; then
     echo "CHECKERFRAMEWORK must be set to the base directory of a pre-built Checker Framework for this script to succeed. Please checkout github.com/typetools/checker-framework and follow the build instructions there"
@@ -72,6 +86,9 @@ if [ "x${INLIST}" = "x" ]; then
     exit 4
 fi
 
+if [ "x${USER}" = "x" ]; then
+    USER=kelloggm
+fi
 
 ### Script
 
@@ -91,15 +108,30 @@ mkdir ${OUTDIR}-results || true
 
 pushd ${OUTDIR}
 
-for repo in `cat ../${INLIST}`; do
-    
-    REPO_NAME=`echo ${repo} | cut -d / -f 5`
+while IFS= read -r line
+do    
+    REPOHASH=${line}
+    REPO=`echo ${REPOHASH} | awk '{print $1}'`
+    HASH=`echo ${REPOHASH} | awk '{print $2}'`
+
+    REPO_NAME=`echo ${REPO} | cut -d / -f 5`
     
     if [ ! -d ${REPO_NAME} ]; then
-        git clone ${repo}
+        git clone ${REPO}
+    else
+        rm -rf ${REPO_NAME}/dljc-out
     fi
 
     pushd ${REPO_NAME}
+
+    git checkout ${HASH}
+
+    OWNER=`echo ${REPO} | cut -d / -f 4`
+
+    if [ "${OWNER}" = "${USER}" ]; then
+        ORIGIN=`echo ${REPOHASH} | awk '{print $3}'`
+        git remote add unannotated ${ORIGIN}
+    fi
 
     if [ -f build.gradle ]; then
 	BUILD_CMD="./gradlew clean compileJava -Dorg.gradle.java.home=${JAVA_HOME}"
@@ -127,6 +159,11 @@ for repo in `cat ../${INLIST}`; do
 	    DLJC_CMD="${TMP}"
 	fi
 
+	if [ ! "x${QUALS}" = "x" ]; then
+	    TMP="${DLJC_CMD} --quals ${QUALS}"
+	    DLJC_CMD="${TMP}"
+	fi
+
         TMP="${DLJC_CMD} -- ${BUILD_CMD}"
         DLJC_CMD="${TMP}"
 
@@ -135,6 +172,6 @@ for repo in `cat ../${INLIST}`; do
     fi
  
     popd
-done
+done < ../${INLIST}
 
 popd
