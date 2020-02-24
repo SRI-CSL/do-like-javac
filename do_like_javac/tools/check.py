@@ -13,7 +13,7 @@ def run(args, javac_commands, jars):
         # checker should run via auto-discovery
         checker_command = [javacheck, "-Astubs=" + str(args.stubs)]
 
-    checker_command += getArgumentsByVerson(args.jdkVersion)
+    checker_command += getArgumentsByVersion(args.jdkVersion)
 
     for jc in javac_commands:
         pprint.pformat(jc)
@@ -31,7 +31,7 @@ def run(args, javac_commands, jars):
         cmd = checker_command + ["-classpath", cp] + java_files
         common.run_cmd(cmd, args, 'check')
 
-def getArgumentsByVerson(jdkVersion):
+def getArgumentsByVersion(jdkVersion):
     if jdkVersion is not None:
         version = int(jdkVersion)
     else:
