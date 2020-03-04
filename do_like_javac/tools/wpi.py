@@ -77,7 +77,7 @@ def run(args, javac_commands, jars):
                 processorArg[1] += "," + javac_switches['processor']
             java_files = jc['java_files']
             other_args = []
-            for k, v in javac_switches:
+            for k, v in javac_switches.items():
                 if not k in banned_options:
                     other_args.append("-" + k)
                     if v is not None:
