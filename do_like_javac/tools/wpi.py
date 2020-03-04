@@ -79,8 +79,9 @@ def run(args, javac_commands, jars):
             other_args = []
             for k, v in javac_switches.items():
                 if not k in banned_options:
-                    other_args.append("-" + k)
-                    if v is not None:
+                    if v is None or v is not False:
+                        other_args.append("-" + k)
+                    if v is not None and v is not True:
                         other_args.append(str(v))
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
             common.run_cmd(cmd, args, 'wpi')
