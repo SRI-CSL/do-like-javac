@@ -12,12 +12,12 @@ import check
 
 argparser = None
 
-banned_options = ["nowarn", "classpath", "processorpath", "processor"]
+banned_options = ["nowarn", "classpath", "processorpath", "processor", "Xmaxerrs", "Xmaxwarns"]
 
 def run(args, javac_commands, jars):
     # checker-framework javac.
     javacheck = os.environ['CHECKERFRAMEWORK']+"/checker/bin/javac"
-    checker_command = [javacheck, "-Ainfer=stubs", "-AmergeStubsWithSource"]
+    checker_command = [javacheck, "-Ainfer=stubs", "-AmergeStubsWithSource", "-Xmaxerrs", "10000", "-Xmaxwarns", "10000"]
     if args.checker is not None:
         processorArg = ["-processor", args.checker]
     else:
