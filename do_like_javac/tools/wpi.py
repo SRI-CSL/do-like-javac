@@ -59,9 +59,9 @@ def run(args, javac_commands, jars):
                 pp = javac_switches['processorpath'] + ':'
             cp = javac_switches['classpath']
             if args.quals:
-                 cp += ":" + args.quals
+                 cp += args.quals + ':'
             if args.lib_dir:
-                cp += ':' + pp + args.lib_dir + ':'
+                cp += pp + args.lib_dir + ':'
             if javac_switches.has_key('processor') and len(processorArg) == 2:
                 processorArg[1] += "," + javac_switches['processor']
             java_files = jc['java_files']
