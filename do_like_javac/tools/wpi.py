@@ -26,6 +26,12 @@ def run(args, javac_commands, jars):
 
     checker_command += check.getArgumentsByVersion(args.jdkVersion)
 
+    if args.cleanCmd is None:
+        print "to run whole-program inference, you must provide a clean command using the --cleanCmd argument"
+        sys.exit(1)
+    else:
+        cleanCmd = args.cleanCmd.split('\s')
+
     for jc in javac_commands:
 
         wpiDir = os.path.join(os.getcwd(), 'build/whole-program-inference')
@@ -37,6 +43,9 @@ def run(args, javac_commands, jars):
         diffResult = 1
         stubDirs = []
         while diffResult != 0:
+
+            # first, clean the project before each CF run
+            common.run_cmd(cleanCmd, args, 'wpi')
 
             iterationStubs = ':'.join(stubDirs)
             stubArg = None
