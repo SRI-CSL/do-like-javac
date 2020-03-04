@@ -1,3 +1,4 @@
+import shlex
 import sys
 
 import common
@@ -30,7 +31,7 @@ def run(args, javac_commands, jars):
         print "to run whole-program inference, you must provide a clean command using the --cleanCmd argument"
         sys.exit(1)
     else:
-        cleanCmd = args.cleanCmd.split('\s')
+        cleanCmd = shlex.split(args.cleanCmd)
 
     for jc in javac_commands:
 
