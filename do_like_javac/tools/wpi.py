@@ -38,18 +38,7 @@ def run(args, javac_commands, jars):
         stubDirs = []
         while diffResult != 0:
 
-            if os.path.isdir(wpiDir):
-                # move the old wpi files, add them to stub path
-                previousIterationDir = tempfile.mkdtemp(suffix="iteration" + str(iteration))
-                stubs = os.listdir(wpiDir)
-
-                for stub in stubs:
-                    shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
-
-                stubDirs.append(previousIterationDir)
-
             iterationStubs = ':'.join(stubDirs)
-
             stubArg = None
 
             if args.stubs:
@@ -86,7 +75,17 @@ def run(args, javac_commands, jars):
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
             common.run_cmd(cmd, args, 'wpi')
 
-            if len(stubDirs) != 0:
+            # process outputs
+            # move the old wpi files, add them to stub path
+            previousIterationDir = tempfile.mkdtemp(suffix="iteration" + str(iteration))
+            stubs = os.listdir(wpiDir)
+
+            for stub in stubs:
+                shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
+
+            stubDirs.append(previousIterationDir)
+
+            if len(stubDirs) > 1:
                 if args and args.verbose and args.log_to_stderr:
                     out = sys.stderr
                 else:
