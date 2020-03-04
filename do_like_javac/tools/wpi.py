@@ -12,14 +12,17 @@ import check
 
 argparser = None
 
+banned_options = ["nowarn", "classpath", "processorpath", "processor"]
+
 def run(args, javac_commands, jars):
     # checker-framework javac.
     javacheck = os.environ['CHECKERFRAMEWORK']+"/checker/bin/javac"
+    checker_command = [javacheck, "-Ainfer=stubs", "-AmergeStubsWithSource"]
     if args.checker is not None:
-        checker_command = [javacheck, "-processor", args.checker, "-Ainfer=stubs", "-AmergeStubsWithSource"]
+        processorArg = ["-processor", args.checker]
     else:
         # checker should run via auto-discovery
-        checker_command = [javacheck, "-Ainfer=stubs", "-AmergeStubsWithSource"]
+        processorArg = []
 
     checker_command += check.getArgumentsByVersion(args.jdkVersion)
 
@@ -70,8 +73,16 @@ def run(args, javac_commands, jars):
                  cp += ":" + args.quals
             if args.lib_dir:
                 cp += ':' + pp + args.lib_dir + ':'
+            if javac_switches.has_key('processor') and len(processorArg) == 2:
+                processorArg[1] += "," + javac_switches['processor']
             java_files = jc['java_files']
-            cmd = iterationCheckerCmd + ["-classpath", cp] + java_files
+            other_args = []
+            for k, v in javac_switches:
+                if not k in banned_options:
+                    other_args.append("-" + k)
+                    if v is not None:
+                        other_args.append(v)
+            cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
             common.run_cmd(cmd, args, 'wpi')
 
             if len(stubDirs) != 0:
