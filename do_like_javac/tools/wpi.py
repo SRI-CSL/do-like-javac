@@ -84,7 +84,10 @@ def run(args, javac_commands, jars):
                     if v is not None and v is not True:
                         other_args.append(str(v))
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
-            common.run_cmd(cmd, args, 'wpi')
+            stats = common.run_cmd(cmd, args, 'wpi')
+
+            if stats['returncode'] == 0:
+                return
 
             # process outputs
             # move the old wpi files, add them to stub path
