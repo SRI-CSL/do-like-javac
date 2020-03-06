@@ -1,5 +1,6 @@
 import shlex
 import sys
+from filecmp import dircmp
 
 import common
 import os
@@ -96,10 +97,5 @@ def run(args, javac_commands, jars):
             stubDirs.append(previousIterationDir)
 
             if len(stubDirs) > 1:
-                if args and args.verbose and args.log_to_stderr:
-                    out = sys.stderr
-                else:
-                    out_file = os.path.join(args.output_directory,  "wpi.log")
-                    out = open(out_file, 'a')
-
-                diffResult = subprocess.run(["diff", "-qr", wpiDir, stubDirs[-1]], stdout=out).returncode
+                dcmp = dircmp(stubDirs[-1], stubDirs[-2])
+                diffResult = len(dcmp.diff_files)
