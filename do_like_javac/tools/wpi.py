@@ -86,7 +86,7 @@ def run(args, javac_commands, jars):
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
             stats = common.run_cmd(cmd, args, 'wpi')
 
-            if stats['returncode'] == 0:
+            if stats['return_code'] == 0:
                 return
 
             # process outputs
