@@ -78,7 +78,11 @@ def run(args, javac_commands, jars):
             java_files = jc['java_files']
             other_args = []
             for k, v in javac_switches.items():
-                if not k in banned_options:
+                if k not in banned_options:
+                    if k == "source" or k == "target":
+                        # if the source/target is < 8, change it to 8
+                        if v in ["1.5", "5", "1.6", "6", "1.7", "7"]:
+                            v = "8"
                     if v is None or v is not False:
                         other_args.append("-" + k)
                     if v is not None and v is not True:
