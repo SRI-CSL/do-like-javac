@@ -14,7 +14,7 @@ import check
 
 argparser = None
 
-banned_options = ["nowarn", "classpath", "processorpath", "processor", "Xmaxerrs", "Xmaxwarns"]
+banned_options = ["nowarn", "classpath", "processorpath", "processor", "Xmaxerrs", "Xmaxwarns", "proc:none"]
 
 def run(args, javac_commands, jars):
     # checker-framework javac.
