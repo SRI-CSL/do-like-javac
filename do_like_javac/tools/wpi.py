@@ -14,7 +14,7 @@ import check
 
 argparser = None
 
-banned_options = ["nowarn", "classpath", "processorpath", "processor", "Xmaxerrs", "Xmaxwarns", "proc:none"]
+banned_options = ["nowarn", "classpath", "processorpath", "processor", "Xmaxerrs", "Xmaxwarns", "proc:none", "release"]
 
 def run(args, javac_commands, jars):
     # checker-framework javac.
@@ -34,6 +34,9 @@ def run(args, javac_commands, jars):
     else:
         cleanCmd = shlex.split(args.cleanCmd)
 
+    # before invoking the CF for the first time, clean the project
+    common.run_cmd(cleanCmd, args, 'wpi')
+
     for jc in javac_commands:
 
         wpiDir = os.path.join(os.getcwd(), 'build/whole-program-inference')
@@ -45,9 +48,6 @@ def run(args, javac_commands, jars):
         diffResult = 1
         stubDirs = []
         while diffResult != 0:
-
-            # first, clean the project before each CF run
-            common.run_cmd(cleanCmd, args, 'wpi')
 
             iterationStubs = ':'.join(stubDirs)
             stubArg = None
