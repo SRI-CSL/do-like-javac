@@ -35,7 +35,7 @@ def run(args, javac_commands, jars):
         cleanCmd = shlex.split(args.cleanCmd)
 
     # before invoking the CF for the first time, clean the project
-    common.run_cmd(cleanCmd, args, 'wpi')
+    # common.run_cmd(cleanCmd, args, 'wpi')
 
     for jc in javac_commands:
 
