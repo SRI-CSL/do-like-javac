@@ -41,9 +41,10 @@ def getArgumentsByVersion(jdkVersion):
     if version == 8:
         result += ['-J-Xbootclasspath/p:' + os.environ['CHECKERFRAMEWORK'] + '/checker/dist/javac.jar']
         result += ['-Xbootclasspath/p:' + os.environ['CHECKERFRAMEWORK'] + '/checker/dist/jdk8.jar']
-        result += ['-source', '8', '-target', '8']
+        result += ['--release', '8']
     elif version == 11:
         result += ['-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED']
+        result += ['--release', '11']
     else:
         raise ValueError("the Checker Framework only supports Java versions 8 and 11")
 
