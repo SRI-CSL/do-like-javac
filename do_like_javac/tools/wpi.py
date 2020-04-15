@@ -7,6 +7,7 @@ import os
 import pprint
 import shutil
 import tempfile
+import distutils
 import subprocess32 as subprocess
 
 # re-use existing CF build logic
@@ -75,7 +76,45 @@ def run(args, javac_commands, jars):
                 cp += pp + args.lib_dir + ':'
             if javac_switches.has_key('processor') and len(processorArg) == 2:
                 processorArg[1] += "," + javac_switches['processor']
+
             java_files = jc['java_files']
+
+            # delombok
+            jars = cp.split(":")
+            new_cp = ""
+            lombokjar = ""
+            for jar in jars:
+                # This should catch only the Lombok jar, because it's based
+                # on Lombok's Maven coordinates.
+                if "/org/projectlombok/lombok/" in jar:
+                    lombokjar = jar
+                else:
+                    # re-add everything that isn't lombok to the classpath
+                    new_cp += jar + ":"
+
+            # must wait until here to supply the classpath without lombok
+            if lombokjar != "":
+                # delombok takes a directory as input rather than individual source files,
+                # so this guesses at what the correct top-level directory is. It's a hack,
+                # but it should work for Maven and Gradle projects that follow the default
+                # conventions. For compilation to make sense, there must be at least one
+                # Java file, so this access should be safe.
+                anySrcFile = java_files[0]
+                standardSrcDir = "src/main/java/"
+
+                standardSrcIndex = anySrcFile.index(standardSrcDir)
+
+                if standardSrcDir != -1:
+                    srcDir = anySrcFile[:standardSrcIndex]
+                    lombok_cmd = "java -jar " + lombokjar + " delombok " + srcDir \
+                                 + "/src/main/java/ -d " + srcDir + "/delombok/main/java -c " + new_cp
+                    common.run_cmd(lombok_cmd, args, "wpi")
+                    # replace the original source files with the delombok'd code, so that
+                    # the actual javac commands don't need to be modified
+                    distutils.dir_util.copy_tree(srcDir + "/delombok/", srcDir + "/src/")
+
+            # use the new classpath, without lombok
+            cp = new_cp
             other_args = []
             for k, v in javac_switches.items():
                 if k not in banned_options:
