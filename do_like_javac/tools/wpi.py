@@ -7,7 +7,7 @@ import os
 import pprint
 import shutil
 import tempfile
-import distutils
+from distutils import dir_util
 import subprocess32 as subprocess
 
 # re-use existing CF build logic
@@ -111,7 +111,7 @@ def run(args, javac_commands, jars):
                     common.run_cmd(lombok_cmd, args, "wpi")
                     # replace the original source files with the delombok'd code, so that
                     # the actual javac commands don't need to be modified
-                    distutils.dir_util.copy_tree(srcDir + "/delombok/", srcDir + "/src/")
+                    dir_util.copy_tree(srcDir + "/delombok/", srcDir + "/src/")
 
             # use the new classpath, without lombok
             cp = new_cp
