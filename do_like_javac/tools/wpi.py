@@ -73,7 +73,6 @@ def run(args, javac_commands, jars):
 
             # delombok
             jars = cp.split(":")
-            new_cp = ""
             lombokjar = ""
             for jar in jars:
                 # This should catch only the Lombok jar, because it's based
@@ -81,9 +80,6 @@ def run(args, javac_commands, jars):
                 # second is the gradle cache's file structure.
                 if "/org/projectlombok/lombok/" in jar or "/org.projectlombok/lombok/":
                     lombokjar = jar
-                else:
-                    # re-add everything that isn't lombok to the classpath
-                    new_cp += jar + ":"
 
             # must wait until here to supply the classpath without lombok
             if lombokjar != "":
@@ -101,7 +97,7 @@ def run(args, javac_commands, jars):
                     srcDir = anySrcFile[:standardSrcIndex]
                     lombok_cmd = ["java", "-jar", lombokjar, "delombok",
                                   srcDir + "/src/main/java/", "-d", srcDir + "/delombok/main/java",
-                                  "-c", new_cp]
+                                  "-c", cp]
                     common.run_cmd(lombok_cmd, args, "wpi")
                     # replace the original source files with the delombok'd code, so that
                     # the actual javac commands don't need to be modified
@@ -110,9 +106,6 @@ def run(args, javac_commands, jars):
                     # suppress all type.anno.before.modifier warnings, because delombok
                     # prints annotations in the wrong place
                     iterationCheckerCmd.append("-AsuppressWarnings=type.anno.before.modifier")
-
-            # use the new classpath, without lombok
-            cp = new_cp
 
             # include processor path in the class path if it is present
             pp = ''
