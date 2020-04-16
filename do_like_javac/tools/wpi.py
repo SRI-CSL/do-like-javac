@@ -65,15 +65,7 @@ def run(args, javac_commands, jars):
 
             pprint.pformat(jc)
             javac_switches = jc['javac_switches']
-            # include processor path in the class path if it is present
-            pp = ''
-            if javac_switches.has_key('processorpath'):
-                pp = javac_switches['processorpath'] + ':'
             cp = javac_switches['classpath']
-            if args.quals:
-                 cp += args.quals + ':'
-            if args.lib_dir:
-                cp += pp + args.lib_dir + ':'
             if javac_switches.has_key('processor') and len(processorArg) == 2:
                 processorArg[1] += "," + javac_switches['processor']
 
@@ -114,8 +106,22 @@ def run(args, javac_commands, jars):
                     # the actual javac commands don't need to be modified
                     dir_util.copy_tree(srcDir + "/delombok/", srcDir + "/src/")
 
+                    # suppress all type.anno.before.modifier warnings, because delombok
+                    # prints annotations in the wrong place
+                    iterationCheckerCmd.append("-AsuppressWarnings=type.anno.before.modifier")
+
             # use the new classpath, without lombok
             cp = new_cp
+
+            # include processor path in the class path if it is present
+            pp = ''
+            if javac_switches.has_key('processorpath'):
+                pp = javac_switches['processorpath'] + ':'
+            if args.quals:
+                 cp += args.quals + ':'
+            if args.lib_dir:
+                cp += pp + args.lib_dir + ':'
+
             other_args = []
             for k, v in javac_switches.items():
                 if k not in banned_options:
