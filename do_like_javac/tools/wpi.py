@@ -108,7 +108,7 @@ def run(args, javac_commands, jars):
                     srcDir = anySrcFile[:standardSrcIndex]
                     lombok_cmd = "java -jar " + lombokjar + " delombok " + srcDir \
                                  + "/src/main/java/ -d " + srcDir + "/delombok/main/java -c " + new_cp
-                    common.run_cmd(lombok_cmd, args, "wpi")
+                    common.run_cmd([lombok_cmd], args, "wpi")
                     # replace the original source files with the delombok'd code, so that
                     # the actual javac commands don't need to be modified
                     dir_util.copy_tree(srcDir + "/delombok/", srcDir + "/src/")
