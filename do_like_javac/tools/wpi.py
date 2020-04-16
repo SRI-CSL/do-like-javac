@@ -77,8 +77,9 @@ def run(args, javac_commands, jars):
             lombokjar = ""
             for jar in jars:
                 # This should catch only the Lombok jar, because it's based
-                # on Lombok's Maven coordinates.
-                if "/org/projectlombok/lombok/" in jar:
+                # on Lombok's Maven coordinates. First is the Maven repo file structure;
+                # second is the gradle cache's file structure.
+                if "/org/projectlombok/lombok/" in jar or "/org.projectlombok/lombok/":
                     lombokjar = jar
                 else:
                     # re-add everything that isn't lombok to the classpath
