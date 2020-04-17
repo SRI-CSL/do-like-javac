@@ -60,6 +60,7 @@ def run(args, javac_commands, jars):
         java_files = jc['java_files']
 
         # delombok
+        delombok = False
         jars = cp.split(":")
         lombokjar = ""
         for jar in jars:
@@ -93,9 +94,10 @@ def run(args, javac_commands, jars):
                 # the actual javac commands don't need to be modified
                 dir_util.copy_tree(srcDir + "/delombok/", srcDir + "/src/")
 
-                # suppress all type.anno.before.modifier warnings, because delombok
-                # prints annotations in the wrong place
-                iterationCheckerCmd.append("-AsuppressWarnings=type.anno.before.modifier")
+                # for modifying the checker command in each iteration
+                delombok = True
+
+
 
         # include processor path in the class path if it is present
         pp = ''
@@ -139,6 +141,11 @@ def run(args, javac_commands, jars):
                 iterationCheckerCmd = checker_command + [stubArg]
             else:
                 iterationCheckerCmd = checker_command
+
+            # suppress all type.anno.before.modifier warnings, because delombok
+            # prints annotations in the wrong place
+            if delombok:
+                iterationCheckerCmd.append("-AsuppressWarnings=type.anno.before.modifier")
 
             pprint.pformat(jc)
 
