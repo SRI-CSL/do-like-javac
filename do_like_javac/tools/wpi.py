@@ -40,6 +40,9 @@ def run(args, javac_commands, jars):
 
     for jc in javac_commands:
 
+        # something searchable to delineate different javac commands
+        common.run_cmd(["echo", "\"-----------------------------------------------------------\""], args, "wpi")
+
         wpiDir = os.path.join(os.getcwd(), 'build/whole-program-inference')
         # if there is already a WPI directory, delete it and start over
         if os.path.isdir(wpiDir):
@@ -63,8 +66,10 @@ def run(args, javac_commands, jars):
             # This should catch only the Lombok jar, because it's based
             # on Lombok's Maven coordinates. First is the Maven repo file structure;
             # second is the gradle cache's file structure.
-            if "/org/projectlombok/lombok/" in jar or "/org.projectlombok/lombok/":
+            lombok_dirs = ["/org/projectlombok/lombok/", "/org.projectlombok/lombok/"]
+            if any([x in jar for x in lombok_dirs]):
                 lombokjar = jar
+                break
 
         # must wait until here to supply the classpath without lombok
         if lombokjar != "":
