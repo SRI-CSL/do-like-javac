@@ -29,15 +29,6 @@ def run(args, javac_commands, jars):
 
     checker_command += check.getArgumentsByVersion(args.jdkVersion)
 
-    if args.cleanCmd is None:
-        print "to run whole-program inference, you must provide a clean command using the --cleanCmd argument"
-        sys.exit(1)
-    else:
-        cleanCmd = shlex.split(args.cleanCmd)
-
-    # before invoking the CF for the first time, clean the project
-    # common.run_cmd(cleanCmd, args, 'wpi')
-
     for jc in javac_commands:
 
         # something searchable to delineate different javac commands

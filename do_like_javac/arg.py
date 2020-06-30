@@ -70,10 +70,6 @@ base_group.add_argument('--quals', metavar='<quals>',
                         action='store',
                         help='Path to custom annotations to put on the classpath when using the Checker Framework.')
 
-base_group.add_argument('--cleanCmd', metavar='<cleanCmd>',
-                        action='store',
-                        help='Command to run to clean between rounds of Checker Framework whole-program inference.')
-
 def split_args_to_parse():
     split_index = len(sys.argv)
     if CMD_MARKER in sys.argv:
