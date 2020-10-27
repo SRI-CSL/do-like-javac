@@ -111,6 +111,22 @@ You will also need Daikon built and installed somewhere, with the environment va
 
     dljc --lib path/to/libs/ -t dyntrace -- mvn compile
 
+Checker Framework whole-program inference
+---------
+
+The Checker Framework's whole-program inference tool will iteratively type-check your
+program using the specified Checker Framework checker until the set of annotations reaches
+a fix-point (note that this process may not terminate). You will need the Checker Framework's
+`checker.jar` file. An example of invoking this tool might look like this:
+
+    dljc --lib path/to/checker.jar -t wpi --checker org.checkerframework.checker.nullness.NullnessChecker -- ./gradlew compileJava
+
+The `--checker` option is required. Its argument is the fully-qualified name of the checker you want to run.
+
+This tool also supports some other tool-specific optional arguments:
+* `--stubs /path/to/stubs` tells the checker to run with the specified stub files.
+* `--jdkVersion 8/11` tells the Checker Framework to run using JDK8 or JDK11
+* `--quals /path/to/qual.jar` tells the Checker Framework where to find qualifiers (annotations) to put on the classpath
 
 LICENSE
 =======
