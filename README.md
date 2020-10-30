@@ -121,7 +121,7 @@ a fix-point (note that this process may not terminate). You will need the Checke
 
     dljc --lib path/to/checker.jar -t wpi --checker org.checkerframework.checker.nullness.NullnessChecker -- ./gradlew compileJava
 
-The `--checker` option is required. Its argument is the fully-qualified name of the checker you want to run.
+The `--checker` option is required. Its argument is the name of the checker you want to run.
 
 This tool also supports some other tool-specific optional arguments:
 * `--stubs /path/to/stubs` tells the checker to run with the specified stub files.
