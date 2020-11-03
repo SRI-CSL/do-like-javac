@@ -101,7 +101,7 @@ def run(args, javac_commands, jars):
 
         other_args = []
         for k, v in javac_switches.items():
-            if k not in banned_options and not k.startswith("Xep:"):
+            if k not in banned_options and not k.startswith("Xep:") and not k.startswith("XepExcludedPaths:"):
                 if k == "source" or k == "target":
                     # if the source/target is < 8, change it to 8
                     if v in ["1.5", "5", "1.6", "6", "1.7", "7"]:
