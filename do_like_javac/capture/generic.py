@@ -89,8 +89,7 @@ class GenericCapture(object):
 
             if is_switch(a):
                 possible_switch_arg = False
-
-            if a.endswith('.java'):
+            elif a.endswith('.java'):
                 files.append(a)
                 possible_switch_arg = False
 
