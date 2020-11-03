@@ -15,8 +15,11 @@ import check
 
 argparser = None
 
-banned_options = ["nowarn", "classpath", "processorpath", "processor", "Xmaxerrs", "Xmaxwarns", "proc:none", "release", "XepDisableAllChecks"]
-banned_options_prefixes = ["Xep:", "XepExcludedPaths:"]
+banned_options = ("classpath", "release",
+                  "nowarn", "Xmaxerrs", "Xmaxwarns", "Werror",
+                  "processorpath", "processor", "proc:none",
+                  "XepDisableAllChecks", "Xplugin:ErrorProne")
+banned_options_prefixes = ("Xep:", "XepExcludedPaths:")
 
 def run(args, javac_commands, jars):
     # checker-framework javac.
