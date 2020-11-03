@@ -74,7 +74,7 @@ def run_cmd(cmd, args=None, tool=None):
     stats['timed_out'] = True
     proc.kill()
 
-  output("Running {}\n\n".format(friendly_cmd))
+  output("\nRunning {}\n\n".format(friendly_cmd))
 
   try:
     start_time = timeit.default_timer()
