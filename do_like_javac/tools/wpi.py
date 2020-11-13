@@ -157,8 +157,8 @@ def run(args, javac_commands, jars):
                 stubs = os.listdir(wpiDir)
             except OSError as e:
                 raise Exception("No WPI outputs were discovered. It is likely that WPI failed; "
-                                "please check the dljc-out directory of the target ("
-                                + str(os.getcwd()) + "). Original exception: " + str(e))
+                                "please check " + os.path.join(os.getcwd(), 'dljc-out')
+                                + " . Original exception: " + str(e))
 
             for stub in stubs:
                 shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
