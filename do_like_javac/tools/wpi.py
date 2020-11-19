@@ -150,7 +150,9 @@ def run(args, javac_commands, jars):
 
             # process outputs
             # move the old wpi files, add them to stub path
+            print str(resultsDir)
             previousIterationDir = os.mkdir(os.path.join(resultsDir, "iteration" + str(iteration)))
+            print str(previousIterationDir)
             iteration += 1
             try:
                 stubs = os.listdir(wpiDir)
