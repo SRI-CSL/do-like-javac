@@ -46,6 +46,7 @@ def run(args, javac_commands, jars):
         iteration = 0
         diffResult = 1
         stubDirs = []
+        resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-")
 
         javac_switches = jc['javac_switches']
         cp = javac_switches['classpath']
@@ -147,12 +148,10 @@ def run(args, javac_commands, jars):
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
             stats = common.run_cmd(cmd, args, 'wpi')
 
-            if stats['return_code'] == 0:
-                return
-
             # process outputs
             # move the old wpi files, add them to stub path
-            previousIterationDir = tempfile.mkdtemp(suffix="iteration" + str(iteration))
+            previousIterationDir = os.mkdir(os.path.join(resultsDir, "iteration" + str(iteration)))
+            iteration += 1
             try:
                 stubs = os.listdir(wpiDir)
             except OSError as e:
@@ -162,6 +161,9 @@ def run(args, javac_commands, jars):
 
             for stub in stubs:
                 shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
+
+            if stats['return_code'] == 0:
+                return
 
             stubDirs.append(previousIterationDir)
 
