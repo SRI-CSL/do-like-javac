@@ -48,7 +48,7 @@ def run(args, javac_commands, jars):
         stubDirs = []
         resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-")
 
-        pprint.pprint("Directory for generated stub files: " + str(resultsDir))
+        print "Directory for generated stub files: " + str(resultsDir)
 
         javac_switches = jc['javac_switches']
         cp = javac_switches['classpath']
