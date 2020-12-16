@@ -74,6 +74,7 @@ def run_cmd(cmd, args=None, tool=None):
     stats['timed_out'] = True
     proc.kill()
 
+  # output("\nPath: " + os.environ['PATH'] + "\n")
   output("\nRunning {}\n\n".format(friendly_cmd))
 
   try:
