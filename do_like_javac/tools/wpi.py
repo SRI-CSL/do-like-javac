@@ -1,5 +1,3 @@
-import shlex
-import sys
 from filecmp import dircmp
 
 import common
@@ -8,7 +6,6 @@ import pprint
 import shutil
 import tempfile
 from distutils import dir_util
-import subprocess32 as subprocess
 
 # re-use existing CF build logic
 import check

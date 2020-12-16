@@ -1,5 +1,5 @@
 import sys, os, traceback
-import subprocess32 as subprocess
+import subprocess
 import timeit
 from threading import Timer
 
