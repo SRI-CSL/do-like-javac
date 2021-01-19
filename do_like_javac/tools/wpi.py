@@ -21,7 +21,7 @@ banned_options_prefixes = ("Xep:", "XepExcludedPaths:")
 def run(args, javac_commands, jars):
     # checker-framework javac.
     javacheck = os.environ['CHECKERFRAMEWORK']+"/checker/bin/javac"
-    checker_command = [javacheck, "-Ainfer=stubs", "-AmergeStubsWithSource", "-Xmaxerrs", "10000", "-Xmaxwarns", "10000"]
+    checker_command = [javacheck, "-AmergeStubsWithSource", "-Xmaxerrs", "10000", "-Xmaxwarns", "10000"]
     if args.checker is not None:
         processorArg = ["-processor", args.checker]
     else:
@@ -156,7 +156,7 @@ def run(args, javac_commands, jars):
             pprint.pformat(jc)
 
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
-            stats = common.run_cmd(cmd, args, 'wpi')
+            stats = common.run_cmd(cmd + ["-Ainfer=stubs", "-Awarns"], args, 'wpi')
 
             # process outputs
             # move the old wpi files, add them to stub path
@@ -173,11 +173,11 @@ def run(args, javac_commands, jars):
             for stub in stubs:
                 shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
 
-            if stats['return_code'] == 0:
-                return
-
             stubDirs.append(previousIterationDir)
 
             if len(stubDirs) > 1:
                 dcmp = dircmp(stubDirs[-1], stubDirs[-2])
                 diffResult = len(dcmp.diff_files)
+
+        # Run one final time without "-Awarns", for the final user output.
+        common.run_cmd(cmd, args, 'wpi')
