@@ -70,6 +70,10 @@ base_group.add_argument('--quals', metavar='<quals>',
                         action='store',
                         help='Path to custom annotations to put on the classpath when using the Checker Framework.')
 
+base_group.add_argument('--extraToolArgs', metavar='<extraToolArgs>',
+                        action='store',
+                        help='List of extra arguments to pass to a tool.')
+
 def split_args_to_parse():
     split_index = len(sys.argv)
     if CMD_MARKER in sys.argv:
