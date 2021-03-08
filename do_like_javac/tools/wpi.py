@@ -35,8 +35,8 @@ def run(args, javac_commands, jars):
 
     checker_command += check.getArgumentsByVersion(jdkVersion)
 
-    if args.extraToolArgs is not None:
-        checker_command += args.extraToolArgs.split()
+    if args.extraJavacArgs is not None:
+        checker_command += args.extraJavacArgs.split()
 
     for jc in javac_commands:
 

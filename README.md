@@ -126,8 +126,15 @@ The `--checker` option is required. Its argument is the name(s) of the checker y
 
 This tool also supports some other tool-specific optional arguments:
 * `--stubs /path/to/stubs` tells the checker to run with the specified stub files.
-* `--jdkVersion 8/11` tells the Checker Framework to run using JDK8 or JDK11
-* `--quals /path/to/qual.jar` tells the Checker Framework where to find qualifiers (annotations) to put on the classpath
+* `--jdkVersion 8/11` tells the Checker Framework to run using JDK8 or JDK11.
+* `--quals /path/to/qual.jar` tells the Checker Framework where to find qualifiers (annotations) to put on the classpath.
+* `--extraJavacArgs='-AcustomArg1 -AcustomArg2'` passes the given arguments to invocations of `javac` which will run
+  a Checker Framework checker as an annotation processor (i.e., the arguments are NOT passed to the `javac` used while
+  building the target project without running the analysis). This option is intended for Checker Framework options,
+  such as `-AassumeSideEffectFree` or
+  [others documented in the Checker Framework manual](https://checkerframework.org/manual/#checker-options), but you
+  can also use it to pass standard `javac` options (e.g. [those documented by Oracle](
+  https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javac.html)).
 
 LICENSE
 =======
