@@ -72,7 +72,7 @@ base_group.add_argument('--quals', metavar='<quals>',
 
 base_group.add_argument('--extraJavacArgs', metavar='<extraJavacArgs>',
                         action='store',
-                        help='List of extra arguments to pass to javac when running a Checker Framework checker. Use this for'
+                        help='List of extra arguments to pass to javac when running a Checker Framework checker. Use this for '
                              'arguments that are only needed when running a checker, such as -AassumeSideEffectFree.')
 
 def split_args_to_parse():
