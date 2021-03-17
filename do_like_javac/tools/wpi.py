@@ -1,6 +1,6 @@
 from filecmp import dircmp
 
-import common
+from . import common
 import os
 import pprint
 import shutil
@@ -8,7 +8,7 @@ import tempfile
 from distutils import dir_util
 
 # re-use existing CF build logic
-import check
+from . import check
 
 argparser = None
 
@@ -53,11 +53,11 @@ def run(args, javac_commands, jars):
         stubDirs = []
         resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-")
 
-        print "Directory for generated stub files: " + str(resultsDir)
+        print("Directory for generated stub files: " + str(resultsDir))
 
         javac_switches = jc['javac_switches']
         cp = javac_switches['classpath']
-        if javac_switches.has_key('processor') and len(processorArg) == 2:
+        if 'processor' in javac_switches and len(processorArg) == 2:
             processorArg[1] += "," + javac_switches['processor']
 
         java_files = jc['java_files']
@@ -104,7 +104,7 @@ def run(args, javac_commands, jars):
 
         # include processor path in the class path if it is present
         pp = ''
-        if javac_switches.has_key('processorpath'):
+        if 'processorpath' in javac_switches:
             pp = javac_switches['processorpath'] + ':'
         if args.quals:
             cp += args.quals + ':'
@@ -112,7 +112,7 @@ def run(args, javac_commands, jars):
             cp += pp + args.lib_dir + ':'
 
         other_args = []
-        for k, v in javac_switches.items():
+        for k, v in list(javac_switches.items()):
             if k not in banned_options and not k.startswith(banned_options_prefixes):
                 if k == "source" or k == "target" or k == "-release":
                     # If the source/target is < 8, change it to 8.

@@ -1,8 +1,8 @@
 import pprint
-import arg
-import log
-import tools
-import cache
+from . import arg
+from . import log
+from . import tools
+from . import cache
 import os,json,sys
 
 def output_json(filename, obj):
@@ -20,7 +20,7 @@ def main():
     result = cache.retrieve(cmd, args, capturer)
 
     if not result:
-        print "DLJC: Build command failed."
+        print("DLJC: Build command failed.")
         sys.exit(1)
 
     javac_commands, jars, stats = result

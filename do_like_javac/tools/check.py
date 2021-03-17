@@ -1,4 +1,4 @@
-import common
+from . import common
 import os
 import pprint
 
@@ -23,7 +23,7 @@ def run(args, javac_commands, jars):
             cp += args.quals + ':'
         paths = ['-classpath', cp]
         pp = ''
-        if javac_switches.has_key('processorpath'):
+        if 'processorpath' in javac_switches:
             pp = javac_switches['processorpath'] + ':'
         if args.lib_dir:
             cp += pp + args.lib_dir + ':'

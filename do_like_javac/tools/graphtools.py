@@ -1,6 +1,6 @@
 import os
 import argparse
-import common
+from . import common
 
 argparser = argparse.ArgumentParser(add_help=False)
 graph_group = argparser.add_argument_group('graphtool arguments')
@@ -11,7 +11,7 @@ graph_group.add_argument('--graph-jar', metavar='<graphtool-jar>',
 
 def run(args, javac_commands, jars):
   if not args.graph_jar:
-    print "Could not run graph tool: missing arg --graph-jar"
+    print("Could not run graph tool: missing arg --graph-jar")
     return
 
   tool_command = ["java", "-jar", args.graph_jar]

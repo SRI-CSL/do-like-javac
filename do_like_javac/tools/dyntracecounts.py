@@ -1,5 +1,5 @@
 import os
-import dyntrace
+from . import dyntrace
 
 argparser = None
 
