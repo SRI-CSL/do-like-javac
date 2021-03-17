@@ -121,8 +121,14 @@ a fix-point (note that this process may not terminate). You will need the Checke
 
     dljc --lib path/to/checker.jar -t wpi --checker org.checkerframework.checker.nullness.NullnessChecker -- ./gradlew compileJava
 
-The `--checker` option is required. Its argument is the name(s) of the checker you want to run, separated by commas
-(identically to the standard syntax used by the -processor argument to javac).
+The `--checker` option is usually required. Its argument is the name(s) of the checker you want to run, separated by commas
+(identically to the standard syntax used by the -processor argument to javac). If no `--checker` argument is supplied,
+then the classpath will be searched for annotation processors using javac's standard annotation processor discovery
+mechanism; from the javac documentation:
+> The search path can be specified with the -processorpath option. If no path is specified, then the user
+> class path is used. Processors are located by means of service provider-configuration files named
+> `META-INF/services/javax.annotation.processing.Processor` on the search path. Such files should
+> contain the names of any annotation processors to be used, listed one per line.
 
 This tool also supports some other tool-specific optional arguments:
 * `--stubs /path/to/stubs` tells the checker to run with the specified stub files.
