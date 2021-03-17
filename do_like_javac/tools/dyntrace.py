@@ -1,7 +1,7 @@
 import os
 import json
-from . import jsoninv
-from . import common
+import jsoninv
+import common
 import tempfile
 import argparse
 

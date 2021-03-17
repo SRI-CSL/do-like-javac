@@ -1,3 +1,3 @@
-from . import command
+import command
 
 run = command.main
