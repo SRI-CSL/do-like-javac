@@ -1,7 +1,7 @@
 import os
 import re
 import xml.etree.ElementTree as ET
-import common
+from . import common
 
 def generate_json_invariants(args, out_dir):
   filename = os.path.join(out_dir, 'invariants.xml')
@@ -20,7 +20,7 @@ def generate_json_invariants(args, out_dir):
   for ppt in invariants:
     add_ppt(methods, ppt)
 
-  js = {"invariants": methods.values()}
+  js = {"invariants": list(methods.values())}
 
   return js
   
