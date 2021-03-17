@@ -1,0 +1,11 @@
+name: run-wpi-many-tests
+on: [push, pull_request]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: exec-wpi-many-tests
+        run: ./run-cf-tests.sh
+        shell: bash
