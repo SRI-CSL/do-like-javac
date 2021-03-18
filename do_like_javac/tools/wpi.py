@@ -12,11 +12,14 @@ import check
 
 argparser = None
 
-banned_options = ("classpath",
+# all options passed to javac by the build system are copied to the invocations
+# of javac that run the Checker Framework, except those that either exactly match
+# an element of ignored_options or start with an element of ignored_options_prefixes
+ignored_options = ("classpath",
                   "nowarn", "Xmaxerrs", "Xmaxwarns", "Werror",
                   "processorpath", "processor", "proc:none",
                   "XepDisableAllChecks", "Xplugin:ErrorProne")
-banned_options_prefixes = ("Xep:", "XepExcludedPaths:")
+ignored_options_prefixes = ("Xep:", "XepExcludedPaths:")
 
 def run(args, javac_commands, jars):
     # checker-framework javac.
@@ -113,7 +116,7 @@ def run(args, javac_commands, jars):
 
         other_args = []
         for k, v in javac_switches.items():
-            if k not in banned_options and not k.startswith(banned_options_prefixes):
+            if k not in ignored_options and not k.startswith(ignored_options_prefixes):
                 if k == "source" or k == "target" or k == "-release":
                     # If the source/target is < 8, change it to 8.
                     # The CF is generally incompatible with java versions below 8, so
