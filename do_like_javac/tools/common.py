@@ -56,7 +56,8 @@ def run_cmd(cmd, args=None, tool=None):
   timer = None
   out = None
   out_file = None
-  friendly_cmd = ' '.join(cmd)
+  # Without quoting, empty arguments don't appear in friendly_cmd
+  friendly_cmd = ' '.join("'" + elt + "'" for elt in cmd)
 
   if args and args.verbose and args.log_to_stderr:
     out = sys.stderr
