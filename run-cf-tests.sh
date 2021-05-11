@@ -17,7 +17,7 @@ else
   mkdir -p /tmp/"$USER" && git -C /tmp/"$USER" clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git
 fi
 
-### Clone the CF. If there is a branch with the same name as this branch, git-clone-related will check out that branch.
+### clone the CF. If there is a branch with the same name as this branch, git-clone-related will check out that branch.
 rm -rf /tmp/"$USER"/checker-framework
 /tmp/"$USER"/plume-scripts/git-clone-related typetools checker-framework /tmp/"$USER"/checker-framework
 export CHECKERFRAMEWORK=/tmp/"$USER"/checker-framework
