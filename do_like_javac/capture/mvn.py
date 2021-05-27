@@ -7,7 +7,7 @@
 # in the same directory.
 
 import re
-import generic
+from . import generic
 
 supported_commands = ['mvn']
 
@@ -55,4 +55,4 @@ class MavenCapture(generic.GenericCapture):
                 if found:
                     files_to_compile.append(found.group(1))
 
-        return map(self.javac_parse, javac_commands)
+        return list(map(self.javac_parse, javac_commands))

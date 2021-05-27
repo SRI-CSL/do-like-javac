@@ -24,7 +24,7 @@ project, selecting "Export" and choosing the "Ant Buildfiles" option.
 Dependencies
 ============
 
-* Python 2.7
+* Python 3
 
 That's it. No other external dependencies for the core `do-like-javac` scripts.
 

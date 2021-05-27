@@ -87,13 +87,12 @@ def run_cmd(cmd, args=None, tool=None):
       timer.start()
 
     for line in iter(process.stdout.readline, b''):
-      stats['output'] = stats['output'] + line
-      output(line)
+      stats['output'] = stats['output'] + line.decode()
+      output(line.decode())
 
     process.stdout.close()
-    process.wait()
+    stats['return_code'] = process.wait()
     stats['time'] = timeit.default_timer() - start_time
-    stats['return_code'] = process.returncode
     if timer:
       timer.cancel()
 

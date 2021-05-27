@@ -1,16 +1,16 @@
-import jprint
-import randoop
-import randoop_old
-import bixie
-import graphtools
-import chicory
-import dyntrace
-import dyntracecounts
+from . import jprint
+from . import randoop
+from . import randoop_old
+from . import bixie
+from . import graphtools
+from . import chicory
+from . import dyntrace
+from . import dyntracecounts
 
 # import soot
-import check
-import infer
-import wpi
+from . import check
+from . import infer
+from . import wpi
 
 TOOLS = {
   # 'soot'      : soot,
@@ -28,13 +28,13 @@ TOOLS = {
 }
 
 def parsers():
-  return [mod.argparser for name, mod in TOOLS.iteritems() if mod.argparser]
+  return [mod.argparser for name, mod in TOOLS.items() if mod.argparser]
 
 def check_tool(tool):
   if tool in TOOLS:
     return tool
   else:
-    print "ERROR: Could not find tool {}".format(tool)
+    print("ERROR: Could not find tool {}".format(tool))
     return None
 
 def parse_tools(tools):
