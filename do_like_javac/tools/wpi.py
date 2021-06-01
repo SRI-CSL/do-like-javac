@@ -180,9 +180,9 @@ def run(args, javac_commands, jars):
             try:
                 stubs = os.listdir(wpiDir)
             except OSError as e:
-                raise Exception("No WPI outputs were discovered. It is likely that WPI failed; "
-                                "please check " + os.path.join(os.getcwd(), 'dljc-out')
-                                + " . Original exception: " + str(e))
+                print("No WPI outputs were discovered; it is likely that WPI failed or the Checker Framework crashed.")
+                print("Check the file " + os.path.join(os.getcwd(), 'dljc-out', 'wpi.log') + " for more information.")
+                raise e
 
             for stub in stubs:
                 shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
