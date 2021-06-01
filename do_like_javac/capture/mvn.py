@@ -6,10 +6,11 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
+import os
 import re
 from . import generic
 
-supported_commands = ['mvn']
+supported_commands = ['mvn', 'mvnw']
 
 def gen_instance(cmd, args):
     return MavenCapture(cmd, args)
@@ -17,7 +18,11 @@ def gen_instance(cmd, args):
 class MavenCapture(generic.GenericCapture):
     def __init__(self, cmd, args):
         super(MavenCapture, self).__init__(cmd, args)
-        self.build_cmd = ['mvn', '-X', '-B'] + cmd[1:]
+        self.build_cmd = [cmd[0], '-X', '-B'] + cmd[1:]
+
+        # Automatically promote to mvnw if available
+        if os.path.exists('mvnw'):
+          self.build_cmd[0] = './mvnw'
 
     def get_target_jars(self, verbose_output):
         jar_pattern = '[INFO] Building jar: '
