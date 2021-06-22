@@ -53,7 +53,7 @@ def run(args, javac_commands, jars):
         iteration = 0
         diffResult = 1
         stubDirs = []
-        resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-" + "%Y%m%d%H%M%S)".format(datetime.now()) + "-")
+        resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-" + datetime.now().strftime("%Y%m%d%H%M%S") + "-")
 
         print("Directory for generated stub files: " + str(resultsDir))
 
