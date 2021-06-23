@@ -51,7 +51,7 @@ def run(args, javac_commands, jars):
             shutil.rmtree(wpiDir)
 
         iteration = 0
-        diffResult = 1
+        diffResult = True
         stubDirs = []
         resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-" + datetime.now().strftime("%Y%m%d%H%M%S") + "-")
 
@@ -148,7 +148,7 @@ def run(args, javac_commands, jars):
             checker_command = [arg for arg in checker_command if not arg.startswith("--add-opens")]
             other_args = [arg for arg in other_args if not arg.startswith("--add-opens")]
 
-        while diffResult != 0:
+        while diffResult:
 
             iterationStubs = ':'.join(stubDirs)
             stubArg = None
@@ -192,7 +192,12 @@ def run(args, javac_commands, jars):
 
             if len(stubDirs) > 1:
                 dcmp = dircmp(stubDirs[-1], stubDirs[-2])
-                diffResult = len(dcmp.diff_files)
+                diffResult = has_differing_files(dcmp)
 
         # Run one final time without "-Awarns", for the final user output.
         common.run_cmd(cmd, args, 'wpi')
+
+
+def has_differing_files(dcmp):
+    return (dcmp.diff_files
+            or any(map(has_differing_files, dcmp.subdirs.values())))
