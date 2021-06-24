@@ -8,10 +8,16 @@ def run(args, javac_commands, jars):
     # checker-framework javac.
     javacheck = os.environ['CHECKERFRAMEWORK']+"/checker/bin/javac"
     if args.checker is not None:
-        checker_command = [javacheck, "-processor", args.checker, "-Astubs=" + str(args.stubs)]
+        checker_command = [
+            javacheck,
+            "-processor", args.checker,
+            "-Astubs=" + str(args.stubs),
+            "-Aajava=" + str(args.ajava)
+        ]
     else:
         # checker should run via auto-discovery
-        checker_command = [javacheck, "-Astubs=" + str(args.stubs)]
+        checker_command = [javacheck, "-Astubs=" + str(args.stubs),
+                           "-Aajava=" + str(args.ajava)]
 
     checker_command += getArgumentsByVersion(args.jdkVersion)
 

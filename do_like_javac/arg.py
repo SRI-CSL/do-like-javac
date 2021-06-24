@@ -58,6 +58,10 @@ base_group.add_argument('--stubs', metavar='<stubs>',
                         action=AbsolutePathAction,
                         help='Location of stub files to use for the Checker Framework')
 
+base_group.add_argument('--ajava', metavar='<ajava>',
+                        action=AbsolutePathAction,
+                        help='Location of ajava files to use for the Checker Framework')
+
 base_group.add_argument('-l', '--lib', metavar='<lib_dir>',
                         action='store',dest='lib_dir',
                         help='Library directory with JARs for tools that need them.')

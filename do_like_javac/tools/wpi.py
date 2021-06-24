@@ -1,3 +1,4 @@
+import datetime
 from filecmp import dircmp
 
 from datetime import datetime
@@ -52,10 +53,10 @@ def run(args, javac_commands, jars):
 
         iteration = 0
         diffResult = True
-        stubDirs = []
-        resultsDir = tempfile.mkdtemp(prefix="wpi-stubs-" + datetime.now().strftime("%Y%m%d%H%M%S") + "-")
+        ajavaDirs = []
+        resultsDir = tempfile.mkdtemp(prefix="wpi-ajava-" + datetime.now().strftime("%Y%m%d%H%M%S") + "-")
 
-        print("Directory for generated stub files: " + str(resultsDir))
+        print("Directory for generated annotation files: " + str(resultsDir))
 
         javac_switches = jc['javac_switches']
         cp = javac_switches['classpath']
@@ -149,19 +150,19 @@ def run(args, javac_commands, jars):
             other_args = [arg for arg in other_args if not arg.startswith("--add-opens")]
 
         while diffResult:
-
-            iterationStubs = ':'.join(stubDirs)
-            stubArg = None
-
+            iterationCheckerCmd = checker_command
+            # TODO: the switch to ajava files instead of stub files should make the separate stubs argument
+            # to dljc unnecessary, as there's no longer any need to combine stub lists.
+            # TODO: do we need to treat the -Aajava argument the same way? I.e., will this work if the user
+            # supplies their own -Aajava= argument as part of the extraJavacArgs argument?
             if args.stubs:
-                stubArg = "-Astubs=" + str(args.stubs) + ":" + iterationStubs
-            elif iterationStubs != "":
-                stubArg = "-Astubs=" + iterationStubs
-
-            if stubArg is not None:
-                iterationCheckerCmd = checker_command + [stubArg]
-            else:
-                iterationCheckerCmd = checker_command
+                iterationCheckerCmd.append("-Astubs=" + str(args.stubs))
+            iterationAjavaDirs = ajavaDirs.copy()
+            if args.ajava:
+                iterationAjavaDirs.append(str(args.ajava))
+            if iterationAjavaDirs:
+                iterationCheckerCmd.append(
+                    "-Aajava=" + ":".join(iterationAjavaDirs))
 
             # suppress all type.anno.before.modifier warnings, because delombok
             # prints annotations in the wrong place
@@ -171,27 +172,28 @@ def run(args, javac_commands, jars):
             pprint.pformat(jc)
 
             cmd = iterationCheckerCmd + ["-classpath", cp] + processorArg + other_args + java_files
-            stats = common.run_cmd(cmd + ["-Ainfer=stubs", "-Awarns"], args, 'wpi')
+            stats = common.run_cmd(cmd + ["-Ainfer=ajava", "-Awarns"], args, 'wpi')
 
             # process outputs
-            # move the old wpi files, add them to stub path
+            # move the old wpi files, add them to ajava path
             previousIterationDir = os.path.join(resultsDir, "iteration" + str(iteration))
             os.mkdir(previousIterationDir)
             iteration += 1
             try:
-                stubs = os.listdir(wpiDir)
+                ajavaFiles = os.listdir(wpiDir)
             except OSError as e:
                 print("No WPI outputs were discovered; it is likely that WPI failed or the Checker Framework crashed.")
                 print("Check the file " + os.path.join(os.getcwd(), 'dljc-out', 'wpi.log') + " for more information.")
                 raise e
 
-            for stub in stubs:
-                shutil.move(os.path.join(wpiDir, stub), previousIterationDir)
+            for ajavaFile in ajavaFiles:
+                shutil.move(os.path.join(wpiDir, ajavaFile),
+                            previousIterationDir)
 
-            stubDirs.append(previousIterationDir)
+            ajavaDirs.append(previousIterationDir)
 
-            if len(stubDirs) > 1:
-                dcmp = dircmp(stubDirs[-1], stubDirs[-2])
+            if len(ajavaDirs) > 1:
+                dcmp = dircmp(ajavaDirs[-1], ajavaDirs[-2])
                 diffResult = has_differing_files(dcmp)
 
         # Run one final time without "-Awarns", for the final user output.
