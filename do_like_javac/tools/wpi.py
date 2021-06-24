@@ -54,7 +54,7 @@ def run(args, javac_commands, jars):
         iteration = 0
         diffResult = True
         ajavaDirs = []
-        resultsDir = tempfile.mkdtemp(prefix="wpi-ajava-" + datetime.now().strftime("%Y%m%d%H%M%S") + "-")
+        resultsDir = tempfile.mkdtemp(prefix="wpi-ajava-" + datetime.now().strftime("%Y%m%d-%H%M%S") + "-")
 
         print("Directory for generated annotation files: " + str(resultsDir))
 
