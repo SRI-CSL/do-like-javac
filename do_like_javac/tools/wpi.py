@@ -26,7 +26,7 @@ ignored_options_prefixes = ("Xep:", "XepExcludedPaths:")
 def run(args, javac_commands, jars):
     # checker-framework javac.
     javacheck = os.environ['CHECKERFRAMEWORK']+"/checker/bin/javac"
-    checker_command = [javacheck, "-AmergeStubsWithSource", "-Xmaxerrs", "10000", "-Xmaxwarns", "10000"]
+    checker_command = [javacheck, "-Xmaxerrs", "10000", "-Xmaxwarns", "10000"]
     if args.checker is not None:
         processorArg = ["-processor", args.checker]
     else:
