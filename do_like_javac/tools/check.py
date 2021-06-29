@@ -48,15 +48,27 @@ def getArgumentsByVersion(jdkVersion, other_args=[]):
     result = []
     if version == 8:
         result += ['-J-Xbootclasspath/p:' + os.environ['CHECKERFRAMEWORK'] + '/checker/dist/javac.jar']
-    elif version == 11:
+    elif version == 11 or version == 16:
         release_8 = False
         for i, str in enumerate(other_args):
             if str == '--release' and other_args[i+1] == "8":
                 release_8 = True
         if not release_8:
             # Avoid javac "error: option --add-opens not allowed with target 1.8"
-            result += ['-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED']
+            if version == 11:
+                result += ['-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED']
+            elif version == 16:
+                result += ['-J--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+                           '-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED']
+            
     else:
-        raise ValueError("the Checker Framework only supports Java versions 8 and 11")
+        raise ValueError("the Checker Framework only supports Java versions 8, 11 and 16")
 
     return result
