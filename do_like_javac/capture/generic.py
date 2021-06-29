@@ -5,6 +5,8 @@ import do_like_javac.tools.common as cmdtools
 
 def is_switch(s):
     return s != None and s.startswith('-')
+def is_switch_first_part(s):
+    return s != None and s.startswith('-') and ("=" not in s)
 
 def get_entry_point(jar):
     class_pattern = "Main-Class:"
@@ -93,7 +95,7 @@ class GenericCapture(object):
                 files.append(a)
                 possible_switch_arg = False
 
-            if is_switch(prev_arg):
+            if is_switch_first_part(prev_arg):
                 if possible_switch_arg:
                     switches[prev_arg[1:]] = a
                 else:

@@ -137,10 +137,15 @@ def run(args, javac_commands, jars):
                     elif jdkVersion == 8 and k == "-release":
                         # don't try to use --release on a Java 8 JVM, which doesn't support it
                         v = False
-                if v is None or v is not False:
-                    other_args.append("-" + k)
-                if v is not None and v is not True:
-                    other_args.append(str(v))
+                # Combine --add-opens into a single arg with equals, so we
+                # can more easily remove key and value for release8, below:
+                if v is not None and v is not True and k.startswith("-add-opens"):
+                    other_args.append("-" + k + "=" + v)
+                else: 
+                    if v is None or v is not False:
+                        other_args.append("-" + k)
+                    if v is not None and v is not True:
+                        other_args.append(str(v))
 
         checker_command += check.getArgumentsByVersion(jdkVersion, other_args)
 
