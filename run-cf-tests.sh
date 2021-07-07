@@ -27,4 +27,4 @@ export DLJC=$(pwd)/dljc
 cd /tmp/"$USER"/checker-framework
 
 ### run the CF tests
-./gradlew wpiManyTests wpiPlumeLibTests
+./gradlew wpiManyTest wpiPlumeLibTest
