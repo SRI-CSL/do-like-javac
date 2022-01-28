@@ -12,7 +12,7 @@ def get_entry_point(jar):
     class_pattern = "Main-Class:"
 
     with zipfile.ZipFile(jar, 'r') as zip:
-        metadata = str.splitlines(zip.read("META-INF/MANIFEST.MF"))
+        metadata = str.splitlines(zip.read("META-INF/MANIFEST.MF").decode("utf-8"))
         for line in metadata:
             if class_pattern in line:
                 content = line[len(class_pattern):].strip()
