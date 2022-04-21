@@ -4,7 +4,7 @@ import timeit
 from threading import Timer
 
 def log(args, tool, message):
-  with open(os.path.join(args.output_directory, f'{tool}.log'), 'a') as f:
+  with open(os.path.join(args.output_directory, f"{tool}-stdout.log"), 'a') as f:
     f.write(message)
     f.flush()
 
@@ -88,7 +88,7 @@ def run_cmd(cmd, args=None, tool=None):
     stats['return_code'] = process.returncode
 
   except subprocess.TimeoutExpired as e:
-    output("Timed out after {} seconds on {}\n".format(args.timeout, friendly_cmd))
+    output(f"Timed out after {args.timeout} seconds on {friendly_cmd}\n")
     stats['timed_out'] = True
   except Exception as e:
     print(e)
