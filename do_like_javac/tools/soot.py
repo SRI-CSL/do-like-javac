@@ -1,17 +1,16 @@
 # DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
 
-import argparse
 import pprint
+import argparse
 
-import common
+from . import common
 
 argparser = argparse.ArgumentParser(add_help=False)
 soot_group = argparser.add_argument_group('soot arguments')
 
 soot_group.add_argument('-j', '--soot-jar', metavar='<soot-jar>',
-                        action='store', default=None, dest='soot_jar',
-                        help='Set the path to the soot jar.')
-
+                         action='store', default=None, dest='soot_jar',
+                         help='Set the path to the soot jar.')
 
 def run(args, javac_commands, jars):
     soot_command = ["java", "-jar", args.soot_jar]
@@ -28,3 +27,5 @@ def run(args, javac_commands, jars):
 
         cmd = soot_command + ["-cp", cp, "-process-dir", class_dir]
         common.run_cmd(cmd, args, 'soot')
+
+

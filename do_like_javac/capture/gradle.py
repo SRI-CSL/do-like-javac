@@ -6,16 +6,13 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
+from . import generic
 import os
-
-import generic
 
 supported_commands = ['gradle', 'gradlew']
 
-
 def gen_instance(cmd, args):
     return GradleCapture(cmd, args)
-
 
 class GradleCapture(generic.GenericCapture):
     def __init__(self, cmd, args):
@@ -24,7 +21,7 @@ class GradleCapture(generic.GenericCapture):
 
         # Automatically promote to gradlew if available
         if os.path.exists('gradlew'):
-            self.build_cmd[0] = './gradlew'
+          self.build_cmd[0] = './gradlew'
 
     def get_javac_commands(self, verbose_output):
         argument_start_pattern = ' Compiler arguments: '
@@ -35,4 +32,4 @@ class GradleCapture(generic.GenericCapture):
                 content = line.partition(argument_start_pattern)[2].strip()
                 results.append(content.split(' '))
 
-        return map(self.javac_parse, results)
+        return list(map(self.javac_parse, results))

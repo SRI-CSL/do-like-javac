@@ -24,18 +24,12 @@ project, selecting "Export" and choosing the "Ant Buildfiles" option.
 Dependencies
 ============
 
-* Python 2.7
-
-That's it. No other external dependencies for the core `do-like-javac` scripts.
-
-Of course, you will also need to have installed:
-
+* Python 3
 * The analysis tool(s) you want to run.
 * Any build dependencies of the project you're analyzing.
 
-`do-like-javac` was built and tested on Mac OS X and GNU/Linux. It probably also
-works on Microsoft Windows, but the method of invocation is probably different and
-we provide no support.
+`do-like-javac` was built and tested on Mac OS X and GNU/Linux. It may also
+work on Microsoft Windows, but we provide no support.
 
 Installation
 ============
@@ -69,15 +63,21 @@ If you're running checking tools, there are a couple more flags that may be
 helpful. `--quiet` suppresses output from tools, and `--timeout <seconds>`
 kills any tool subcommand that runs longer than `<seconds>`.
 
+Extending
+===========
+
+Instructions for adding support for new tools or build systems to DLJC can be
+found in [Extending.md](./Extending.md).
+
 Caching
 =======
 
 `do-like-javac` can only extract data from a full compile of a project. That means
 if you want to re-run it with new arguments or different analysis tools, you will
-have to clean and fully re-compile your project. To save time and shortcut this
+have to clean and fully re-compile the project. To save time and shortcut this
 process, we save a cache of the results in the output directory. If you want `dljc`
 to use this cache, simply add the `--cache` flag and the cache (if available) will
-be used instead of recompiling your project.
+be used instead of recompiling the project.
 
 **IMPORTANT NOTE**: We don't do any sort of cache invalidation or freshness checking.
 If you add new files to your project and want `dljc` to pick up on them, you will have
@@ -101,7 +101,7 @@ The Bixie tool will run your project through [Bixie](http://sri-csl.github.io/bi
 Dyntrace
 ---------
 
-The Dyntrace tool will run your project through Randoop to generate tests, then run those tests with Daikon/Chicory to generate invariants. You will need to provide a library directory with the following jars using the `--lib` option:
+The Dyntrace tool will run your project through Randoop to generate tests, then run those tests with Daikon/Chicory to generate likely invariants. You will need to provide a library directory with the following jars using the `--lib` option:
 
 * randoop.jar
 * junit-4.12.jar

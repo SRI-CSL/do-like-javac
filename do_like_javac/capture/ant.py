@@ -6,14 +6,12 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
-import generic
+from . import generic
 
 supported_commands = ['ant']
 
-
 def gen_instance(cmd, args):
     return AntCapture(cmd, args)
-
 
 class AntCapture(generic.GenericCapture):
 
@@ -68,4 +66,4 @@ class AntCapture(generic.GenericCapture):
                         javac_arguments.append(arg)
         if javac_arguments != []:
             javac_commands.append(javac_arguments)
-        return map(self.javac_parse, javac_commands)
+        return list(map(self.javac_parse, javac_commands))
