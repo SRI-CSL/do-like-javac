@@ -1,7 +1,6 @@
 import sys, os, traceback
 import subprocess
 import timeit
-from threading import Timer
 
 def log(args, tool, message):
   with open(os.path.join(args.output_directory, f"{tool}-stdout.log"), 'a') as f:
