@@ -63,7 +63,7 @@ def run_cmd(cmd, args=None, tool=None):
   if args and args.verbose and args.log_to_stderr:
     out = sys.stderr
   elif tool:
-    out_file = os.path.join(args.output_directory, f"{tool}.log")
+    out_file = os.path.join(args.output_directory, f"{tool}-stdout.log")
     out = open(out_file, 'a')
 
   def output(line):
