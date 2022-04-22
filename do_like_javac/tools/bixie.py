@@ -1,6 +1,7 @@
-import os
-import common
 import copy
+import os
+
+from . import common
 
 argparser = None
 

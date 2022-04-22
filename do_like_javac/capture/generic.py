@@ -1,16 +1,26 @@
 import os
-import zipfile
 import timeit
+import zipfile
+
 import do_like_javac.tools.common as cmdtools
+
 
 def is_switch(s):
     return s != None and s.startswith('-')
+
+## brought this from github.com/kelloggm/do-like-javac
+def is_switch_first_part(s):
+    return s != None and s.startswith('-') and ("=" not in s)
 
 def get_entry_point(jar):
     class_pattern = "Main-Class:"
 
     with zipfile.ZipFile(jar, 'r') as zip:
-        metadata = str.splitlines(zip.read("META-INF/MANIFEST.MF"))
+        metadata = []
+        try:
+            metadata = str.splitlines(zip.read("META-INF/MANIFEST.MF").decode("utf-8"))
+        except TypeError as e:
+            print(f"ERROR: unable to read META-INF/MANIFEST.MF. See: {e}")
         for line in metadata:
             if class_pattern in line:
                 content = line[len(class_pattern):].strip()
@@ -59,10 +69,12 @@ class GenericCapture(object):
         stats = {}
 
         start_time = timeit.default_timer()
-        result = cmdtools.run_cmd(self.build_cmd)
-        stats['build_time'] = result['time']
+        result = cmdtools.run_cmd(self.build_cmd, self.args)
+        # stats['build_time'] = result['time']
+        stats['build_time'] = timeit.default_timer() - start_time
 
-        with open(os.path.join(self.args.output_directory, 'build_output.txt'), 'w') as f:
+        build_out_file = os.path.join(self.args.output_directory, 'build_output.txt')
+        with open(build_out_file, 'w') as f:
             f.write(result['output'])
 
         if result['return_code'] != 0:
@@ -72,7 +84,7 @@ class GenericCapture(object):
 
         javac_commands = self.get_javac_commands(build_lines)
         target_jars = self.get_target_jars(build_lines)
-        jars_with_entry_points = map(get_entry_point, target_jars)
+        jars_with_entry_points = list(map(get_entry_point, target_jars))
 
         self.record_stats(stats, javac_commands, jars_with_entry_points)
 
@@ -94,7 +106,7 @@ class GenericCapture(object):
                 files.append(a)
                 possible_switch_arg = False
 
-            if is_switch(prev_arg):
+            if is_switch_first_part(prev_arg):
                 if possible_switch_arg:
                     switches[prev_arg[1:]] = a
                 else:

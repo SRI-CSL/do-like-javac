@@ -1,9 +1,10 @@
+import json
+import os
 import pprint
-import arg
-import log
-import tools
-import cache
-import os,json,sys
+import sys
+
+from . import arg, cache, log, tools
+
 
 def output_json(filename, obj):
     with open(filename, 'w') as f:
@@ -20,10 +21,12 @@ def main():
     result = cache.retrieve(cmd, args, capturer)
 
     if not result:
-        print "DLJC: Build command failed."
+        print("DLJC: Build command failed.")
         sys.exit(1)
 
     javac_commands, jars, stats = result
+    if not javac_commands or len(javac_commands) == 0:
+        raise ValueError(f"no javac commands found by capturer:\n\tcmd = {cmd}\n\targs = {args}")
 
     log.info('Results: %s', pprint.pformat(javac_commands))
     output_json(os.path.join(args.output_directory, 'javac.json'), javac_commands)

@@ -6,11 +6,10 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
-import os
-import sys
-import platform
-import shutil
 import logging
+import os
+import platform
+import sys
 
 FORMAT = '[%(levelname)s] %(message)s'
 LOG_FILE = 'toplevel.log'

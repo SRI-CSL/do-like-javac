@@ -1,6 +1,6 @@
 import os
 import argparse
-import common
+from . import common
 
 argparser = argparse.ArgumentParser(add_help=False)
 infer_group = argparser.add_argument_group('inference tool arguments')
@@ -26,7 +26,7 @@ def run(args, javac_commands, jars):
     CFI_dist = os.path.join(os.environ['JSR308'], 'checker-framework-inference', 'dist')
     CFI_command = ['java']
 
-    print os.environ
+    print(os.environ)
 
     for jc in javac_commands:
         target_cp = jc['javac_switches']['classpath'] + \
@@ -53,5 +53,7 @@ def run(args, javac_commands, jars):
                              '--logLevel=WARNING',
                              '-afud', args.afuOutputDir]
         cmd.extend(jc['java_files'])
+        
+        print(f"Running command", " ".join(cmd))
 
         common.run_cmd(cmd, args, 'infer')

@@ -1,8 +1,7 @@
-# DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
-
-import os
-import pprint
 import argparse
+import pprint
+
+from . import common
 
 argparser = argparse.ArgumentParser(add_help=False)
 soot_group = argparser.add_argument_group('soot arguments')

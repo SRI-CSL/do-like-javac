@@ -10,8 +10,7 @@ import argparse
 import os
 import sys
 
-import tools
-import capture
+from . import capture, tools
 
 DEFAULT_OUTPUT_DIRECTORY = os.path.join(os.getcwd(), 'dljc-out')
 
@@ -30,8 +29,10 @@ base_group.add_argument('-o', '--out', metavar='<directory>',
                         default=DEFAULT_OUTPUT_DIRECTORY, dest='output_directory',
                         action=AbsolutePathAction,
                         help='The directory to log results.')
+
 base_group.add_argument('--log_to_stderr', action='store_true',
                         help='''Redirect log messages to stderr instead of log file''')
+
 base_group.add_argument('-t', '--tool', metavar='<tool>',
                         action='store',default=None,
                         help='A comma separated list of tools to run. Valid tools: ' + ', '.join(tools.TOOLS))
@@ -51,12 +52,18 @@ base_group.add_argument('--cache', action='store_true',
                         help='''Use the dljc cache (if available)''')
 
 base_group.add_argument('-c', '--checker', metavar='<checker>',
-                        action='store',default='NullnessChecker',
+                        action='store', 
+                        # do not run the NullnessChecker by default
+                        # default='NullnessChecker',
                         help='A checker to check (for checker/inference tools)')
 
 base_group.add_argument('-l', '--lib', metavar='<lib_dir>',
                         action='store',dest='lib_dir',
                         help='Library directory with JARs for tools that need them.')
+
+base_group.add_argument('--jdkVersion', metavar='<jdkVersion>',
+                        action='store',
+                        help='Version of the JDK to use with the Checker Framework.')
 
 def split_args_to_parse():
     split_index = len(sys.argv)
