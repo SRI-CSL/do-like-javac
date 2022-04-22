@@ -1,7 +1,5 @@
-# DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
-
-import pprint
 import argparse
+import pprint
 
 from . import common
 

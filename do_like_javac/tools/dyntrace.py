@@ -1,8 +1,8 @@
-import os
-import json
-from . import jsoninv
-from . import common
 import argparse
+import json
+import os
+
+from . import common, jsoninv
 
 argparser = argparse.ArgumentParser(add_help=False)
 dyntrace_group = argparser.add_argument_group('dyntrace arguments')

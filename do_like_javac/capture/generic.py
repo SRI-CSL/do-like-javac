@@ -1,11 +1,14 @@
 import os
-import zipfile
 import timeit
+import zipfile
+
 import do_like_javac.tools.common as cmdtools
+
 
 def is_switch(s):
     return s != None and s.startswith('-')
 
+## brought this from github.com/kelloggm/do-like-javac
 def is_switch_first_part(s):
     return s != None and s.startswith('-') and ("=" not in s)
 

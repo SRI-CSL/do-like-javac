@@ -1,12 +1,12 @@
-# DEPRECATED -- WILL BE REMOVED IN FUTURE VERSION
-
-from . import common
 import os
 import pprint
 
+from . import common
+
 argparser = None
 
-## other_args is other command-line arguments to javac
+## other_args is other command-line arguments to javac.
+## brought this from github.com/kelloggm/do-like-javac
 def get_arguments_by_version(jdk_version, other_args = None):
     if jdk_version is not None:
         version = int(jdk_version)
@@ -61,4 +61,7 @@ def run(args, javac_commands, jars):
 
         java_files = ' '.join(jc['java_files'])
         cmd = checker_command + ["-classpath", cp, java_files]
+        
+        print("Running command", " ".join(cmd))
+        
         common.run_cmd(cmd, args, 'check')

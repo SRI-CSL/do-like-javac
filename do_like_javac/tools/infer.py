@@ -53,5 +53,7 @@ def run(args, javac_commands, jars):
                              '--logLevel=WARNING',
                              '-afud', args.afuOutputDir]
         cmd.extend(jc['java_files'])
+        
+        print(f"Running command", " ".join(cmd))
 
         common.run_cmd(cmd, args, 'infer')

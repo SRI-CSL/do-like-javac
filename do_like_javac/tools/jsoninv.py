@@ -1,7 +1,9 @@
 import os
 import re
 import xml.etree.ElementTree as ET
+
 from . import common
+
 
 def generate_json_invariants(args, out_dir):
   filename = os.path.join(out_dir, 'invariants.xml')
@@ -11,7 +13,7 @@ def generate_json_invariants(args, out_dir):
   try:
     tree = ET.parse(filename)
   except:
-    common.log(args, 'jsoninv', 'Failed to parse {}'.format(filename))
+    common.log(args, 'jsoninv', f'Failed to parse {filename}')
     return
 
   invariants = tree.getroot()
@@ -52,7 +54,7 @@ def ppt_info(ppt):
   return class_name, method_name, args, point
 
 def find_method(methods, class_name, method_name, args):
-  descriptor = "{}.{}({})".format(class_name, method_name, args)
+  descriptor = f"{class_name}.{method_name}({args})"
   if descriptor not in methods:
     methods[descriptor] = {"cls": class_name,
                            "method": method_name,

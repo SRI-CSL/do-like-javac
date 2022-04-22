@@ -1,14 +1,6 @@
-from . import jprint
-from . import randoop
-from . import bixie
-from . import graphtools
-from . import chicory
-from . import dyntrace
-from . import dyntracecounts
-
 # import soot
-from . import check
-from . import infer
+from . import (bixie, check, chicory, dyntrace, dyntracecounts, graphtools,
+               infer, jprint, randoop)
 
 TOOLS = {
   # 'soot'      : soot,

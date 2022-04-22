@@ -1,9 +1,10 @@
+import json
+import os
 import pprint
-from . import arg
-from . import log
-from . import tools
-from . import cache
-import os,json,sys
+import sys
+
+from . import arg, cache, log, tools
+
 
 def output_json(filename, obj):
     with open(filename, 'w') as f:

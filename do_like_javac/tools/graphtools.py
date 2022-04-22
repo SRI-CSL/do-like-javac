@@ -1,7 +1,8 @@
-import os
 import argparse
-from . import common
 import copy
+import os
+
+from . import common
 
 argparser = argparse.ArgumentParser(add_help=False)
 graph_group = argparser.add_argument_group('graphtool arguments')
