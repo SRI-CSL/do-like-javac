@@ -155,14 +155,16 @@ def run(args, javac_commands, jars):
             other_args = [arg for arg in other_args if not arg.startswith("--add-opens")]
 
         while diffResult:
-            iterationCheckerCmd = checker_command
+            iterationCheckerCmd = checker_command.copy()
             # TODO: the switch to ajava files instead of stub files should make the separate stubs argument
             # to dljc unnecessary, as there's no longer any need to combine stub lists.
             # TODO: do we need to treat the -Aajava argument the same way? I.e., will this work if the user
             # supplies their own -Aajava= argument as part of the extraJavacArgs argument?
             if args.stubs:
                 iterationCheckerCmd.append("-Astubs=" + str(args.stubs))
-            iterationAjavaDirs = ajavaDirs.copy()
+            # only use the last element in ajavaDirs, to avoid an ambiguity warning that would be issued
+            # if two ajava files for the same source file were to be passed
+            iterationAjavaDirs = [ajavaDirs[-1]] if ajavaDirs else []
             if args.ajava:
                 iterationAjavaDirs.append(str(args.ajava))
             if iterationAjavaDirs:
