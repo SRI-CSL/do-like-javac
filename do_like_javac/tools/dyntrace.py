@@ -17,7 +17,7 @@ dyntrace_group.add_argument(
   '--error-driver',
   action='store_true',
   dest='error_driver',
-  help='Chose Error Revealing Driver')
+  help='Choose Error Revealing Driver (Default is Regression Driver)')
 
 dyntrace_group.add_argument(
   '--evidence-csv', 
