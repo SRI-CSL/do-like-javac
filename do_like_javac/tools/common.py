@@ -61,6 +61,9 @@ def run_cmd(cmd, args=None, tool=None):
   out = None
   out_file = None
   friendly_cmd = ' '.join("'" + elt + "'" for elt in cmd)
+  
+  # track command args
+  stats['cmd_args'] = friendly_cmd
 
   if args and args.verbose and args.log_to_stderr:
     out = sys.stderr
