@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-from . import common, descert, jsoninv
+from . import common, jsonev, jsoninv
 
 argparser = argparse.ArgumentParser(add_help=False)
 dyntrace_group = argparser.add_argument_group('dyntrace arguments')
@@ -348,9 +348,9 @@ def daikon_print_xml(args, classpath, out_dir):
 def evidence_print_json(args, tool_stats, out_dir):
   tool = next(iter(tool_stats))
   if 'randoop' == tool:
-    ejs = descert.generate_json_randoop_evidence(args, tool_stats)
+    ejs = jsonev.generate_json_randoop_evidence(args, tool_stats)
   elif 'daikon' == tool:
-    ejs = descert.generate_json_daikon_evidence(args, tool_stats, out_dir)
+    ejs = jsonev.generate_json_daikon_evidence(args, tool_stats, out_dir)
   else:
     return
 
