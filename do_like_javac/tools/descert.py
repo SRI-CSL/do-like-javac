@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import json
 import os
 import typing as ty
 from abc import ABC, abstractmethod
+from datetime import date
 
-from . import common
+from . import common, jsoninv
+
 
 class LineProcessor(ABC):
   subclasses = []
@@ -134,8 +137,31 @@ def processline(line: str) -> dict:
 
   return None
 
-def generate_json_randoop_evidence(args, tool_stats, out_dir):
-  randoop_log_file = os.path.join(out_dir, "randoop-log.txt")
+def generate_qual_data(tool:str, activity: str) -> dict:
+  tool = tool.upper()
+  qual_evidence = {}
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION'] = {}
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['TITLE'] = 'do-like-javac'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['SUMMARY'] = 'Runs Randoop via do-like-javac'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['QUALIFIEDBY'] = 'SRI International'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['USERGUIDE'] = 'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['INSTALLATION'] = 'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['ACTIVITY'] = activity
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['DATE'] = date.today()
+  return qual_evidence
+
+def get_test_driver_class(driver, out_dir):  
+  for root, _, files in os.walk(out_dir):
+    for file in files:
+      if file.endswith('.class'):
+        if driver in file:
+          driver_class_file = os.path.join(root, file)
+          return driver_class_file
+
+  return None
+
+def generate_json_randoop_evidence(args, tool_stats):
+  randoop_log_file = os.path.join("dljc-out", "randoop-log.txt")
 
   if not os.path.exists(randoop_log_file):
     return None
@@ -146,20 +172,14 @@ def generate_json_randoop_evidence(args, tool_stats, out_dir):
     common.log(args, 'descert', f'Failed to read {randoop_log_file}')
 
   evidence = {}
+  # Randoop qualification data
+  evidence.update(generate_qual_data('randoop', 'TestGeneration'))
+  
   # Randoop tool config
   evidence['RANDOOP_JUNIT_TEST_GENERATION'] = {}
   evidence['RANDOOP_JUNIT_TEST_GENERATION']['INVOKEDBY'] = 'do-like-javac'
   evidence['RANDOOP_JUNIT_TEST_GENERATION']['AUTOMATEDBY'] = 'do-like-javac'
-  evidence['RANDOOP_JUNIT_TEST_GENERATION']['PARAMETERS'] = tool_stats['gen_stats']['cmd_args']
-
-  # qualification data
-  evidence['RANDOOP_TOOL_QUALIFICATION'] = {}
-  evidence['RANDOOP_TOOL_QUALIFICATION']['TITLE'] = 'do-like-javac'
-  evidence['RANDOOP_TOOL_QUALIFICATION']['SUMMARY'] = 'Runs Randoop via do-like-javac'
-  evidence['RANDOOP_TOOL_QUALIFICATION']['QUALIFIEDBY'] = 'SRI International'
-  evidence['RANDOOP_TOOL_QUALIFICATION']['USERGUIDE'] = 'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'
-  evidence['RANDOOP_TOOL_QUALIFICATION']['INSTALLATION'] = 'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'
-  evidence['RANDOOP_TOOL_QUALIFICATION']['ACTIVITY'] = 'TestGeneration'
+  evidence['RANDOOP_JUNIT_TEST_GENERATION']['PARAMETERS'] = tool_stats['randoop']['gen_stats']['cmd_args']
 
   evidence['RANDOOP_TESTS_AND_METRICS'] = {}
   with f:
@@ -173,11 +193,65 @@ def generate_json_randoop_evidence(args, tool_stats, out_dir):
             # metrics metrics
             evidence['RANDOOP_TESTS_AND_METRICS'].update(out_dict[key])
 
-  evidence['RANDOOP_TESTS_AND_METRICS']['TEST_GENERATION_TIME'] = tool_stats['gen_stats']['time']
-  evidence['RANDOOP_TESTS_AND_METRICS']['TEST_COMPILATION_TIME'] = tool_stats['comp_stats']['time']
+  evidence['RANDOOP_TESTS_AND_METRICS']['TEST_GENERATION_TIME'] = tool_stats['randoop']['gen_stats']['time']
+  evidence['RANDOOP_TESTS_AND_METRICS']['TEST_COMPILATION_TIME'] = tool_stats['randoop']['comp_stats']['time']
 
   return evidence
 
 def generate_json_daikon_evidence(args, tool_stats, out_dir):
-  pass
+  evidence = {}
+  # qualification data
+  evidence.update(generate_qual_data('daikon', 'Dynamic Analysis'))
+
+  # Daikon tool config
+  evidence['DAIKON_LIKELY_INVS_DETECTION'] = {}
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['INVOKEDBY'] = 'do-like-javac'
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['AUTOMATEDBY'] = 'do-like-javac'
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] = []
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'dycomp': tool_stats['daikon']['dyncomp_stats']['cmd_args']}]
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'chicory': tool_stats['daikon']['chicory_stats']['cmd_args']}]
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'daikon': tool_stats['daikon']['daikon_stats']['cmd_args']}]
+
+  # metrics
+  evidence['DAIKON_INVS_AND_METRICS'] = {}
+  evidence['DAIKON_INVS_AND_METRICS']['DYCOMP_ELAPSED_TIME'] = tool_stats['daikon']['dyncomp_stats']['time']
+  evidence['DAIKON_INVS_AND_METRICS']['CHICORY_ELAPSED_TIME'] = tool_stats['daikon']['chicory_stats']['time']
+  evidence['DAIKON_INVS_AND_METRICS']['DAIKON_ELAPSED_TIME'] = tool_stats['daikon']['daikon_stats']['time']
+
+  tree = jsoninv.parse_invariants_xml(args, out_dir)
+  ppt_count, cls_count = 0, 0
+  if tree or tree is not None:
+    ppts = [ppt for ppt in tree.getroot()]
+    ppt_count = len(ppts)
+    cls_count = len({jsoninv.ppt_info(ppt)[0] for ppt in ppts})
+  evidence['DAIKON_INVS_AND_METRICS']['PPT_COUNT'] = ppt_count
+  evidence['DAIKON_INVS_AND_METRICS']['CLASSES_COUNT'] = cls_count
+
+  daikon_invariants_file = os.path.join(out_dir, 'invariants.json')
+  if not os.path.exists(daikon_invariants_file):
+    common.log(args, 'descert', f'Failed to locate {daikon_invariants_file}')
+    daikon_invariants_file = 'MISSING'
+  evidence['DAIKON_INVS_AND_METRICS']['INVS_FILE'] = daikon_invariants_file
+
+  try:
+    f = open(daikon_invariants_file, 'r')
+  except OSError:
+    common.log(args, 'descert', f'Failed to read {daikon_invariants_file}')
+
+  invariants_data = json.loads(f.read())
+  evidence['DAIKON_INVS_AND_METRICS']['INVARIANTS_COUNT'] = len(invariants_data["invariants"])
+
+  randoop_driver = "ErrorTestDriver" if args.error_driver else "RegressionTestDriver"
+  supporting_files = []
+  if daikon_invariants_file != 'MISSING':
+    # if the daikon invs file exists then its xml, dtrace, gz counterparts must also exist
+    supporting_files += [os.path.join(out_dir, 'invariants.xml')]
+    supporting_files += [os.path.join(out_dir, "invariants.gz")]
+    supporting_files += [os.path.join(out_dir, f"{randoop_driver}.dtrace.gz")]
+    supporting_files += [os.path.join(out_dir, f"{randoop_driver}.decls-DynComp")]
+  evidence['DAIKON_INVS_AND_METRICS']['SUPPORT_FILES'] = supporting_files
+  driver_class_file = get_test_driver_class(randoop_driver, out_dir)
+  evidence['DAIKON_INVS_AND_METRICS']['TEST_DRIVER'] = driver_class_file if driver_class_file is not None else 'MISSING'
+
+  return evidence
 

@@ -5,15 +5,23 @@ import xml.etree.ElementTree as ET
 from . import common
 
 
-def generate_json_invariants(args, out_dir):
+def parse_invariants_xml(args, out_dir):
   filename = os.path.join(out_dir, 'invariants.xml')
   if not os.path.exists(filename):
-    return
+    return None
 
   try:
     tree = ET.parse(filename)
   except:
     common.log(args, 'jsoninv', f'Failed to parse {filename}')
+    return None
+  
+  return tree
+
+
+def generate_json_invariants(args, out_dir):
+  tree = parse_invariants_xml(args, out_dir)
+  if not tree or tree is None:
     return
 
   invariants = tree.getroot()

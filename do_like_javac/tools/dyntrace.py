@@ -87,25 +87,39 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
 
     if args.evidence_csv:
       # persist Randoop evidence data
-      evidence_print_json(args, randoop_stats, test_class_directory)
+      evidence_print_json(
+        args,                 # dyntrace arguments
+        randoop_stats,        # stats seq yielded by Randoop commands
+        test_class_directory) # dljc-out/
 
   if 'chicory' in run_parts:
     selects = get_select_list(classdir)
     omit_file_path = get_special_file("omit-list", out_dir, i)
     omits = get_omit_list(omit_file_path)
 
-    run_dyncomp(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
-    run_chicory(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
-    run_daikon(args, chicory_classpath, test_class_directory, False)
+    dyncomp_stats = run_dyncomp(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
+    chicory_stats = run_chicory(args, chicory_classpath, randoop_driver, test_class_directory, selects, omits)
+    daikon_stats = run_daikon(args, chicory_classpath, test_class_directory, False)
+
+    # keep stats around
+    whole_stats = {'daikon': {}}
+    whole_stats['daikon']['dyncomp_stats'] = dyncomp_stats
+    whole_stats['daikon']['chicory_stats'] = chicory_stats
+    whole_stats['daikon']['daikon_stats'] = daikon_stats
 
     if 'invcounts' in run_parts:
-      run_daikon(args, chicory_classpath, test_class_directory, True)
+      daikon_invcounts_stats = run_daikon(args, chicory_classpath, test_class_directory, True)
+      whole_stats['daikon']['invcounts_stats'] = daikon_invcounts_stats
 
     if args.daikon_xml:
       daikon_print_xml(args, chicory_classpath, test_class_directory)
     
-  if args.evidence_csv:
-    pass
+    if args.evidence_csv:
+      # persist Daikon evidence data
+      evidence_print_json(
+        args,                 # dyntrace arguments
+        whole_stats,          # stats seq yielded by Daikon commands
+        test_class_directory) # dljc-out/
 
 def get_select_list(classdir):
   """Get a list of all directories under classdir containing class files."""
@@ -173,19 +187,19 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
     "java", "-ea", 
     "-classpath", classpath, 
     f"-Xbootclasspath/a:{rc_classpath}",
-    f"-javaagent:{rc_classpath}", 
+    f"-javaagent:{rc_classpath}",
     "randoop.main.Main", "gentests",
     f"--classlist={class_list_file}", 
     f"--time-limit={time_limit}",
-    f"--omit-methods={omitted_methods}", 
+    f"--omit-methods={omitted_methods}",
     "--junit-reflection-allowed=false",
     "--flaky-test-behavior=DISCARD", 
-    "--usethreads=true", 
+    "--usethreads=true",
     "--call-timeout=5",
-    "--silently-ignore-bad-class-names=true", 
+    "--silently-ignore-bad-class-names=true",
     f"--junit-output-dir={test_src_dir}",
     # Uncomment these lines to produce Randoop debugging logs
-    f"--log={randoop_log_file}", 
+    f"--log={randoop_log_file}",
     f"--selection-log={selection_log_file}",
     f"--operation-history-log={operation_log_file}"]
 
@@ -300,9 +314,9 @@ def run_daikon(args, classpath, out_dir, invcounts):
                      "-classpath", classpath,
                      "daikon.Daikon",
                      "-o", os.path.join(out_dir, "invariants.gz")]
-  
+
   randoop_driver = "ErrorTestDriver" if args.error_driver else "RegressionTestDriver"
-  
+
   if invcounts:
     daikon_command.append("--config_option")
     daikon_command.append("daikon.Daikon.calc_possible_invs=true")
@@ -334,7 +348,7 @@ def daikon_print_xml(args, classpath, out_dir):
 def evidence_print_json(args, tool_stats, out_dir):
   tool = next(iter(tool_stats))
   if 'randoop' == tool:
-    ejs = descert.generate_json_randoop_evidence(args, tool_stats, out_dir)
+    ejs = descert.generate_json_randoop_evidence(args, tool_stats)
   elif 'daikon' == tool:
     ejs = descert.generate_json_daikon_evidence(args, tool_stats, out_dir)
   else:
