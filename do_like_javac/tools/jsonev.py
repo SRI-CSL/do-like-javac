@@ -141,7 +141,7 @@ def generate_qual_data(tool:str, activity: str, summary: str, readme_url: str) -
   tool = tool.upper()
   qual_evidence = {}
   qual_evidence[f'{tool}_TOOL_QUALIFICATION'] = {}
-  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['TITLE'] = tool
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['TITLE'] = tool.capitalize()
   qual_evidence[f'{tool}_TOOL_QUALIFICATION']['SUMMARY'] = summary
   qual_evidence[f'{tool}_TOOL_QUALIFICATION']['QUALIFIEDBY'] = 'SRI International'
   qual_evidence[f'{tool}_TOOL_QUALIFICATION']['USERGUIDE'] = readme_url
