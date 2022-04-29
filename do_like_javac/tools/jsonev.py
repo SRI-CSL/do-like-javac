@@ -137,15 +137,15 @@ def processline(line: str) -> dict:
 
   return None
 
-def generate_qual_data(tool:str, activity: str) -> dict:
+def generate_qual_data(tool:str, activity: str, summary: str, readme_url: str) -> dict:
   tool = tool.upper()
   qual_evidence = {}
   qual_evidence[f'{tool}_TOOL_QUALIFICATION'] = {}
-  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['TITLE'] = 'do-like-javac'
-  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['SUMMARY'] = 'Runs Randoop via do-like-javac'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['TITLE'] = tool
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['SUMMARY'] = summary
   qual_evidence[f'{tool}_TOOL_QUALIFICATION']['QUALIFIEDBY'] = 'SRI International'
-  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['USERGUIDE'] = 'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'
-  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['INSTALLATION'] = 'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['USERGUIDE'] = readme_url
+  qual_evidence[f'{tool}_TOOL_QUALIFICATION']['INSTALLATION'] = readme_url
   qual_evidence[f'{tool}_TOOL_QUALIFICATION']['ACTIVITY'] = activity
   qual_evidence[f'{tool}_TOOL_QUALIFICATION']['DATE'] = date.today()
   return qual_evidence
@@ -160,6 +160,12 @@ def get_test_driver_class(driver, out_dir):
 
   return None
 
+def get_dljc_kwargs(args):
+  dljc_kwargs = []
+  if args and len(vars(args)) > 0:
+    dljc_kwargs += [f"{k}:'{vars(args)[k]}'" for k in vars(args)]
+  return dljc_kwargs
+
 def generate_json_randoop_evidence(args, tool_stats):
   randoop_log_file = os.path.join("dljc-out", "randoop-log.txt")
 
@@ -173,13 +179,20 @@ def generate_json_randoop_evidence(args, tool_stats):
 
   evidence = {}
   # Randoop qualification data
-  evidence.update(generate_qual_data('randoop', 'TestGeneration'))
+  evidence.update(generate_qual_data(
+    'randoop', 'TestGeneration', 'Automatic unit test generation for Java', 
+    'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'))
   
   # Randoop tool config
   evidence['RANDOOP_JUNIT_TEST_GENERATION'] = {}
-  evidence['RANDOOP_JUNIT_TEST_GENERATION']['INVOKEDBY'] = 'do-like-javac'
-  evidence['RANDOOP_JUNIT_TEST_GENERATION']['AUTOMATEDBY'] = 'do-like-javac'
-  evidence['RANDOOP_JUNIT_TEST_GENERATION']['PARAMETERS'] = tool_stats['randoop']['gen_stats']['cmd_args']
+  evidence['RANDOOP_JUNIT_TEST_GENERATION']['INVOKEDBY'] = 'do-like-javac (dljc)'
+  evidence['RANDOOP_JUNIT_TEST_GENERATION']['AUTOMATEDBY'] = 'do-like-javac (dljc)'
+  evidence['RANDOOP_JUNIT_TEST_GENERATION']['PARAMETERS'] = [
+    {'randoop': tool_stats['randoop']['gen_stats']['cmd_args']}]
+  
+  dljc_kwargs = get_dljc_kwargs(args)
+  if dljc_kwargs or len(dljc_kwargs) > 0:
+    evidence['RANDOOP_JUNIT_TEST_GENERATION']['PARAMETERS'] += [{'dljc':' '.join(dljc_kwargs)}]
 
   evidence['RANDOOP_TESTS_AND_METRICS'] = {}
   with f:
@@ -196,21 +209,27 @@ def generate_json_randoop_evidence(args, tool_stats):
   evidence['RANDOOP_TESTS_AND_METRICS']['TEST_GENERATION_TIME'] = tool_stats['randoop']['gen_stats']['time']
   evidence['RANDOOP_TESTS_AND_METRICS']['TEST_COMPILATION_TIME'] = tool_stats['randoop']['comp_stats']['time']
 
-  return evidence
+  return {'Evidence': evidence}
 
 def generate_json_daikon_evidence(args, tool_stats, out_dir):
   evidence = {}
   # qualification data
-  evidence.update(generate_qual_data('daikon', 'Dynamic Analysis'))
+  evidence.update(generate_qual_data(
+    'daikon', 'Dynamic Analysis', 'Dynamic detection of likely program invariants',
+    'http://plse.cs.washington.edu/daikon/download/doc/daikon.html'))
 
   # Daikon tool config
   evidence['DAIKON_LIKELY_INVS_DETECTION'] = {}
-  evidence['DAIKON_LIKELY_INVS_DETECTION']['INVOKEDBY'] = 'do-like-javac'
-  evidence['DAIKON_LIKELY_INVS_DETECTION']['AUTOMATEDBY'] = 'do-like-javac'
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['INVOKEDBY'] = 'do-like-javac (dljc)'
+  evidence['DAIKON_LIKELY_INVS_DETECTION']['AUTOMATEDBY'] = 'do-like-javac (dljc)'
   evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] = []
   evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'dycomp': tool_stats['daikon']['dyncomp_stats']['cmd_args']}]
   evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'chicory': tool_stats['daikon']['chicory_stats']['cmd_args']}]
   evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'daikon': tool_stats['daikon']['daikon_stats']['cmd_args']}]
+  
+  dljc_kwargs = get_dljc_kwargs(args)
+  if dljc_kwargs or len(dljc_kwargs) > 0:
+    evidence['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS'] += [{'dljc':' '.join(dljc_kwargs)}]
 
   # metrics
   evidence['DAIKON_INVS_AND_METRICS'] = {}
@@ -253,5 +272,5 @@ def generate_json_daikon_evidence(args, tool_stats, out_dir):
   driver_class_file = get_test_driver_class(randoop_driver, out_dir)
   evidence['DAIKON_INVS_AND_METRICS']['TEST_DRIVER'] = driver_class_file if driver_class_file is not None else 'MISSING'
 
-  return evidence
+  return {'Evidence': evidence}
 
