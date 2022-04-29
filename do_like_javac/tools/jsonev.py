@@ -208,6 +208,7 @@ def generate_json_randoop_evidence(args, tool_stats):
 
   evidence['RANDOOP_TESTS_AND_METRICS']['TEST_GENERATION_TIME'] = tool_stats['randoop']['gen_stats']['time']
   evidence['RANDOOP_TESTS_AND_METRICS']['TEST_COMPILATION_TIME'] = tool_stats['randoop']['comp_stats']['time']
+  evidence['RANDOOP_TESTS_AND_METRICS']['GENERATED_TEST_FILES'] = tool_stats['randoop']['gen_stats']['files_to_compile']
 
   return {'Evidence': evidence}
 
