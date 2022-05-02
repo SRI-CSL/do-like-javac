@@ -125,6 +125,29 @@ class JUnitGenData:
   developedBy_identifier: str
   toolInvocation_identifier: str
 
+@dataclass(frozen=True)
+@dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
+class DocData:
+  dateOfIssue: datetime
+  versionNumber: str
+  description: str
+  generatedAtTime: datetime 
+  identifier: str
+  invalidatedAtTime: datetime
+  title: str
+  approvalAuthority_identifier: str
+  issuingOrganization_identifier: str
+  references_identifier: str
+  status_identifier: str
+  definedIn_identifier: str
+  content_identifier: str
+  dataInsertedBy_identifier: str
+  wasAttributedTo_identifier: str
+  wasDerivedFrom_identifier: str
+  wasGeneratedBy_identifier: str
+  wasImpactedBy_identifier: str
+  wasRevisionOf_identifier: str
+
 def run(args, javac_commands, jars):
   out_dir = os.path.basename(args.output_directory)
   for jc in javac_commands:
@@ -212,8 +235,6 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     # rotate existing evidence directory
     rotate_and_make_dir(evidence_directory)
   
-  evidence_data = []
-  
   # data to become
   tool_data = ToolData(
     toolSummaryDescription=randoop_basic_data.summary,
@@ -222,7 +243,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     identifier=randoop_basic_data.identifier(),
     title=randoop_basic_data.title(),
     userGuide_identifier=randoop_basic_data.user_guide_id())
-  
+
   # 1. create evidence/ingest_Auto_TOOL.csv
   ingest_tool_file = os.path.join(evidence_directory, "ingest_Auto_TOOL.csv")
   with open(ingest_tool_file, "w") as f:
@@ -250,7 +271,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       toolParamaters=tool_params,
       dataInsertedBy_identifier='dljc')
     tool_invoke_data += [tool_invoke]
-  
+
   # 2. create evidence/ingest_Auto_TOOL_INVOCATION_INSTANCE.csv
   ingest_tool_invoke_file = os.path.join(evidence_directory, "ingest_Auto_TOOL_INVOCATION_INSTANCE.csv")
   with open(ingest_tool_invoke_file, "w") as f:
@@ -260,7 +281,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     except Exception:
       common.log(args, 'csve', f'Failed to write {ingest_tool_invoke_file}')
       return
-  
+
   # collect tool metrics data
   numberOfErrorRevealingTestCases = randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS']['ERROR_REVEALING_TEST_COUNT']
   numberOfRegressionTestCases = randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS']['REGRESSION_TEST_COUNT']
@@ -275,7 +296,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     identifier=f"{randoop_basic_data.identifier()}_METRICS",
     title=f"{randoop_basic_data.title()} metrics data",
     wasGeneratedBy_identifier=randoop_basic_data.identifier())
-    
+
   # collect file data
   tool_file_data = []
   tool_metrics_data = []
@@ -296,7 +317,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       fileFormat_identifier=f'FORMAT_{file_ext}',
       wasGeneratedBy_identifier=randoop_basic_data.identifier())
     tool_file_data += [file_data]
-    
+
     if "ErrorTestDriver" in filename:
       tool_metrics_data += [replace(
         tool_metric_data,
@@ -309,6 +330,24 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
         numberOfErrorRevealingTestCases=0,
         totalNumberOfTestCases=numberOfRegressionTestCases,
         jUnitTestFile_identifier=file_identifier)]
+
+  manual_url = randoop_data['Evidence']["RANDOOP_TOOL_QUALIFICATION"]["USERGUIDE"]
+  tool_file_data += [
+    FileData(
+      filename=manual_url,
+      description=f'Randoop Manual {randoop_basic_data.version}',
+      generatedAtTime=tests_creation_date,
+      identifier='FILE_RANDOOP_' + '_'.join(randoop_basic_data.version.split('.')),
+      title=f'Randoop Manual {randoop_basic_data.version}',
+      fileFormat_identifier='FORMAT_HTML')] # Randoop Manual
+  tool_file_data += [
+    FileData(
+      filename='https://github.com/SRI-CSL/do-like-javac/blob/master/README.md',
+      description='do-like-javac Manual 0.1',
+      generatedAtTime=tests_creation_date,
+      identifier='FILE_DLJC_0_1',
+      title='do-like-javac Manual 0.1',
+      fileFormat_identifier='FORMAT_MD')]
 
   # 3. create evidence/ingest_Auto_FILE.csv
   ingest_file = os.path.join(evidence_directory, "ingest_Auto_FILE.csv")
@@ -329,7 +368,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     except Exception:
       common.log(args, 'csve', f'Failed to write {ingest_metrics_file}')
       return
-  
+
   # 5. create evidence/ingest_Auto_RANDOOP_JUNIT_TEST_GENERATION.csv
   junit_gen_data = JUnitGenData(
     description=f"{randoop_basic_data.title()} metrics",
@@ -345,10 +384,33 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       common.log(args, 'csve', f'Failed to write {ingest_randoop_junit_file}')
       return
 
-  # 6. create 
-  evidence_data += [tool_file_data]
-  evidence_data += [tool_metrics_data]
-  
+  # 6. create evidence/ingest_Auto_DOCUMENT.csv
+  ingest_doc_file = os.path.join(evidence_directory, "ingest_Auto_DOCUMENT.csv")
+  docs_data = [
+    DocData(
+      dateOfIssue=tests_creation_date,
+      versionNumber=randoop_basic_data.version,
+      description='Randoop Manual',
+      identifier='DOCUMENT_RANDOOP_' + '_'.join(randoop_basic_data.version.split('.')),
+      title=f'Randoop Manual {randoop_basic_data.version}',
+      approvalAuthority_identifier='ORG_UW',
+      issuingOrganization_identifier='ORG_UW',
+      content_identifier='FILE_RANDOOP_' + '_'.join(randoop_basic_data.version.split('.'))),
+    DocData(
+      dateOfIssue=date.today(), 
+      versionNumber='0.1',
+      description='do-like-javac Manual',
+      identifier='DOCUMENT_DLJC_0_1',
+      title='do-like-javac Manual 0.1',
+      approvalAuthority_identifier='ORG_SRI',
+      issuingOrganization_identifier='ORG_SRI',
+      content_identifier='FILE_DLJC_0_1')]
+  with open(ingest_doc_file, "w") as f:
+    try:
+      w = DataclassWriter(f, docs_data, DocData)
+      w.write()
+    except Exception:
+      common.log(args, 'csve', f'Failed to write {ingest_doc_file}')
 
 def daikon_print_csv(args, daikon_evidence_json, out_dir):
   try:
