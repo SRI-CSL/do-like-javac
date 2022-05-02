@@ -181,7 +181,7 @@ def generate_json_randoop_evidence(args, tool_stats):
   # Randoop qualification data
   evidence.update(generate_qual_data(
     'randoop', 'TestGeneration', 'Automatic unit test generation for Java', 
-    'https://raw.githubusercontent.com/SRI-CSL/do-like-javac/master/README.md'))
+    'https://randoop.github.io/randoop/manual/index.html'))
   
   # Randoop tool config
   evidence['RANDOOP_JUNIT_TEST_GENERATION'] = {}
