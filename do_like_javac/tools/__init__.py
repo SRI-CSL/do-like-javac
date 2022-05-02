@@ -1,6 +1,6 @@
 # import soot
-from . import (bixie, check, chicory, dyntrace, dyntracecounts, graphtools,
-               infer, jprint, randoop)
+from . import (bixie, check, chicory, csve, dyntrace, dyntracecounts,
+               graphtools, infer, jprint, randoop)
 
 TOOLS = {
   # 'soot'      : soot,
@@ -13,6 +13,7 @@ TOOLS = {
   'chicory'   : chicory,
   'dyntrace'  : dyntrace,
   'dyntracecounts' : dyntracecounts,
+  'csve'      : csve,
 }
 
 def parsers():
