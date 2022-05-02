@@ -411,6 +411,8 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       w.write()
     except Exception:
       common.log(args, 'csve', f'Failed to write {ingest_doc_file}')
+  
+  common.log(args, 'csve', f'Finished writing evidence data to {evidence_directory}')
 
 def daikon_print_csv(args, daikon_evidence_json, out_dir):
   try:
