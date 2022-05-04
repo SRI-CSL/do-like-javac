@@ -219,6 +219,11 @@ def generate_json_daikon_evidence(args, tool_stats, out_dir):
     'daikon', 'Dynamic Analysis', 'Dynamic detection of likely program invariants',
     'http://plse.cs.washington.edu/daikon/download/doc/daikon.html'))
 
+  # TODO(has) - investigate whether there is a way to extract this version 
+  # number from Daikon's generated files? Quick sol: Use
+  # Daikon 5.8.10 since is the latest version.
+  evidence['DAIKON_TOOL_QUALIFICATION']['DAIKON_VERSION'] = '5.8.10'
+
   # Daikon tool config
   evidence['DAIKON_LIKELY_INVS_DETECTION'] = {}
   evidence['DAIKON_LIKELY_INVS_DETECTION']['INVOKEDBY'] = 'do-like-javac (dljc)'
