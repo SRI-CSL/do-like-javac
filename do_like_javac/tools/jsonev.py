@@ -176,6 +176,7 @@ def generate_json_randoop_evidence(args, tool_stats):
     f = open(randoop_log_file, 'r')
   except OSError:
     common.log(args, 'descert', f'Failed to read {randoop_log_file}')
+    return None
 
   evidence = {}
   # Randoop qualification data
