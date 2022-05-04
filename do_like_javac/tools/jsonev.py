@@ -263,6 +263,7 @@ def generate_json_daikon_evidence(args, tool_stats, out_dir):
     f = open(daikon_invariants_file, 'r')
   except OSError:
     common.log(args, 'descert', f'Failed to read {daikon_invariants_file}')
+    return None
 
   invariants_data = json.loads(f.read())
   evidence['DAIKON_INVS_AND_METRICS']['INVARIANTS_COUNT'] = len(invariants_data["invariants"])
