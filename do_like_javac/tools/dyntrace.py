@@ -85,7 +85,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
       compile_classpath, 
       test_class_directory)
 
-    if args.evidence_csv:
+    if args.evidence_json:
       # persist Randoop evidence data
       evidence_print_json(
         args,                 # dyntrace arguments
@@ -114,7 +114,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
     if args.daikon_xml:
       daikon_print_xml(args, chicory_classpath, test_class_directory)
     
-    if args.evidence_csv:
+    if args.evidence_json:
       # persist Daikon evidence data
       evidence_print_json(
         args,                 # dyntrace arguments
