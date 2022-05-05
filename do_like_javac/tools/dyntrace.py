@@ -20,9 +20,9 @@ dyntrace_group.add_argument(
   help='Choose Error Revealing Driver (Default is Regression Driver)')
 
 dyntrace_group.add_argument(
-  '--evidence-csv',
+  '--evidence-json',
   action='store_true',
-  dest='evidence_csv',
+  dest='evidence_json',
   help='Extract evidence data from dyntrace output')
 
 no_jdk = False
