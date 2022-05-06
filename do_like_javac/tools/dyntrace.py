@@ -60,6 +60,12 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
     f.write(classdir)
 
+  # HACK: NEED THIS FOR processing Log4J processing with Randoop
+  if os.environ['LOG4JDIR']:
+    sample_dir = os.path.join(os.environ['LOG4JDIR'], 'sample')
+    if os.path.exists(sample_dir):
+      base_classpath = base_classpath + ":" + f'{sample_dir}/BOOT-INF/lib/*'
+
   randoop_classpath = lib('randoop.jar') + ":" + base_classpath
   # randoop needs to be on compile classpath due to replacement of System.exit with SystemExitCalledError
   compile_classpath = lib("junit-4.12.jar") + ":" + randoop_classpath
