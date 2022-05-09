@@ -68,7 +68,7 @@ class ToolData:
 class ToolInvokeData:
   # RACK 10.2
   # aka ToolConfigurationInstance
-  # Runs {Tool} with paramters [....] 
+  # Runs {Tool} with parameters [....] 
   description: str = ''
   generatedAtTime: datetime = None
   identifier: str = ''
@@ -366,10 +366,10 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     # DONT INCLUDE IT INVOKE CONFIG INSTANCE
     if tool_name == 'dljc':
       continue
-    # Runs {Tool} with paramters [....] 
-    tool_description = f'Runs {tool_name} with paramters {each_param_dict[tool_name]}'
+    # Runs {Tool} with parameters [....] 
+    tool_description = f'Runs {tool_name} with parameters {each_param_dict[tool_name]}'
     tool_identifier = f"{tool_name.upper()}_CONFIG_INSTANCE" if tool_name == 'dljc' else f"{randoop_basic_data.identifier()}_CONFIG_INSTANCE"
-    tool_title = f'{tool_name.upper()} invocation paramters'
+    tool_title = f'{tool_name.upper()} invocation parameters'
     tool_invoke = ToolInvokeData(
       description=tool_description,
       generatedAtTime=date.today(),
@@ -573,9 +573,9 @@ def daikon_print_csv(args, daikon_evidence_json, out_dir):
     if tool_name == 'dljc':
       continue
     # Runs {Tool} with paramters [....] 
-    tool_description = f'Runs {tool_name} with paramters {each_param_dict[tool_name]}'
+    tool_description = f'Runs {tool_name} with parameters {each_param_dict[tool_name]}'
     tool_identifier = f"{tool_name.upper()}_CONFIG_INSTANCE" if tool_name == 'dljc' else f"{daikon_basic_data.identifier()}_CONFIG_INSTANCE"
-    tool_title = f'{tool_name.upper()} invocation paramters'
+    tool_title = f'{tool_name.upper()} invocation parameters'
     tool_invoke = ToolInvokeData(
       description=tool_description,
       generatedAtTime=date.today(),
