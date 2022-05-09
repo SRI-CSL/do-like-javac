@@ -16,9 +16,9 @@ argparser = argparse.ArgumentParser(add_help=False)
 csve_group = argparser.add_argument_group('csve arguments')
 
 csve_group.add_argument(
-  '--override-csv',
+  '--override-evidence',
   action='store_true',
-  dest='override_csv',
+  dest='override_evidence',
   help='Overrides csv evidence files')
 
 
@@ -40,163 +40,157 @@ class BasicData:
   
   def user_guide_id(self) -> str:
     return f'DOCUMENT_{self.qual_title.upper()} version {self.doc_id()}'
-  
+
+
+@dataclass(frozen=True)
+@dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
+class GeneralData:
+  identifier: str = ''
+  description: str = ''
+  generatedBy_identifier: str = ''
+  generatedWith_identifier: str = ''
+  generationConfiguration_identifier: str = ''
+  generatedAtTime: datetime = None
 
 @dataclass(frozen=True)
 class ToolData:
-  toolInstallationConfiguration_identifier: str
-  toolUsageSummary: str
-  toolVersion: str
-  description: str
-  identifier: str
-  title: str
-  userGuide_identifier: str
+  # RACK 10.2
+  toolInstallationConfiguration_identifier: str = ''
+  toolUsageSummary: str = ''
+  toolVersion: str = ''
+  description: str = ''
+  identifier: str = ''
+  title: str = ''
+  userGuide_identifier: str = ''
 
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class ToolInvokeData:
-  # TODO(has) - change schema
+  # RACK 10.2
+  # aka ToolConfigurationInstance
   # Runs {Tool} with paramters [....] 
-  description: str
-  # @keep
-  generatedAtTime: datetime
-  # @keep
-  identifier: str
-  invalidatedAtTime: datetime
-  # @keep
-  title: str
-  toolParamaters: str
-  definedIn_identifier: str
-  dataInsertedBy_identifier: str
+  description: str = ''
+  generatedAtTime: datetime = None
+  identifier: str = ''
+  title: str = ''
 
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class FileData:
-  # TODO(has) - cleanup once final schema is defined
-  filename: str
-  description: str
-  generatedAtTime: datetime
-  identifier: str
-  # invalidatedAtTime: datetime
-  title: str
-  # createBy_identifier: str
-  # definedIn_identifier: str
-  fileFormat_identifier: str
-  # fileHash_identifier: str
-  # satisfies_identifier: str
-  # dataInsertedBy_identifier: str
-  # wasAttributedTo_identifier: str
-  # wasDerivedFrom_identifier: str
-  wasGeneratedBy_identifier: str
-  # wasImpactedBy_identifier: str
-  # wasRevisionOf_identifier: str
+  # RACK 10.2
+  filename: str = ''
+  description: str = ''
+  generatedAtTime: datetime = None
+  identifier: str = ''
+  title: str = ''
+  fileFormat_identifier: str = ''
+  wasGeneratedBy_identifier: str = ''
 
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class RandoopMetricData:
-  numberOfErrorRevealingTestCases: int
-  numberOfReducedViolationInducingTestCases: int
-  numberOfRegressionTestCases: int
-  numberOfViolationInducingTestCases: int
+  numberOfErrorRevealingTestCases: int = 0
+  numberOfReducedViolationInducingTestCases: int = 0
+  numberOfRegressionTestCases: int = 0
+  numberOfViolationInducingTestCases: int = 0
   # Note: explicitly defined given that a method named `totalNumberOfTestCases` 
   # which returns numberOfErrorRevealingTestCases + numberOfRegressionTestCases 
   # is not written as a column in a csv file.
-  totalNumberOfTestCases: int
-  description: str
-  generatedAtTime: datetime
-  identifier: str
-  title: str
-  jUnitTestFile_identifier: str
-  producedBy_identifier: str
-  verifies_identifier: str
-  definedIn_identifier: str
-  dataInsertedBy_identifier: str
-  wasAttributedTo_identifier: str
-  wasDerivedFrom_identifier: str
-  wasGeneratedBy_identifier: str
-  wasImpactedBy_identifier: str
-  asRevisionOf_identifier: str
+  totalNumberOfTestCases: int = 0
+  description: str = ''
+  generatedAtTime: datetime = None
+  identifier: str = ''
+  title: str = ''
+  jUnitTestFile_identifier: str = ''
+  producedBy_identifier: str = ''
+  verifies_identifier: str = ''
+  definedIn_identifier: str = ''
+  dataInsertedBy_identifier: str = ''
+  wasAttributedTo_identifier: str = ''
+  wasDerivedFrom_identifier: str = ''
+  wasGeneratedBy_identifier: str = ''
+  wasImpactedBy_identifier: str = ''
+  asRevisionOf_identifier: str = ''
 
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class ToolOutputData:
-  description: str
-  endedAtTime: datetime
-  identifier: str
-  startedAtTime: datetime
-  title: str
-  definedIn_identifier: str
-  dataInsertedBy_identifier: str
-  used_identifier: str
-  wasAssociatedWith_identifier: str
-  wasInformedBy_identifier: str
-  developedBy_identifier: str
-  toolInvocation_identifier: str
+  # RACK 10.2
+  description: str = ''
+  endedAtTime: datetime = None
+  identifier: str = ''
+  startedAtTime: datetime = None
+  title: str = ''
+  wasInformedBy_identifier: str = ''
+  testGenInfo_identifier: str = ''
+  # toolInvocation_identifier: str = ''
+  testGenInput_identifier: str = ''
+
 
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class DocData:
-  dateOfIssue: datetime
-  versionNumber: str
-  description: str
-  generatedAtTime: datetime 
-  identifier: str
-  invalidatedAtTime: datetime
-  title: str
-  approvalAuthority_identifier: str
-  issuingOrganization_identifier: str
-  references_identifier: str
-  status_identifier: str
-  definedIn_identifier: str
-  content_identifier: str
-  dataInsertedBy_identifier: str
-  wasAttributedTo_identifier: str
-  wasDerivedFrom_identifier: str
-  wasGeneratedBy_identifier: str
-  wasImpactedBy_identifier: str
-  wasRevisionOf_identifier: str
+  dateOfIssue: datetime = None
+  versionNumber: str = ''
+  description: str = ''
+  generatedAtTime: datetime = None
+  identifier: str = ''
+  invalidatedAtTime: datetime = None
+  title: str = ''
+  approvalAuthority_identifier: str = ''
+  issuingOrganization_identifier: str = ''
+  references_identifier: str = ''
+  status_identifier: str = ''
+  definedIn_identifier: str = ''
+  content_identifier: str = ''
+  dataInsertedBy_identifier: str = ''
+  wasAttributedTo_identifier: str = ''
+  wasDerivedFrom_identifier: str = ''
+  wasGeneratedBy_identifier: str = ''
+  wasImpactedBy_identifier: str = ''
+  wasRevisionOf_identifier: str = ''
   
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class DaikonInvsData:
-  classesCount: int
-  invariantCount: int
-  testsCount: int
-  description: str
-  generatedAtTime: str
-  identifier: str
-  invalidatedAtTime: str
-  title: str
-  likelyInvariants_identifier: str
-  producedBy_identifier: str
-  supportFiles_identifier: str
-  testDriver_identifier: str
-  verifies_identifier: str
-  definedIn_identifier: str
-  dataInsertedBy_identifier: str
-  wasAttributedTo_identifier: str
-  wasDerivedFrom_identifier: str
-  wasGeneratedBy_identifier: str
-  wasImpactedBy_identifier: str
-  wasRevisionOf_identifier: str
+  classesCount: int = 0
+  invariantCount: int = 0
+  testsCount: int = 0
+  description: str = ''
+  generatedAtTime: datetime = None
+  identifier: str = ''
+  invalidatedAtTime: str = ''
+  title: str = ''
+  likelyInvariants_identifier: str = ''
+  producedBy_identifier: str = ''
+  supportFiles_identifier: str = ''
+  testDriver_identifier: str = ''
+  verifies_identifier: str = ''
+  definedIn_identifier: str = ''
+  dataInsertedBy_identifier: str = ''
+  wasAttributedTo_identifier: str = ''
+  wasDerivedFrom_identifier: str = ''
+  wasGeneratedBy_identifier: str = ''
+  wasImpactedBy_identifier: str = ''
+  wasRevisionOf_identifier: str = ''
 
 @dataclass(frozen=True)
 @dateformat("%Y-%m-%dT%H:%M:%S.%f%z")
 class LikelyProgramInvariant:
-  invariantSpecification: str
-  description: str
-  generatedAtTime: datetime
-  identifier: str
-  invalidatedAtTime: datetime
-  title: str
-  definedIn_identifier: str
-  models_identifier: str
-  dataInsertedBy_identifier: str
-  wasAttributedTo_identifier: str
-  wasDerivedFrom_identifier: str
-  wasGeneratedBy_identifier: str
-  wasImpactedBy_identifier: str
-  wasRevisionOf_identifier: str
+  invariantSpecification: str = ''
+  description: str = ''
+  generatedAtTime: datetime = None
+  identifier: str = ''
+  invalidatedAtTime: datetime = None
+  title: str = ''
+  definedIn_identifier: str = ''
+  models_identifier: str = ''
+  dataInsertedBy_identifier: str = ''
+  wasAttributedTo_identifier: str = ''
+  wasDerivedFrom_identifier: str = ''
+  wasGeneratedBy_identifier: str = ''
+  wasImpactedBy_identifier: str = ''
+  wasRevisionOf_identifier: str = ''
 
 def run(args, javac_commands, jars):
   out_dir = os.path.basename(args.output_directory)
@@ -230,6 +224,12 @@ def rotate_and_make_dir(d):
   move(d, rd)
   os.mkdir(d)
 
+def rmdir(dir_path):
+  try:
+    if os.path.isdir(dir_path):
+      shutil.rmtree(dir_path)
+  except OSError as e:
+    print("Error: %s : %s" % (dir_path, e.strerror))
 
 def evidence_print_csv(args, java_command, out_dir):
   test_class_directory = get_test_class_directory('test-classes', out_dir)
@@ -237,17 +237,23 @@ def evidence_print_csv(args, java_command, out_dir):
     common.log(args, 'csve', f'Failed to locate {test_class_directory}')
     return
   
+  evidence_directory = os.path.join(out_dir, "evidence")
+  if not os.path.exists(evidence_directory):
+    os.mkdir(evidence_directory)
+  else:
+    if args.override_evidence:
+      rmdir(evidence_directory)
+    else:
+      # rotate existing evidence directory
+      rotate_and_make_dir(evidence_directory)
+  
   randoop_evidence_json = os.path.join(test_class_directory, 'randoop-evidence.json')
   daikon_evidence_json = os.path.join(test_class_directory, 'daikon-evidence.json')
-  if not os.path.exists(randoop_evidence_json) or not os.path.exists(daikon_evidence_json):
-    common.log(args, 'csve', f'Failed to read {randoop_evidence_json} or {daikon_evidence_json}')
-    return
 
   # from *_evidence_json to *_evidence_csv
   randoop_print_csv(args, randoop_evidence_json, out_dir)
-  daikon_print_csv(args, randoop_evidence_json, out_dir)
-  
-  common.run_cmd([], args, 'csve')
+  daikon_print_csv(args, daikon_evidence_json, out_dir)
+
 
 def camel_to_snake(name):
   name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -298,24 +304,20 @@ def get_invariants(tool_identifier: str, out_dir: str) -> ty.List[LikelyProgramI
   return invs
 
 def randoop_print_csv(args, randoop_evidence_json, out_dir):
+  if not os.path.exists(randoop_evidence_json):
+    common.log(args, 'csve', f'Failed to locate {randoop_evidence_json}')
+    return
   try:
     rej = open(randoop_evidence_json, 'r')
-  except OSError:
-    common.log(args, 'csve', f'Failed to read {randoop_evidence_json}')
+  except OSError as o:
+    common.log(args, 'csve', f'Failed to read {randoop_evidence_json}. See: {o}')
     return
 
   randoop_data = json.loads(rej.read())
 
   # collect tool data
   randoop_basic_data = get_basic_tool_info('randoop', randoop_data)
-
-  # TODO(has) is randoop_print_csv the right place for this code?
   evidence_directory = os.path.join(out_dir, "evidence")
-  if not os.path.exists(evidence_directory):
-    os.mkdir(evidence_directory)
-  else:
-    # rotate existing evidence directory
-    rotate_and_make_dir(evidence_directory)
 
   tool_data = ToolData(
     toolUsageSummary=randoop_basic_data.summary,
@@ -334,23 +336,45 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
     except Exception:
       common.log(args, 'csve', f'Failed to write {ingest_tool_file}')
       return
+  
+  # 1.1 create evidence/ingest_GenerationInformation.csv
+  general_info_data = []
+  general_info_data += [
+    GeneralData(
+      identifier=f"{randoop_basic_data.identifier()}_INVOKE_INFO",
+      description='Info about invoking the Randoop Tool',
+      generatedBy_identifier='Huascar_Sanchez',
+      generatedWith_identifier=f"{randoop_basic_data.identifier()}",
+      generationConfiguration_identifier=f"{randoop_basic_data.identifier()}_CONFIG_INSTANCE")]
+  
+  ingest_general_file = os.path.join(evidence_directory, "ingest_GenerationInformation.csv")
+  with open(ingest_general_file, "w") as f:
+    try:
+      w = DataclassWriter(f, general_info_data, GeneralData)
+      w.write()
+    except Exception:
+      common.log(args, 'csve', f'Failed to write {ingest_general_file}')
+      return
+  
+  tests_creation_date = randoop_data['Evidence']["RANDOOP_TOOL_QUALIFICATION"]["DATE"]
 
   # collect tool invocation data
   tool_invoke_data = []
   randoop_params = randoop_data['Evidence']['RANDOOP_JUNIT_TEST_GENERATION']['PARAMETERS']
   for each_param_dict in randoop_params:
     tool_name = next(iter(each_param_dict))
-    tool_description = 'Build monitor for Java Projects' if tool_name == 'dljc' else randoop_basic_data.description
-    tool_identifier = f"{tool_name}_INVOKE" if tool_name == 'dljc' else f"{randoop_basic_data.identifier()}_INVOKE"
-    tool_title = 'do-like-javac (dljc)' if tool_name == 'dljc' else randoop_basic_data.title()
-    tool_params = each_param_dict[tool_name]
+    # DONT INCLUDE IT INVOKE CONFIG INSTANCE
+    if tool_name == 'dljc':
+      continue
+    # Runs {Tool} with paramters [....] 
+    tool_description = f'Runs {tool_name} with paramters {each_param_dict[tool_name]}'
+    tool_identifier = f"{tool_name.upper()}_CONFIG_INSTANCE" if tool_name == 'dljc' else f"{randoop_basic_data.identifier()}_CONFIG_INSTANCE"
+    tool_title = f'{tool_name.upper()} invocation paramters'
     tool_invoke = ToolInvokeData(
       description=tool_description,
       generatedAtTime=date.today(),
       identifier=tool_identifier,
-      title=tool_title,
-      toolParamaters=tool_params,
-      dataInsertedBy_identifier='dljc')
+      title=tool_title)
     tool_invoke_data += [tool_invoke]
 
   # 2. create evidence/ingest_Auto_ToolConfigurationInstance.csv
@@ -364,8 +388,8 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       return
 
   # collect tool metrics data
-  numberOfErrorRevealingTestCases = randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS']['ERROR_REVEALING_TEST_COUNT']
-  numberOfRegressionTestCases = randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS']['REGRESSION_TEST_COUNT']
+  numberOfErrorRevealingTestCases = int(randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS'].get('ERROR_REVEALING_TEST_COUNT', 0))
+  numberOfRegressionTestCases = int(randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS'].get('REGRESSION_TEST_COUNT', 0))
   tool_metric_data = RandoopMetricData(
     numberOfErrorRevealingTestCases=numberOfErrorRevealingTestCases,
     numberOfReducedViolationInducingTestCases=0,
@@ -381,7 +405,6 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
   # collect file data
   tool_file_data = []
   tool_metrics_data = []
-  tests_creation_date = randoop_data['Evidence']["RANDOOP_TOOL_QUALIFICATION"]["DATE"]
   generated_test_files = randoop_data['Evidence']['RANDOOP_TESTS_AND_METRICS']['GENERATED_TEST_FILES']
   for file_to_compile in generated_test_files:
     file_parts = os.path.splitext(file_to_compile)
@@ -420,15 +443,8 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       generatedAtTime=tests_creation_date,
       identifier=f'FILE_RANDOOP_{randoop_basic_data.doc_id()}',
       title=f'Randoop Manual {randoop_basic_data.version}',
-      fileFormat_identifier='FORMAT_HTML')] # Randoop Manual
-  tool_file_data += [
-    FileData(
-      filename='https://github.com/SRI-CSL/do-like-javac/blob/master/README.md',
-      description='do-like-javac Manual 0.1',
-      generatedAtTime=tests_creation_date,
-      identifier='FILE_DLJC_0_1',
-      title='do-like-javac Manual 0.1',
-      fileFormat_identifier='FORMAT_MD')]
+      fileFormat_identifier='FORMAT_HTML',
+      wasGeneratedBy_identifier='Michael_Ernst')]
 
   # 3. create evidence/ingest_Auto_FILE.csv
   ingest_file = os.path.join(evidence_directory, "ingest_Auto_FILE.csv")
@@ -452,10 +468,11 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
 
   # 5. create evidence/ingest_Auto_RandoopJUnitTestGeneration.csv
   junit_gen_data = ToolOutputData(
-    description=f"Tests generated by {randoop_basic_data.title()}",
+    description=f"{randoop_basic_data.title()} data",
     identifier=f"{randoop_basic_data.identifier()}_TEST",
-    title=f"{randoop_basic_data.title()} data",
-    developedBy_identifier=randoop_basic_data.identifier())
+    title=f"Tests generated by {randoop_basic_data.title()}",
+    testGenInfo_identifier=f'{randoop_basic_data.identifier()}_INVOKE_INFO',
+    testGenInput_identifier=randoop_basic_data.identifier())
   
   ingest_randoop_junit_file = os.path.join(evidence_directory, "ingest_Auto_RandoopJUnitTestGeneration.csv")
   with open(ingest_randoop_junit_file, "w") as f:
@@ -477,16 +494,7 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
       title=f'Randoop Manual {randoop_basic_data.version}',
       approvalAuthority_identifier='ORG_UW',
       issuingOrganization_identifier='ORG_UW',
-      content_identifier=f'FILE_RANDOOP_{randoop_basic_data.doc_id()}'),
-    DocData(
-      dateOfIssue=date.today(), 
-      versionNumber='0.1',
-      description='do-like-javac Manual',
-      identifier='DOCUMENT_DLJC_0_1',
-      title='do-like-javac Manual 0.1',
-      approvalAuthority_identifier='ORG_SRI',
-      issuingOrganization_identifier='ORG_SRI',
-      content_identifier='FILE_DLJC_0_1')]
+      content_identifier=f'FILE_RANDOOP_{randoop_basic_data.doc_id()}')]
   with open(ingest_doc_file, "w") as f:
     try:
       w = DataclassWriter(f, docs_data, DocData)
@@ -498,6 +506,9 @@ def randoop_print_csv(args, randoop_evidence_json, out_dir):
   common.log(args, 'csve', f'Finished writing Randoop evidence data to {evidence_directory}')
 
 def daikon_print_csv(args, daikon_evidence_json, out_dir):
+  if not os.path.exists(daikon_evidence_json):
+    common.log(args, 'csve', f'Failed to locate {daikon_evidence_json}')
+    return
   try:
     dej = open(daikon_evidence_json, 'r')
   except OSError:
@@ -533,27 +544,43 @@ def daikon_print_csv(args, daikon_evidence_json, out_dir):
     except Exception:
       common.log(args, 'csve', f'Failed to write {ingest_tool_file}')
       return
+    
+  # 1.1 create evidence/ingest_GenerationInformation.csv
+  general_info_data = []
+  general_info_data += [
+    GeneralData(
+      identifier=f"{daikon_basic_data.identifier()}_INVOKE_INFO",
+      description='Info about invoking the Daikon Tool',
+      generatedBy_identifier='Huascar_Sanchez',
+      generatedWith_identifier=f"{daikon_basic_data.identifier()}",
+      generationConfiguration_identifier=f"{daikon_basic_data.identifier()}_CONFIG_INSTANCE")]
+  
+  ingest_general_file = os.path.join(evidence_directory, "ingest_GenerationInformation.csv")
+  with open(ingest_general_file, "a") as f:
+    try:
+      w = DataclassWriter(f, general_info_data, GeneralData)
+      w.write()
+    except Exception:
+      common.log(args, 'csve', f'Failed to write {ingest_general_file}')
+      return
 
   # 2. update evidence/ingest_Auto_TOOL_INVOCATION_INSTANCE.csv
   tool_invoke_data = []
   daikon_params = daikon_basic_data['Evidence']['DAIKON_LIKELY_INVS_DETECTION']['PARAMETERS']
   for each_param_dict in daikon_params:
     tool_name = next(iter(each_param_dict))
-    # don't include dljc invocation if invocation file already exists
-    if os.path.exists(ingest_tool_invoke_file) and tool_name == 'dljc':
+    # don't include dljc info
+    if tool_name == 'dljc':
       continue
-    tool_description = 'Build monitor for Java Projects' if tool_name == 'dljc' else daikon_basic_data.description
-    tool_identifier = tool_name if tool_name == 'dljc' else daikon_basic_data.identifier()
-    tool_identifier = f"{tool_name}_INVOKE" if tool_name == 'dljc' else f"{daikon_basic_data.identifier()}_INVOKE"
-    tool_title = 'do-like-javac (dljc)' if tool_name == 'dljc' else daikon_basic_data.title()
-    tool_params = each_param_dict[tool_name]
+    # Runs {Tool} with paramters [....] 
+    tool_description = f'Runs {tool_name} with paramters {each_param_dict[tool_name]}'
+    tool_identifier = f"{tool_name.upper()}_CONFIG_INSTANCE" if tool_name == 'dljc' else f"{daikon_basic_data.identifier()}_CONFIG_INSTANCE"
+    tool_title = f'{tool_name.upper()} invocation paramters'
     tool_invoke = ToolInvokeData(
       description=tool_description,
       generatedAtTime=date.today(),
       identifier=tool_identifier,
-      title=tool_title,
-      toolParamaters=tool_params,
-      dataInsertedBy_identifier='dljc')
+      title=tool_title)
     tool_invoke_data += [tool_invoke]
 
   ingest_tool_invoke_file = os.path.join(evidence_directory, "ingest_Auto_ToolConfigurationInstance.csv")
@@ -606,6 +633,17 @@ def daikon_print_csv(args, daikon_evidence_json, out_dir):
       wasGeneratedBy_identifier=daikon_basic_data.identifier())
     tool_file_data += [file_data]
     
+  manual_url = daikon_basic_data['Evidence']["DAIKON_TOOL_QUALIFICATION"]["USERGUIDE"]
+  tool_file_data += [
+    FileData(
+      filename=manual_url,
+      description=f'Daikon Manual {daikon_basic_data.version}',
+      generatedAtTime=file_creation_date,
+      identifier=f'FILE_DAIKON_{daikon_basic_data.doc_id()}',
+      title=f'Daikon Manual {daikon_basic_data.version}',
+      fileFormat_identifier='FORMAT_HTML',
+      wasGeneratedBy_identifier='Michael_Ernst')]
+    
   ingest_file = os.path.join(evidence_directory, "ingest_Auto_FILE.csv")
   with open(ingest_file, "a") as f:
     try:
@@ -615,12 +653,13 @@ def daikon_print_csv(args, daikon_evidence_json, out_dir):
       common.log(args, 'csve', f'Failed to write {ingest_file}')
       return
 
-  # 5. create evidence/ingest_Auto_DaikonInvariantDetection.csv
+  # 5. create evidence/ingest_Auto_DaikonInvariantDetection.csv  
   daikon_detect_data = ToolOutputData(
     description=f"{daikon_basic_data.title()} detection",
     identifier=f"{daikon_basic_data.identifier()}_DETECT",
     title=f"{daikon_basic_data.title()} invariant detection",
-    tool_identifier=daikon_basic_data.identifier())
+    testGenInfo_identifier=f'{daikon_basic_data.identifier()}_INVOKE_INFO',
+    testGenInput_identifier=daikon_basic_data.identifier())
   
   ingest_invs_detect_file = os.path.join(evidence_directory, "ingest_Auto_DaikonInvariantDetection.csv")
   with open(ingest_invs_detect_file, "w") as f:

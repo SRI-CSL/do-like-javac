@@ -60,20 +60,20 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   with open(os.path.join(test_class_directory, 'classdir.txt'), 'w') as f:
     f.write(classdir)
 
-  # HACK: NEED THIS FOR processing Log4J processing with Randoop
-  if os.environ['LOG4JDIR']:
-    sample_dir = os.path.join(os.environ['LOG4JDIR'], 'sample')
-    if os.path.exists(sample_dir):
-      base_classpath = base_classpath + ":" + f'{sample_dir}/BOOT-INF/lib/*'
-
   randoop_classpath = lib('randoop.jar') + ":" + base_classpath
   # randoop needs to be on compile classpath due to replacement of System.exit with SystemExitCalledError
   compile_classpath = lib("junit-4.12.jar") + ":" + randoop_classpath
   chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
                                 os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
-                                os.path.join(os.environ.get('DAIKONDIR'), 'java'),
+                                os.path.join(os.environ.get('DAIKONDIR'), 'ChicoryPremain.jar'),
+                                os.path.join(os.environ.get('DAIKONDIR'), 'dcomp_premain.jar'),
+                                os.path.join(os.environ.get('DAIKONDIR'), 'dcomp_rt.jar'),
+                                os.path.join(os.environ.get('DAIKONDIR')),
                                 lib("hamcrest-core-1.3.jar"),
                                 compile_classpath])
+  # TODO(has) remove this after testing
+  if "::" in chicory_classpath:
+    chicory_classpath = chicory_classpath.replace("::", ":")
   replace_call_classpath = lib('replacecall.jar')
 
   if 'randoop' in run_parts:
@@ -88,7 +88,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
       test_src_dir, 
       junit_after_path, 
       replace_call_classpath, 
-      compile_classpath, 
+      compile_classpath,
       test_class_directory)
 
     if args.evidence_json:
@@ -173,6 +173,8 @@ def get_omit_list(omit_file_path):
   return omits
 
 def make_class_list(out_dir, classes):
+  if os.path.exists(os.path.join(out_dir,"classlist.txt")):
+    return os.path.join(out_dir, "classlist.txt")
   with open(os.path.join(out_dir,"classlist.txt"), 'w') as class_file:
     for c in classes:
       if "package-info" not in c:
@@ -181,10 +183,11 @@ def make_class_list(out_dir, classes):
     class_file.flush()
     return class_file.name
 
-def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, rc_classpath, time_limit=200, output_limit=4000):
+def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_path, rc_classpath, time_limit=900, output_limit=2000):
   # Methods to be omitted due to non-determinism.
   omitted_methods = "\"(org\\.la4j\\.operation\\.ooplace\\.OoPlaceKroneckerProduct\\.applyCommon)|(PseudoOracle\\.verifyFace)|(org\\.znerd\\.math\\.NumberCentral\\.createRandomInteger)|(org\\.jbox2d\\.common\\.MathUtils\\.randomFloat.*)|(org\\.jbox2d\\.utests\\.MathTest\\.testFastMath)|(org\\.jbox2d\\.testbed\\.tests\\.DynamicTreeTest.*)|(org\\.la4j\\.Matrix.*)\""
 
+  omitted_classes = "\"(org\\.apache\\.logging\\.log4j\\.core\\appender\\.AppenderLoggingException)|(sun\\.security\\.x509\\.AlgorithmId)|(org\\.apache\\.logging\\.log4j\\.core\\.layout\\.Abstract*)\""
   selection_log_file = "dljc-out/selection-log.txt"
   operation_log_file = "dljc-out/operation-history-log.txt"
   randoop_log_file = "dljc-out/randoop-log.txt"
@@ -197,11 +200,16 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
     "randoop.main.Main", "gentests",
     f"--classlist={class_list_file}", 
     f"--time-limit={time_limit}",
-    f"--omit-methods={omitted_methods}",
+    "--stop-on-error-test=false",
+    # f"--omit-methods={omitted_methods}",
+    # f"--omit-classes={omitted_classes}",
     "--junit-reflection-allowed=false",
-    "--flaky-test-behavior=DISCARD", 
-    "--usethreads=true",
-    "--call-timeout=5",
+    # "--flaky-test-behavior=DISCARD",
+    "--flaky-test-behavior=output",
+    "--no-error-revealing-tests",
+    # "--usethreads=true",
+    "--usethreads",
+    # "--call-timeout=5",
     "--silently-ignore-bad-class-names=true",
     f"--junit-output-dir={test_src_dir}",
     # Uncomment these lines to produce Randoop debugging logs
@@ -301,7 +309,6 @@ def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
   dyncomp_command = ["java", "-Xmx3G",
                      "-classpath", classpath,
                      "daikon.DynComp",
-                     "--approximate-omitted-ppts",
                      f"--output-dir={out_dir}"]
 
   if no_jdk:
@@ -349,7 +356,7 @@ def daikon_print_xml(args, classpath, out_dir):
   common.run_cmd(daikon_command, args, 'daikon')
   js = jsoninv.generate_json_invariants(args, out_dir)
   with open(os.path.join(out_dir, 'invariants.json'), 'w') as f:
-    json.dump(js, f)
+    json.dump(js, f, indent=4)
 
 def evidence_print_json(args, tool_stats, out_dir):
   tool = next(iter(tool_stats))
@@ -361,5 +368,5 @@ def evidence_print_json(args, tool_stats, out_dir):
     return
 
   with open(os.path.join(out_dir, f'{tool}-evidence.json'), 'w') as f:
-    json.dump(ejs, f)
+    json.dump(ejs, f, indent=4)
 

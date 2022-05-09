@@ -24,15 +24,15 @@ class RandoopVersion(LineProcessor):
   def process(txt: str) -> ty.Optional[str]:
     if not txt.startswith('Randoop for Java version'): # VERSION
       return None
-    info_arr = txt[txt.index("\"") + 1, txt.rindex("\"")].split(",")
+    info_arr = txt[txt.index("\"") + 1: txt.rindex("\"")].split(",")
     local_changes = 'NONE' if not info_arr[1] or '' ==  info_arr[1] else info_arr[1].split()[0].strip()
     
     qualdata, metadata = {}, {}
     qualdata["RANDOOP_VERSION"] = info_arr[0]
-    qualdata["DATE"] = info_arr[4].trim()
+    qualdata["DATE"] = info_arr[4].strip()
     metadata["CHANGES"] = local_changes
-    metadata["BRANCH"] = info_arr[2].trim().split(" ")[1].trim()
-    metadata["COMMIT"] = info_arr[3].trim().split(" ")[1].trim()
+    metadata["BRANCH"] = info_arr[2].strip().split(" ")[1].strip()
+    metadata["COMMIT"] = info_arr[3].strip().split(" ")[1].strip()
     
     return {
       "RANDOOP_TOOL_QUALIFICATION" : qualdata, 
@@ -45,7 +45,7 @@ class ExploredClasses(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split()
-    metadata['EXPLORED_CLASSES'] = info_array[2].trim()
+    metadata['EXPLORED_CLASSES'] = info_array[2].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class PublicMembers(LineProcessor):
@@ -54,7 +54,7 @@ class PublicMembers(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split("=")
-    metadata['PUBLIC_MEMBERS'] = info_array[1].trim()
+    metadata['PUBLIC_MEMBERS'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class NormalExec(LineProcessor):
@@ -63,7 +63,7 @@ class NormalExec(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['NORMAL_EXECUTIONS'] = info_array[1].trim()
+    metadata['NORMAL_EXECUTIONS'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class ExceptionalExec(LineProcessor):
@@ -72,7 +72,7 @@ class ExceptionalExec(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['EXCEPTIONAL_EXECUTIONS'] = info_array[1].trim()
+    metadata['EXCEPTIONAL_EXECUTIONS'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class NormalTermination(LineProcessor):
@@ -81,7 +81,7 @@ class NormalTermination(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['AVG_NORMAL_TERMINATION_TIME'] = info_array[1].trim()
+    metadata['AVG_NORMAL_TERMINATION_TIME'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class ExceptionalTermination(LineProcessor):
@@ -90,7 +90,7 @@ class ExceptionalTermination(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['AVG_EXCEPTIONAL_TERMINATION_TIME'] = info_array[1].trim()
+    metadata['AVG_EXCEPTIONAL_TERMINATION_TIME'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class MemoryUsage(LineProcessor):
@@ -99,7 +99,7 @@ class MemoryUsage(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split()
-    metadata['MEMORY_USAGE'] = info_array[3].trim()
+    metadata['MEMORY_USAGE'] = info_array[3].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class RegressionTestCount(LineProcessor):
@@ -108,7 +108,7 @@ class RegressionTestCount(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['REGRESSION_TEST_COUNT'] = info_array[1].trim()
+    metadata['REGRESSION_TEST_COUNT'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
   
 class ErrorRevealingTestCount(LineProcessor):
@@ -117,7 +117,7 @@ class ErrorRevealingTestCount(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['ERROR_REVEALING_TEST_COUNT'] = info_array[1].trim()
+    metadata['ERROR_REVEALING_TEST_COUNT'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 class InvalidTestCount(LineProcessor):
@@ -126,13 +126,13 @@ class InvalidTestCount(LineProcessor):
       return None
     metadata = {}
     info_array = txt.split(":")
-    metadata['INVALID_TESTS_GENERATED'] = info_array[1].trim()
+    metadata['INVALID_TESTS_GENERATED'] = info_array[1].strip()
     return {"RANDOOP_TESTS_AND_METRICS": metadata}
 
 def processline(line: str) -> dict:
   for each_proc in LineProcessor.subclasses:
     out = each_proc.process(line)
-    if out or len(out) > 0:
+    if out is not None:
       return out
 
   return None
@@ -167,7 +167,7 @@ def get_dljc_kwargs(args):
   return dljc_kwargs
 
 def generate_json_randoop_evidence(args, tool_stats):
-  randoop_log_file = os.path.join("dljc-out", "randoop-log.txt")
+  randoop_log_file = os.path.join("dljc-out", "randoop-stdout.log")
 
   if not os.path.exists(randoop_log_file):
     return None
