@@ -1,10 +1,11 @@
 import os
 
-from . import dyntrace
+from . import dyntrace, common
 
 argparser = None
 
 def run(args, javac_commands, jars):
+  javac_commands = common.get_module_javac_commands(args, javac_commands)
   i = 1
   out_dir = os.path.basename(args.output_directory)
 

@@ -9,6 +9,32 @@ def log(args, tool, message):
   with open(os.path.join(args.output_directory, f"{tool}-stdout.log"), 'a') as f:
     f.write(message)
     f.flush()
+    
+
+def get_module_javac_commands(args, javac_commands):
+  if args.module_dir is None:
+    return javac_commands
+
+  jc_list = []
+  cp_list = []
+  for jc in javac_commands:
+    cp = classpath(jc)
+    cp_update = [c for c in cp.split(":")]
+    cp_list.extend(cp_update)
+    classdir = os.path.abspath(class_directory(jc))
+    cp_list.append(classdir)
+    
+    if args.module_dir in classdir:
+      jc_list += [jc]
+
+  # deduplicate classpath list
+  cp_list = set(cp_list)
+  with open(os.path.join(args.output_directory, 'global_classpath.txt'), 'w') as f:
+    f.write(":".join(cp_list))
+  
+  # Only one matched javac_command is needed
+  return [jc_list[0]] if len(jc_list) > 1 else jc_list
+
 
 def classpath(javac_command):
   if 'javac_switches' in javac_command:

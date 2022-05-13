@@ -25,10 +25,27 @@ dyntrace_group.add_argument(
   dest='evidence_json',
   help='Extract evidence data from dyntrace output')
 
+dyntrace_group.add_argument(
+  '--module-dir',
+  action='store',
+  default=None,
+  dest='module_dir',
+  help='Directory of module targeted by some analysis tasks')
+
+dyntrace_group.add_argument(
+  '--classlist-txt',
+  action='store',
+  default=None,
+  dest='classlist',
+  help='User-specified classlist.txt for Randoop execution')
+
+
 no_jdk = False
 no_ternary = False
 
+
 def run(args, javac_commands, jars):
+  javac_commands = common.get_module_javac_commands(args, javac_commands)
   i = 1
   out_dir = os.path.basename(args.output_directory)
 
@@ -47,13 +64,30 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   test_src_dir = os.path.join(out_dir, f"test-src{i}")
   test_class_directory = os.path.join(out_dir, f"test-classes{i}")
 
-  if not os.path.exists(test_class_directory):
-    os.mkdir(test_class_directory)
-
   if classpath:
     base_classpath = classpath + ":" + classdir
   else:
     base_classpath = classdir
+
+  ####
+  # dljc, when handling projects with multiple module, will produce
+  # multiple javac commands. Providing the module-dir forces dljc 
+  # to merge all javac_commands and the classpaths into a single 
+  # javac command and a single *global* classpath.
+  if args.module_dir is not None:
+    if args.module_dir in classdir:
+      global_classpath_txt = os.path.join(args.output_directory, 'global_classpath.txt')
+      if os.path.exists(global_classpath_txt):
+        try:
+          data = open(global_classpath_txt).read()
+          base_classpath = data
+        except OSError:
+          common.log(args, "dyntrace", f"Failed to read {global_classpath_txt}")
+          return
+  ####
+
+  if not os.path.exists(test_class_directory):
+    os.mkdir(test_class_directory)
 
   with open(os.path.join(test_class_directory, 'classpath.txt'), 'w') as f:
     f.write(base_classpath)
@@ -78,7 +112,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
 
   if 'randoop' in run_parts:
     classes = sorted(common.get_classes(java_command))
-    class_list_file = make_class_list(test_class_directory, classes)
+    class_list_file = make_class_list(args, test_class_directory, classes)
     junit_after_path = get_special_file("junit-after", out_dir, i)
 
     randoop_stats = run_randoop(
@@ -172,14 +206,19 @@ def get_omit_list(omit_file_path):
             omits.append(omit)
   return omits
 
-def make_class_list(out_dir, classes):
+def make_class_list(args, out_dir, classes):
+  if args.classlist is not None:
+    return os.path.join(args.classlist)
+  # if 'RANDOOP_CLASS_FILE' in os.environ:
+  #   return os.path.join(os.environ['RANDOOP_CLASS_FILE'])
   if os.path.exists(os.path.join(out_dir,"classlist.txt")):
     return os.path.join(out_dir, "classlist.txt")
   with open(os.path.join(out_dir,"classlist.txt"), 'w') as class_file:
     for c in classes:
-      if "package-info" not in c:
-        class_file.write(c)
-        class_file.write('\n')
+      if c.startswith('META-INF') or "package-info" in c:
+        continue
+      class_file.write(c)
+      class_file.write('\n')
     class_file.flush()
     return class_file.name
 
@@ -359,6 +398,9 @@ def daikon_print_xml(args, classpath, out_dir):
     json.dump(js, f, indent=4)
 
 def evidence_print_json(args, tool_stats, out_dir):
+  if tool_stats is None:
+    common.log(args, 'dyntrace', 'Failed to located tool output. Did you run randoop/daikon?')
+    return
   tool = next(iter(tool_stats))
   if 'randoop' == tool:
     ejs = jsonev.generate_json_randoop_evidence(args, tool_stats)
