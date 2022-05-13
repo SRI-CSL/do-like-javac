@@ -193,6 +193,7 @@ class LikelyProgramInvariant:
   wasRevisionOf_identifier: str = ''
 
 def run(args, javac_commands, jars):
+  javac_commands = common.get_module_javac_commands(args, javac_commands)
   out_dir = os.path.basename(args.output_directory)
   for jc in javac_commands:
     evidence_print_csv(args, jc, out_dir)

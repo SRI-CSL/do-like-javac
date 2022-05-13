@@ -25,12 +25,6 @@ dyntrace_group.add_argument(
   dest='evidence_json',
   help='Extract evidence data from dyntrace output')
 
-dyntrace_group.add_argument(
-  '--module-dir',
-  action='store',
-  default=None,
-  dest='module_dir',
-  help='Directory of module targeted by some analysis tasks')
 
 dyntrace_group.add_argument(
   '--classlist-txt',

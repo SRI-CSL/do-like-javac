@@ -12,6 +12,10 @@ def log(args, tool, message):
     
 
 def get_module_javac_commands(args, javac_commands):
+  
+  def single_javac_command(x):
+    return [x[0]] if len(x) > 1 else x
+  
   if args.module_dir is None:
     return javac_commands
 
@@ -27,13 +31,18 @@ def get_module_javac_commands(args, javac_commands):
     if args.module_dir in classdir:
       jc_list += [jc]
 
+  # TODO(has) - do we need to recreate global_classpath.txt everytime we run dljc?
+  global_classpath_txt = os.path.join(args.output_directory, 'global_classpath.txt')
+  if os.path.exists(global_classpath_txt):
+    return single_javac_command(jc_list)
+  
   # deduplicate classpath list
   cp_list = set(cp_list)
-  with open(os.path.join(args.output_directory, 'global_classpath.txt'), 'w') as f:
+  with open(global_classpath_txt, 'w') as f:
     f.write(":".join(cp_list))
   
   # Only one matched javac_command is needed
-  return [jc_list[0]] if len(jc_list) > 1 else jc_list
+  return single_javac_command(jc_list)
 
 
 def classpath(javac_command):
