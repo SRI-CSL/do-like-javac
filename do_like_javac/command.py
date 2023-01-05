@@ -5,6 +5,7 @@ import sys
 
 from . import arg, cache, log, tools
 
+
 def output_json(filename, obj):
     with open(filename, 'w') as f:
         f.write(json.dumps(obj,

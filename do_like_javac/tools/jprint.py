@@ -10,4 +10,4 @@ def run(args, javac_commands, jars):
     },
     indent = 2,
     separators = (',', ': ')
-  )));
+  ));

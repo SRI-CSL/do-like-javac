@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 
 from . import common
 
+
 def generate_json_invariants(args, out_dir):
   filename = os.path.join(out_dir, 'invariants.xml')
   if not os.path.exists(filename):
