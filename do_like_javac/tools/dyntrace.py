@@ -1,9 +1,8 @@
-import os
-import json
-from . import jsoninv
-from . import common
-import tempfile
 import argparse
+import json
+import os
+
+from . import common, jsoninv
 
 argparser = argparse.ArgumentParser(add_help=False)
 dyntrace_group = argparser.add_argument_group('dyntrace arguments')
@@ -11,6 +10,12 @@ dyntrace_group = argparser.add_argument_group('dyntrace arguments')
 dyntrace_group.add_argument('-X', '--daikon-xml',
                         action='store_true',
                         help='Have Daikon emit XML')
+
+# choose error revealing driver
+dyntrace_group.add_argument('--error-driver',
+                        action='store_true',
+                        dest='error_driver',
+                        help='Chose Error Revealing Driver')
 
 no_jdk = False
 no_ternary = False
@@ -31,6 +36,8 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   classdir = os.path.abspath(common.class_directory(java_command))
 
   randoop_driver = "RegressionTestDriver"
+  if args.error_driver:
+    randoop_driver = "ErrorTestDriver"
   test_src_dir = os.path.join(out_dir, "test-src{}".format(i))
   test_class_directory = os.path.join(out_dir, "test-classes{}".format(i))
 
@@ -52,6 +59,7 @@ def dyntrace(args, i, java_command, out_dir, lib_dir, run_parts=['randoop','chic
   compile_classpath = lib("junit-4.12.jar") + ":" + randoop_classpath
   chicory_classpath = ':'.join([os.path.abspath(test_class_directory),
                                 os.path.join(os.environ.get('DAIKONDIR'), 'daikon.jar'),
+                                os.path.join(os.environ.get('DAIKONDIR'), 'java'),
                                 lib("hamcrest-core-1.3.jar"),
                                 compile_classpath])
   replace_call_classpath = lib('replacecall.jar')
@@ -98,7 +106,7 @@ def get_select_list(classdir):
   return selects
 
 def get_special_file(special_type, out_dir, i):
-  candidate = os.path.join(out_dir, "{}.{}".format(special_type, i))
+  candidate = os.path.join(out_dir, f"{special_type}.{i}")
   if os.path.isfile(candidate):
     return os.path.normpath(candidate)
 
@@ -129,8 +137,9 @@ def get_omit_list(omit_file_path):
 def make_class_list(out_dir, classes):
   with open(os.path.join(out_dir,"classlist.txt"), 'w') as class_file:
     for c in classes:
-      class_file.write(c)
-      class_file.write('\n')
+      if "package-info" not in c:
+        class_file.write(c)
+        class_file.write('\n')
     class_file.flush()
     return class_file.name
 
@@ -145,28 +154,30 @@ def generate_tests(args, classpath, class_list_file, test_src_dir, junit_after_p
 
   randoop_command = ["java", "-ea",
                      "-classpath", classpath,
-                     "-Xbootclasspath/a:{}".format(rc_classpath),
-                     "-javaagent:{}".format(rc_classpath),
+                     f"-Xbootclasspath/a:{rc_classpath}",
+                     f"-javaagent:{rc_classpath}",
                      "randoop.main.Main", "gentests",
-                     "--classlist={}".format(class_list_file),
-                     "--time-limit={}".format(time_limit),
-                     "--omitmethods={}".format(omitted_methods),
+                     f"--classlist={class_list_file}",
+                     f"--time-limit={time_limit}",
+                     f"--omit-methods={omitted_methods}",
                      "--junit-reflection-allowed=false",
                      "--flaky-test-behavior=DISCARD",
                      "--usethreads=true",
                      "--call-timeout=5",
                      "--silently-ignore-bad-class-names=true",
-                     "--junit-output-dir={}".format(test_src_dir),
+                     f"--junit-output-dir={test_src_dir}",
                      # Uncomment these lines to produce Randoop debugging logs
-                     #"--log={}".format(randoop_log_file),
-                     "--selection-log={}".format(selection_log_file),
-                     "--operation-history-log={}".format(operation_log_file)]
+                     f"--log={randoop_log_file}",
+                     f"--selection-log={selection_log_file}",
+                     f"--operation-history-log={operation_log_file}"]
 
   if junit_after_path:
-    randoop_command.append("--junit-after-all={}".format(junit_after_path))
+    randoop_command.append(f"--junit-after-all={junit_after_path}")
 
   if output_limit and output_limit > 0:
-    randoop_command.append('--output-limit={}'.format(output_limit))
+    randoop_command.append(f'--output-limit={output_limit}')
+
+  print("Running command", " ".join(randoop_command))
 
   common.run_cmd(randoop_command, args, 'randoop')
 
@@ -191,14 +202,22 @@ def run_chicory(args, classpath, main_class, out_dir, selects=[], omits=[]):
   chicory_command = ["java", "-Xmx3G",
                      "-classpath", classpath,
                      "daikon.Chicory",
-                     "--output_dir={}".format(out_dir)]
+                     f"--output_dir={out_dir}"]
 
-  dc_out_path = os.path.join(out_dir, "RegressionTestDriver.decls-DynComp")
+  randoop_driver = "RegressionTestDriver"
+  if args.error_driver:
+    randoop_driver = "ErrorTestDriver"
+
+  decls_dyn_comp_file = f"{randoop_driver}.decls-DynComp"
+
+  dc_out_path = os.path.join(out_dir, decls_dyn_comp_file)
   chicory_command.append("--comparability-file={}".format(dc_out_path))
 
   chicory_command.extend(selects)
   chicory_command.extend(omits)
   chicory_command.append(main_class)
+
+  print("Running command", " ".join(chicory_command))
 
   common.run_cmd(chicory_command, args, 'chicory')
 
@@ -208,13 +227,15 @@ def run_dyncomp(args, classpath, main_class, out_dir, selects=[], omits=[]):
                      "-classpath", classpath,
                      "daikon.DynComp",
                      "--approximate-omitted-ppts",
-                     "--output-dir={}".format(out_dir)]
+                     f"--output-dir={out_dir}"]
 
   if no_jdk:
     dyncomp_command.append("--rt-file=none")
   dyncomp_command.extend(selects)
   dyncomp_command.extend(omits)
   dyncomp_command.append(main_class)
+
+  print("Running command", " ".join(dyncomp_command))
 
   common.run_cmd(dyncomp_command, args, 'dyncomp')
 
@@ -232,6 +253,8 @@ def run_daikon(args, classpath, out_dir, invcounts):
     daikon_command.append("--config_option")
     daikon_command.append("daikon.inv.ternary.threeScalar.LinearTernaryFloat.enabled=false")
   daikon_command.append(os.path.join(out_dir, "RegressionTestDriver.dtrace.gz"))
+
+  print("Running command", " ".join(daikon_command))
 
   common.run_cmd(daikon_command, args, 'daikon')
 

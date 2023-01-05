@@ -10,8 +10,7 @@ import argparse
 import os
 import sys
 
-from . import tools
-from . import capture
+from . import capture, tools
 
 DEFAULT_OUTPUT_DIRECTORY = os.path.join(os.getcwd(), 'dljc-out')
 
@@ -30,8 +29,10 @@ base_group.add_argument('-o', '--out', metavar='<directory>',
                         default=DEFAULT_OUTPUT_DIRECTORY, dest='output_directory',
                         action=AbsolutePathAction,
                         help='The directory to log results.')
+
 base_group.add_argument('--log_to_stderr', action='store_true',
                         help='''Redirect log messages to stderr instead of log file''')
+
 base_group.add_argument('-t', '--tool', metavar='<tool>',
                         action='store',default=None,
                         help='A comma separated list of tools to run. Valid tools: ' + ', '.join(tools.TOOLS))
@@ -51,7 +52,9 @@ base_group.add_argument('--cache', action='store_true',
                         help='''Use the dljc cache (if available)''')
 
 base_group.add_argument('-c', '--checker', metavar='<checker>',
-                        action='store',
+                        action='store', 
+                        # do not run the NullnessChecker by default
+                        # default='NullnessChecker',
                         help='A checker to check (for checker/inference tools)')
 
 base_group.add_argument('--stubs', metavar='<stubs>',

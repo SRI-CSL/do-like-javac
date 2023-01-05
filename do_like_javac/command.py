@@ -1,9 +1,9 @@
+import json
+import os
 import pprint
-from . import arg
-from . import log
-from . import tools
-from . import cache
-import os,json,sys
+import sys
+
+from . import arg, cache, log, tools
 
 def output_json(filename, obj):
     with open(filename, 'w') as f:
@@ -24,8 +24,8 @@ def main():
         sys.exit(1)
 
     javac_commands, jars, stats = result
-    if len(javac_commands) == 0:
-        raise Exception("command.main: no javac commands found by capturer:\n  cmd = {}\n  args = {}".format(cmd, args))
+    if not javac_commands or len(javac_commands) == 0:
+        raise ValueError(f"no javac commands found by capturer:\n\tcmd = {cmd}\n\targs = {args}")
 
     log.info('Results: %s', pprint.pformat(javac_commands))
     output_json(os.path.join(args.output_directory, 'javac.json'), javac_commands)

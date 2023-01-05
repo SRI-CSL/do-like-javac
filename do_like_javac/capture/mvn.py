@@ -8,6 +8,7 @@
 
 import os
 import re
+
 from . import generic
 
 supported_commands = ['mvn', 'mvnw']

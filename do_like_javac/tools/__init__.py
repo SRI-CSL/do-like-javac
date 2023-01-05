@@ -1,16 +1,6 @@
-from . import jprint
-from . import randoop
-from . import randoop_old
-from . import bixie
-from . import graphtools
-from . import chicory
-from . import dyntrace
-from . import dyntracecounts
-
 # import soot
-from . import check
-from . import infer
-from . import wpi
+from . import (bixie, check, chicory, dyntrace, dyntracecounts, graphtools,
+               infer, jprint, randoop, wpi)
 
 TOOLS = {
   # 'soot'      : soot,
@@ -19,7 +9,6 @@ TOOLS = {
   'inference' : infer,
   'print'     : jprint,
   'randoop'   : randoop,
-  'randoop_old': randoop_old,
   'bixie'     : bixie,
   'graphtool' : graphtools,
   'chicory'   : chicory,
@@ -34,7 +23,7 @@ def check_tool(tool):
   if tool in TOOLS:
     return tool
   else:
-    print("ERROR: Could not find tool {}".format(tool))
+    print(f"ERROR: Could not find tool {tool}")
     return None
 
 def parse_tools(tools):

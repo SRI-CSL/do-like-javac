@@ -6,8 +6,9 @@
 # additional grant of patent rights can be found in the PATENTS_Facebook file
 # in the same directory.
 
-from . import generic
 import os
+
+from . import generic
 
 supported_commands = ['gradle', 'gradlew']
 

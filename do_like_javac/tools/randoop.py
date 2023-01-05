@@ -1,4 +1,5 @@
 import os
+
 from . import dyntrace
 
 argparser = None
@@ -9,4 +10,4 @@ def run(args, javac_commands, jars):
 
   for jc in javac_commands:
     dyntrace.dyntrace(args, i, jc, out_dir, args.lib_dir, ['randoop'])
-    i = i+1
+    i = i + 1
