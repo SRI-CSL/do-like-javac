@@ -1,10 +1,11 @@
 # import soot
 from . import (bixie, check, chicory, dyntrace, dyntracecounts, graphtools,
-               infer, jprint, randoop)
+               infer, jprint, randoop, wpi)
 
 TOOLS = {
   # 'soot'      : soot,
   'checker'   : check,
+  'wpi'       : wpi,
   'inference' : infer,
   'print'     : jprint,
   'randoop'   : randoop,

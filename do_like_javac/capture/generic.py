@@ -7,6 +7,8 @@ import do_like_javac.tools.common as cmdtools
 
 def is_switch(s):
     return s != None and s.startswith('-')
+def is_switch_first_part(s):
+    return s != None and s.startswith('-') and ("=" not in s)
 
 ## brought this from github.com/kelloggm/do-like-javac
 def is_switch_first_part(s):
@@ -101,8 +103,7 @@ class GenericCapture(object):
 
             if is_switch(a):
                 possible_switch_arg = False
-
-            if a.endswith('.java'):
+            elif a.endswith('.java'):
                 files.append(a)
                 possible_switch_arg = False
 
